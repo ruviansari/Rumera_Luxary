@@ -16,8 +16,11 @@ export default function ProductCard({ product, onSelect, onQuickAdd, isWishliste
   const activeVariant = product.variants?.[0];
   const inStock = activeVariant ? activeVariant.stock_quantity > 0 : false;
 
-  // Resolve unique bespoke Rumera bottle image
-  const cardImage = BESPOKE_PRODUCT_IMAGES[product.slug] || resolveImageUrl(product.primary_image) || '/images/showcase/royal_amber_flacon.jpg';
+  // If admin uploaded a custom image, prioritize it over the default demo showcase
+  const hasCustomAdminImage = product.primary_image && (product.primary_image.startsWith('/media/') || product.primary_image.startsWith('http') || product.primary_image.startsWith('data:'));
+  const cardImage = hasCustomAdminImage
+    ? resolveImageUrl(product.primary_image)
+    : (BESPOKE_PRODUCT_IMAGES[product.slug] || resolveImageUrl(product.primary_image) || '/images/showcase/royal_amber_flacon.jpg');
 
   // Clean volume size string so '(Complete Set)' or '(1/4 Tola)' doesn't cause awkward line wraps
   const rawSize = activeVariant?.volume_size || '3 ml';

@@ -599,7 +599,7 @@ export default function HomePage({
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '32px' }}>
-            {featuredProducts.slice(0, 4).map((product) => {
+            {featuredProducts.slice(0, 12).map((product) => {
               const isWishlisted = wishlist.some(item => (item.product?.id || item.product_id || item.id) === product.id);
               return (
                 <ProductCard

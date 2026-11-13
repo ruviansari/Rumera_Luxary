@@ -205,7 +205,10 @@ export default function CartDrawer({
             </div>
           ) : (
             cart.items.map((item) => {
-              const bespokeImg = BESPOKE_PRODUCT_IMAGES[item.product_slug] || resolveImageUrl(item.product_image) || '/images/showcase/royal_emerald_flacon.jpg';
+              const hasCustomAdminImage = item.product_image && (item.product_image.startsWith('/media/') || item.product_image.startsWith('http') || item.product_image.startsWith('data:'));
+              const bespokeImg = hasCustomAdminImage
+                ? resolveImageUrl(item.product_image)
+                : (BESPOKE_PRODUCT_IMAGES[item.product_slug] || resolveImageUrl(item.product_image) || '/images/showcase/royal_emerald_flacon.jpg');
               return (
                 <div
                   key={item.id}

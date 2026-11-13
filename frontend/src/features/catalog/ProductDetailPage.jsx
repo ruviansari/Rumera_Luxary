@@ -43,8 +43,11 @@ export default function ProductDetailPage({ slug, onBack, onAddToCart, onNavigat
         if (data.variants && data.variants.length > 0) {
           setSelectedVariant(data.variants[0]);
         }
+        const hasCustomAdminImage = data.primary_image && (data.primary_image.startsWith('/media/') || data.primary_image.startsWith('http') || data.primary_image.startsWith('data:'));
         const bespoke = BESPOKE_PRODUCT_IMAGES[slug];
-        if (bespoke) {
+        if (hasCustomAdminImage) {
+          setActiveImage(resolveImageUrl(data.primary_image));
+        } else if (bespoke) {
           setActiveImage(bespoke);
         } else if (data.images && data.images.length > 0) {
           setActiveImage(resolveImageUrl(data.images[0].image_url));
