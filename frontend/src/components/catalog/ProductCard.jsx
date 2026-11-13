@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShoppingBag, Eye, Heart } from 'lucide-react';
+import { resolveImageUrl } from '../../services/api';
 
 const BESPOKE_PRODUCT_IMAGES = {
   'royal-quadrumvirate-gift-coffret': '/images/showcase/royal_trio_collection.jpg',
@@ -16,7 +17,7 @@ export default function ProductCard({ product, onSelect, onQuickAdd, isWishliste
   const inStock = activeVariant ? activeVariant.stock_quantity > 0 : false;
 
   // Resolve unique bespoke Rumera bottle image
-  const cardImage = BESPOKE_PRODUCT_IMAGES[product.slug] || product.primary_image || '/images/showcase/royal_amber_flacon.jpg';
+  const cardImage = BESPOKE_PRODUCT_IMAGES[product.slug] || resolveImageUrl(product.primary_image) || '/images/showcase/royal_amber_flacon.jpg';
 
   // Clean volume size string so '(Complete Set)' or '(1/4 Tola)' doesn't cause awkward line wraps
   const rawSize = activeVariant?.volume_size || '3 ml';

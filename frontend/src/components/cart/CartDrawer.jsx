@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Trash2, Plus, Minus, ArrowRight, ShieldCheck, Tag, ShoppingBag, Crown, Sparkles, Check, Gift } from 'lucide-react';
-import { api } from '../../services/api';
+import { api, resolveImageUrl } from '../../services/api';
 
 const BESPOKE_PRODUCT_IMAGES = {
   'royal-quadrumvirate-gift-coffret': '/images/showcase/royal_trio_collection.jpg',
@@ -205,7 +205,7 @@ export default function CartDrawer({
             </div>
           ) : (
             cart.items.map((item) => {
-              const bespokeImg = BESPOKE_PRODUCT_IMAGES[item.product_slug] || item.product_image || '/images/showcase/royal_emerald_flacon.jpg';
+              const bespokeImg = BESPOKE_PRODUCT_IMAGES[item.product_slug] || resolveImageUrl(item.product_image) || '/images/showcase/royal_emerald_flacon.jpg';
               return (
                 <div
                   key={item.id}

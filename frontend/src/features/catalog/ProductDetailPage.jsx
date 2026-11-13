@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingBag, ShieldCheck, Droplets, Clock, Truck, ArrowLeft, RefreshCw, CheckCircle, Heart, Star, Plus, Check, Sparkles, Feather, Award, Crown } from 'lucide-react';
-import { api } from '../../services/api';
+import { api, resolveImageUrl } from '../../services/api';
 import ProductCard from '../../components/catalog/ProductCard';
 
 const BESPOKE_PRODUCT_IMAGES = {
@@ -47,9 +47,9 @@ export default function ProductDetailPage({ slug, onBack, onAddToCart, onNavigat
         if (bespoke) {
           setActiveImage(bespoke);
         } else if (data.images && data.images.length > 0) {
-          setActiveImage(data.images[0].image_url);
+          setActiveImage(resolveImageUrl(data.images[0].image_url));
         } else if (data.primary_image) {
-          setActiveImage(data.primary_image);
+          setActiveImage(resolveImageUrl(data.primary_image));
         }
 
         api.getWishlist()

@@ -7,7 +7,7 @@ import {
   UserPlus, Key, Eye, EyeOff, Check, Ban, ExternalLink, Mail, Phone,
   ChevronDown, Star, Filter, ShieldCheck, Crown, Sparkles
 } from 'lucide-react';
-import { api } from '../../services/api';
+import { api, resolveImageUrl } from '../../services/api';
 
 export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
   // Determine Role & RBAC Permissions
@@ -1321,7 +1321,7 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '22px' }}>
               {filteredProducts.map((p) => {
                 const primaryVariant = p.variants?.[0] || {};
-                const img = p.primary_image || p.images?.[0]?.image_url || '/images/rumera_white_oud_hero.jpg';
+                const img = resolveImageUrl(p.primary_image || p.images?.[0]?.image_url || '/images/rumera_white_oud_hero.jpg');
 
                 return (
                   <div key={p.id} style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', border: '1px solid #E5DFC9', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column' }}>
@@ -2401,7 +2401,7 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
                   {productForm.image_url ? (
                     <div style={{ position: 'relative', width: '70px', height: '70px', backgroundColor: '#0D1714', borderRadius: '6px', overflow: 'hidden', border: '1px solid #B78B45', flexShrink: 0 }}>
                       <img
-                        src={productForm.image_url}
+                        src={resolveImageUrl(productForm.image_url)}
                         alt="Preview"
                         style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }}
                       />

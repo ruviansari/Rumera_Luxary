@@ -31,6 +31,17 @@ export const clearAuth = () => {
   localStorage.removeItem('rumera_user');
 };
 
+export const resolveImageUrl = (url) => {
+  if (!url) return '/images/rumera_white_oud_hero.jpg';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:')) {
+    return url;
+  }
+  if (url.startsWith('/media/')) {
+    return `http://127.0.0.1:8001${url}`;
+  }
+  return url;
+};
+
 // Core Request Wrapper (Dynamically supports Port 8000 or 8001)
 export async function apiRequest(endpoint, { method = 'GET', body = null, isAuth = false } = {}) {
   const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
