@@ -151,13 +151,27 @@ export const api = {
   // Admin ERP APIs
   admin: {
     getAnalytics: () => apiRequest('/admin/analytics/dashboard/'),
-    getUsers: () => apiRequest('/auth/admin/users/'),
+    getUsers: (params = {}) => {
+      const q = new URLSearchParams(params).toString();
+      return apiRequest(`/auth/admin/users/${q ? `?${q}` : ''}`);
+    },
+    createUser: (data) => apiRequest('/auth/admin/users/', { method: 'POST', body: data }),
+    updateUser: (id, data) => apiRequest(`/auth/admin/users/${id}/`, { method: 'PATCH', body: data }),
+    deleteUser: (id) => apiRequest(`/auth/admin/users/${id}/`, { method: 'DELETE' }),
     getProducts: () => apiRequest('/admin/products/'),
     createProduct: (data) => apiRequest('/admin/products/', { method: 'POST', body: data }),
     updateProduct: (id, data) => apiRequest(`/admin/products/${id}/`, { method: 'PATCH', body: data }),
     deleteProduct: (id) => apiRequest(`/admin/products/${id}/`, { method: 'DELETE' }),
     getCategories: () => apiRequest('/admin/categories/'),
     createCategory: (data) => apiRequest('/admin/categories/', { method: 'POST', body: data }),
+    updateCategory: (id, data) => apiRequest(`/admin/categories/${id}/`, { method: 'PATCH', body: data }),
+    deleteCategory: (id) => apiRequest(`/admin/categories/${id}/`, { method: 'DELETE' }),
+    getReviews: (params = {}) => {
+      const q = new URLSearchParams(params).toString();
+      return apiRequest(`/admin/reviews/${q ? `?${q}` : ''}`);
+    },
+    updateReview: (id, data) => apiRequest(`/admin/reviews/${id}/`, { method: 'PATCH', body: data }),
+    deleteReview: (id) => apiRequest(`/admin/reviews/${id}/`, { method: 'DELETE' }),
     getStockMovements: (variantId) => apiRequest(`/admin/inventory/movements/${variantId ? `?variant=${variantId}` : ''}`),
     adjustStock: (data) => apiRequest('/admin/inventory/adjust/', { method: 'POST', body: data }),
     getOrders: (params = {}) => {
@@ -167,6 +181,7 @@ export const api = {
     updateOrderStatus: (orderNumber, data) => apiRequest(`/admin/orders/${orderNumber}/status/`, { method: 'PATCH', body: data }),
     getCoupons: () => apiRequest('/admin/coupons/'),
     createCoupon: (data) => apiRequest('/admin/coupons/', { method: 'POST', body: data }),
+    deleteCoupon: (id) => apiRequest(`/admin/coupons/${id}/`, { method: 'DELETE' }),
     getAbandonedCarts: () => apiRequest('/admin/abandoned-carts/'),
     dispatchShiprocket: (orderId) => apiRequest(`/admin/orders/${orderId}/shiprocket-dispatch/`, { method: 'POST' }),
     getOwnerProfile: () => apiRequest('/admin/content/owner/'),

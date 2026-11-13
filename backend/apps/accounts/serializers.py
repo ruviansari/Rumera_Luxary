@@ -56,8 +56,38 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'phone', 'role', 'is_staff', 'created_at']
-        read_only_fields = ['id', 'role', 'is_staff', 'created_at']
+        fields = ['id', 'email', 'first_name', 'last_name', 'phone', 'role', 'is_staff', 'is_active', 'created_at']
+        read_only_fields = ['id', 'created_at']
+
+
+class AdminUserManageSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=False, allow_blank=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'phone', 'role', 'is_staff', 'is_active', 'created_at', 'password']
+        read_only_fields = ['id', 'created_at']
+
+    def create(self, validated_data):
+        password = validated_data.pop('password', None) or 'Rumera@2026'
+        role = validated_data.get('role', User.Role.CUSTOMER)
+        is_staff = role in [User.Role.SUPER_ADMIN, User.Role.STORE_MANAGER, User.Role.ORDER_FULFILMENT, User.Role.CONTENT_MANAGER]
+        user = User.objects.create_user(
+            password=password,
+            is_staff=is_staff,
+            **validated_data
+        )
+        return user
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        if password:
+            instance.set_password(password)
+        if 'role' in validated_data:
+            role = validated_data['role']
+            instance.role = role
+            instance.is_staff = role in [User.Role.SUPER_ADMIN, User.Role.STORE_MANAGER, User.Role.ORDER_FULFILMENT, User.Role.CONTENT_MANAGER]
+        return super().update(instance, validated_data)
 
 
 class AddressSerializer(serializers.ModelSerializer):

@@ -207,3 +207,21 @@ class WishlistView(APIView):
                 return Response({"message": "Removed from wishlist.", "is_wishlisted": False, "product_id": product.id})
             Wishlist.objects.create(session_key=session_key, product=product)
             return Response({"message": "Added to your royal wishlist.", "is_wishlisted": True, "product_id": product.id}, status=status.HTTP_201_CREATED)
+
+
+class AdminReviewListManageView(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [IsStoreManager]
+
+    def get_queryset(self):
+        qs = Review.objects.all().select_related('product').order_by('-created_at')
+        is_approved = self.request.query_params.get('is_approved')
+        if is_approved is not None:
+            qs = qs.filter(is_approved=is_approved.lower() in ['true', '1'])
+        return qs
+
+
+class AdminReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [IsStoreManager]

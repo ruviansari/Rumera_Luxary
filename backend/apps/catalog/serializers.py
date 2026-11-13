@@ -112,13 +112,15 @@ class ProductAdminSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='product.name', read_only=True)
+
     class Meta:
         model = Review
         fields = [
-            'id', 'product', 'name', 'city', 'rating',
-            'headline', 'comment', 'is_verified_buyer', 'created_at'
+            'id', 'product', 'product_name', 'name', 'city', 'rating',
+            'headline', 'comment', 'is_verified_buyer', 'is_approved', 'created_at'
         ]
-        read_only_fields = ['id', 'is_verified_buyer', 'created_at']
+        read_only_fields = ['id', 'created_at']
 
 
 class WishlistSerializer(serializers.ModelSerializer):

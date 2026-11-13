@@ -10,6 +10,8 @@ from .views import (
     AdminProductDetailView,
     AdminCategoryListCreateView,
     AdminCategoryDetailView,
+    AdminReviewListManageView,
+    AdminReviewDetailView,
 )
 
 urlpatterns = [
@@ -26,4 +28,6 @@ urlpatterns = [
     path('admin/products/<int:pk>/', AdminProductDetailView.as_view(), name='admin_product_detail'),
     path('admin/categories/', AdminCategoryListCreateView.as_view(), name='admin_category_list_create'),
     path('admin/categories/<int:pk>/', AdminCategoryDetailView.as_view(), name='admin_category_detail'),
+    path('admin/reviews/', AdminReviewListManageView.as_view(), name='admin_review_list'),
+    path('admin/reviews/<int:pk>/', AdminReviewDetailView.as_view(), name='admin_review_detail'),
 ]

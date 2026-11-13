@@ -2,6 +2,7 @@ import random
 import re
 from datetime import timedelta
 from django.utils import timezone
+from django.db.models import Q
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,9 +13,10 @@ from .serializers import (
     CustomTokenObtainPairSerializer,
     UserRegistrationSerializer,
     UserSerializer,
+    AdminUserManageSerializer,
     AddressSerializer,
 )
-from .permissions import IsStoreManager
+from .permissions import IsStoreManager, IsSuperAdmin
 
 
 class CustomLoginView(TokenObtainPairView):
@@ -51,11 +53,53 @@ class AddressDetailView(generics.RetrieveUpdateDestroyAPIView):
         return Address.objects.filter(user=self.request.user)
 
 
-# Admin-facing User Management
-class AdminUserListView(generics.ListAPIView):
-    serializer_class = UserSerializer
+# Admin-facing User Management & RBAC
+class AdminUserListCreateView(generics.ListCreateAPIView):
+    serializer_class = AdminUserManageSerializer
     permission_classes = [IsStoreManager]
-    queryset = User.objects.all().order_by('-created_at')
+
+    def get_queryset(self):
+        qs = User.objects.all().order_by('-created_at')
+        role = self.request.query_params.get('role')
+        if role:
+            qs = qs.filter(role=role)
+        search = self.request.query_params.get('search')
+        if search:
+            qs = qs.filter(
+                Q(email__icontains=search) |
+                Q(first_name__icontains=search) |
+                Q(last_name__icontains=search) |
+                Q(phone__icontains=search)
+            )
+        return qs
+
+    def perform_create(self, serializer):
+        # Only Super Admin can assign administrative roles
+        requested_role = serializer.validated_data.get('role', User.Role.CUSTOMER)
+        if requested_role in [User.Role.SUPER_ADMIN, User.Role.STORE_MANAGER, User.Role.ORDER_FULFILMENT, User.Role.CONTENT_MANAGER]:
+            if self.request.user.role != User.Role.SUPER_ADMIN and not self.request.user.is_superuser:
+                raise permissions.PermissionDenied("Only Super Admin can assign staff/manager roles.")
+        serializer.save()
+
+
+class AdminUserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = AdminUserManageSerializer
+    permission_classes = [IsStoreManager]
+
+    def perform_update(self, serializer):
+        requested_role = serializer.validated_data.get('role')
+        if requested_role and requested_role != serializer.instance.role:
+            if self.request.user.role != User.Role.SUPER_ADMIN and not self.request.user.is_superuser:
+                raise permissions.PermissionDenied("Only Super Admin can change user roles.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        if self.request.user.role != User.Role.SUPER_ADMIN and not self.request.user.is_superuser:
+            raise permissions.PermissionDenied("Only Super Admin can remove user accounts.")
+        if instance.id == self.request.user.id:
+            raise permissions.PermissionDenied("Super Admin cannot delete their own active account.")
+        instance.delete()
 
 
 class SendOTPView(APIView):
