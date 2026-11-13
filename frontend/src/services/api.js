@@ -33,10 +33,14 @@ export const clearAuth = () => {
 
 // Core Request Wrapper (Dynamically supports Port 8000 or 8001)
 export async function apiRequest(endpoint, { method = 'GET', body = null, isAuth = false } = {}) {
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
   const headers = {
-    'Content-Type': 'application/json',
     'X-Session-Key': getSessionKey(),
   };
+
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   const token = getAuthToken();
   if (token) {
@@ -49,7 +53,7 @@ export async function apiRequest(endpoint, { method = 'GET', body = null, isAuth
   };
 
   if (body) {
-    config.body = JSON.stringify(body);
+    config.body = isFormData ? body : JSON.stringify(body);
   }
 
   const envBase = import.meta.env?.VITE_API_URL;
@@ -183,6 +187,11 @@ export const api = {
     createCoupon: (data) => apiRequest('/admin/coupons/', { method: 'POST', body: data }),
     deleteCoupon: (id) => apiRequest(`/admin/coupons/${id}/`, { method: 'DELETE' }),
     getAbandonedCarts: () => apiRequest('/admin/abandoned-carts/'),
+    uploadImage: (file) => {
+      const formData = new FormData();
+      formData.append('image', file);
+      return apiRequest('/admin/upload/', { method: 'POST', body: formData });
+    },
     dispatchShiprocket: (orderId) => apiRequest(`/admin/orders/${orderId}/shiprocket-dispatch/`, { method: 'POST' }),
     getOwnerProfile: () => apiRequest('/admin/content/owner/'),
     updateOwnerProfile: (data) => apiRequest('/admin/content/owner/', { method: 'PATCH', body: data }),

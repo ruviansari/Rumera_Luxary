@@ -64,6 +64,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 
 class ProductAdminSerializer(serializers.ModelSerializer):
+    description = serializers.CharField(required=False, allow_blank=True, default='')
+    short_description = serializers.CharField(required=False, allow_blank=True, default='')
     variants = ProductVariantSerializer(many=True, required=False)
     images = ProductImageSerializer(many=True, required=False)
 
@@ -74,6 +76,12 @@ class ProductAdminSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         variants_data = validated_data.pop('variants', [])
         images_data = validated_data.pop('images', [])
+        if not validated_data.get('description'):
+            name = validated_data.get('name', 'Artisanal Flacon')
+            validated_data['description'] = f"{name} is a rare artisanal fragrance formulation decanted at the atelier of Master Perfumer Er. Rumana Ansari."
+        if not validated_data.get('short_description'):
+            validated_data['short_description'] = validated_data.get('description', '')[:280]
+
         product = Product.objects.create(**validated_data)
 
         for variant_data in variants_data:

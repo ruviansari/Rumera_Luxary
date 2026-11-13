@@ -1,7 +1,13 @@
 from django.db.models import Q, Min, Avg
+from django.conf import settings
+from django.core.files.storage import default_storage
+import os
+import time
+import uuid
 from rest_framework import generics, permissions, filters, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from .models import Category, Product, ProductVariant, ProductImage, Review, Wishlist
 from .serializers import (
     CategorySerializer,
@@ -225,3 +231,28 @@ class AdminReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsStoreManager]
+
+
+class AdminImageUploadView(APIView):
+    permission_classes = [IsStoreManager]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def post(self, request):
+        file_obj = request.FILES.get('image') or request.FILES.get('file')
+        if not file_obj:
+            return Response({"error": "No image file provided in request."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Generate safe unique filename
+        ext = os.path.splitext(file_obj.name)[1].lower() or '.jpg'
+        if ext not in ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif']:
+            ext = '.jpg'
+
+        filename = f"products/{uuid.uuid4().hex[:10]}_{int(time.time())}{ext}"
+        saved_path = default_storage.save(filename, file_obj)
+        media_url = f"{settings.MEDIA_URL}{saved_path}".replace('\\', '/')
+
+        return Response({
+            "message": "Image uploaded successfully",
+            "url": media_url,
+            "filename": os.path.basename(saved_path)
+        }, status=status.HTTP_201_CREATED)

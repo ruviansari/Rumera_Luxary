@@ -12,6 +12,7 @@ from .views import (
     AdminCategoryDetailView,
     AdminReviewListManageView,
     AdminReviewDetailView,
+    AdminImageUploadView,
 )
 
 urlpatterns = [
@@ -30,4 +31,5 @@ urlpatterns = [
     path('admin/categories/<int:pk>/', AdminCategoryDetailView.as_view(), name='admin_category_detail'),
     path('admin/reviews/', AdminReviewListManageView.as_view(), name='admin_review_list'),
     path('admin/reviews/<int:pk>/', AdminReviewDetailView.as_view(), name='admin_review_detail'),
+    path('admin/upload/', AdminImageUploadView.as_view(), name='admin_image_upload'),
 ]

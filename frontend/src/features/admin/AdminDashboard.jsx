@@ -82,6 +82,7 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
     stock_quantity: '20'
   };
   const [productForm, setProductForm] = useState(defaultProductForm);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Category Modal
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -299,17 +300,53 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
     setShowProductModal(true);
   };
 
+  // Upload Flacon Image from Computer
+  const handleImageFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Show temporary local preview immediately
+    const tempUrl = URL.createObjectURL(file);
+    setProductForm(prev => ({ ...prev, image_url: tempUrl }));
+
+    setUploadingImage(true);
+    try {
+      const res = await api.admin.uploadImage(file);
+      if (res && res.url) {
+        setProductForm(prev => ({ ...prev, image_url: res.url }));
+        showSuccessNotice("Flacon image uploaded to server successfully!");
+      }
+    } catch (err) {
+      console.warn("Server upload failed, converting to local base64 fallback:", err);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProductForm(prev => ({ ...prev, image_url: reader.result }));
+      };
+      reader.readAsDataURL(file);
+      showSuccessNotice("Flacon image attached successfully!");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleProductSubmit = async (e) => {
     e.preventDefault();
     try {
+      const name = productForm.name.trim();
+      const finalDesc = (productForm.description || '').trim() ||
+        (productForm.short_description || '').trim() ||
+        `${name} is a regal artisanal fragrance formulation decanted at Maison Ruméra Atelier by Master Perfumer Er. Rumana Ansari.`;
+      const finalShortDesc = (productForm.short_description || '').trim() ||
+        finalDesc.slice(0, 260);
+
       const payload = {
-        name: productForm.name.trim(),
+        name: name,
         sku: productForm.sku.trim().toUpperCase(),
         category: parseInt(productForm.category) || categories[0]?.id || 1,
         product_type: productForm.product_type,
         status: productForm.status,
-        short_description: productForm.short_description,
-        description: productForm.description,
+        short_description: finalShortDesc,
+        description: finalDesc,
         fragrance_family: productForm.fragrance_family,
         concentration: productForm.concentration,
         top_notes: productForm.top_notes,
@@ -2354,25 +2391,108 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
                 </div>
               </div>
 
+              {/* Flacon Image Uploader */}
               <div>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#14231F', marginBottom: '3px' }}>Flacon Image URL or Asset Path</label>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#14231F', marginBottom: '6px' }}>
+                  Flacon Bottle Image
+                </label>
+
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap', padding: '14px', backgroundColor: '#FCFAF6', border: '1px dashed #B78B45', borderRadius: '6px' }}>
+                  {productForm.image_url ? (
+                    <div style={{ position: 'relative', width: '70px', height: '70px', backgroundColor: '#0D1714', borderRadius: '6px', overflow: 'hidden', border: '1px solid #B78B45', flexShrink: 0 }}>
+                      <img
+                        src={productForm.image_url}
+                        alt="Preview"
+                        style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }}
+                      />
+                    </div>
+                  ) : (
+                    <div style={{ width: '70px', height: '70px', backgroundColor: '#EFEAE0', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8E9B94', fontSize: '0.7rem', textAlign: 'center', flexShrink: 0 }}>
+                      No Image
+                    </div>
+                  )}
+
+                  <div style={{ flex: 1, minWidth: '220px' }}>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <label
+                        htmlFor="flacon-file-upload-input"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '8px 16px',
+                          backgroundColor: '#14231F',
+                          color: '#D4AF37',
+                          border: '1px solid #B78B45',
+                          borderRadius: '4px',
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <Upload size={14} />
+                        <span>{uploadingImage ? 'Uploading Image...' : 'Upload Image from Computer'}</span>
+                      </label>
+                      <input
+                        id="flacon-file-upload-input"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageFileUpload}
+                        style={{ display: 'none' }}
+                      />
+                      {productForm.image_url && (
+                        <button
+                          type="button"
+                          onClick={() => setProductForm({ ...productForm, image_url: '' })}
+                          style={{ padding: '6px 10px', fontSize: '0.74rem', color: '#963832', background: 'none', border: 'none', cursor: 'pointer' }}
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: '#8E9B94', marginTop: '6px' }}>
+                      PNG, JPG, WEBP flacon photography supported. Live server auto-storage.
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: '8px' }}>
                   <input
                     type="text"
-                    required
                     value={productForm.image_url}
                     onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
-                    placeholder="/images/rumera_white_oud_hero.jpg"
-                    style={{ flex: 1, padding: '9px', border: '1px solid #D8D0BC', borderRadius: '4px', fontSize: '0.84rem' }}
+                    placeholder="Or enter direct image URL / path (e.g. /images/rumera_white_oud_hero.jpg)"
+                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #D8D0BC', borderRadius: '4px', fontSize: '0.78rem', color: '#5C6B63' }}
                   />
-                  {productForm.image_url && (
-                    <img
-                      src={productForm.image_url}
-                      alt="Preview"
-                      style={{ width: '40px', height: '40px', objectFit: 'contain', backgroundColor: '#0D1714', borderRadius: '4px', padding: '2px' }}
-                    />
-                  )}
                 </div>
+              </div>
+
+              {/* Short Description */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#14231F', marginBottom: '3px' }}>
+                  Short Teaser Description (Shown on cards & quick preview)
+                </label>
+                <input
+                  type="text"
+                  value={productForm.short_description}
+                  onChange={(e) => setProductForm({ ...productForm, short_description: e.target.value })}
+                  placeholder="e.g. 12-Year aged wild Assam agarwood infused with Mysore sandalwood."
+                  style={{ width: '100%', padding: '9px', border: '1px solid #D8D0BC', borderRadius: '4px', fontSize: '0.84rem' }}
+                />
+              </div>
+
+              {/* Full Olfactory Description */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#14231F', marginBottom: '3px' }}>
+                  Full Olfactory Description & Distillation Story
+                </label>
+                <textarea
+                  rows="3"
+                  value={productForm.description}
+                  onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                  placeholder="Describe the royal origin, olfactory evolution from top to base, traditional deg-bhapka distillation technique, and ceremonial wearing ritual..."
+                  style={{ width: '100%', padding: '9px', border: '1px solid #D8D0BC', borderRadius: '4px', fontSize: '0.84rem' }}
+                />
               </div>
 
               <div className="admin-grid-2col">

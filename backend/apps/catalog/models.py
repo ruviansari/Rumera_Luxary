@@ -50,8 +50,8 @@ class Product(models.Model):
         choices=Status.choices,
         default=Status.ACTIVE
     )
-    short_description = models.CharField(max_length=300, blank=True)
-    description = models.TextField()
+    short_description = models.CharField(max_length=300, blank=True, default='')
+    description = models.TextField(blank=True, default='')
     fragrance_family = models.CharField(
         max_length=100,
         help_text="e.g. Pure Oud, Royal Floral, Amber Oriental, Woody, Warm Spice",
