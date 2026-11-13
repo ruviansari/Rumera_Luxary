@@ -1059,6 +1059,77 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
                 </table>
               </div>
             </div>
+
+            {/* Recent Free Sample Reservations Overview */}
+            <div style={{ backgroundColor: '#FFFFFF', padding: '26px', borderRadius: '8px', border: '1px solid #E5DFC9', boxShadow: 'var(--shadow-sm)', marginTop: '28px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', flexWrap: 'wrap', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Gift size={18} color="#B78B45" />
+                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', color: '#14231F', margin: 0 }}>
+                    Recent Complimentary Sample Reservations
+                  </h3>
+                </div>
+                <button onClick={() => setActiveTab('free-samples')} className="btn-secondary" style={{ padding: '6px 14px', fontSize: '0.75rem' }}>
+                  Manage All Samples ({sampleRequests.length}) →
+                </button>
+              </div>
+
+              {sampleRequests.length === 0 ? (
+                <div style={{ padding: '24px', textAlign: 'center', color: '#888', fontSize: '0.85rem' }}>
+                  No free sample reservations received yet.
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.86rem' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '2px solid #E5DFC9', color: '#8E9B94', textTransform: 'uppercase', fontSize: '0.72rem' }}>
+                        <th style={{ padding: '10px' }}>Reservation ID</th>
+                        <th style={{ padding: '10px' }}>Patron</th>
+                        <th style={{ padding: '10px' }}>Selected Fragrance</th>
+                        <th style={{ padding: '10px' }}>Delivery Address</th>
+                        <th style={{ padding: '10px' }}>Status</th>
+                        <th style={{ padding: '10px' }}>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sampleRequests.slice(0, 6).map((smp) => (
+                        <tr key={smp.id} style={{ borderBottom: '1px solid #EFEAE0' }}>
+                          <td style={{ padding: '12px 10px', fontFamily: 'monospace', fontWeight: 700, color: '#14231F' }}>
+                            {smp.request_id}
+                          </td>
+                          <td style={{ padding: '12px 10px' }}>
+                            <div style={{ fontWeight: 600 }}>{smp.full_name}</div>
+                            <div style={{ fontSize: '0.76rem', color: '#666' }}>📞 {smp.phone}</div>
+                            <div style={{ fontSize: '0.74rem', color: '#888' }}>✉ {smp.email}</div>
+                          </td>
+                          <td style={{ padding: '12px 10px', fontWeight: 500, color: '#B78B45' }}>
+                            {smp.preferred_product_name || 'Artisanal Blend'}
+                          </td>
+                          <td style={{ padding: '12px 10px', fontSize: '0.8rem', color: '#444', maxWidth: '240px' }}>
+                            {smp.address_line1}, {smp.city}, {smp.state} - {smp.pincode}
+                          </td>
+                          <td style={{ padding: '12px 10px' }}>
+                            <span style={{
+                              padding: '3px 8px',
+                              borderRadius: '4px',
+                              fontSize: '0.72rem',
+                              fontWeight: 700,
+                              backgroundColor: smp.status === 'DELIVERED' ? '#E8F5E9' : smp.status === 'DISPATCHED' ? '#E3F2FD' : smp.status === 'APPROVED' ? '#EDE9FE' : smp.status === 'REJECTED' ? '#FFEBEE' : '#FFF8E1',
+                              color: smp.status === 'DELIVERED' ? '#2E7D32' : smp.status === 'DISPATCHED' ? '#1565C0' : smp.status === 'APPROVED' ? '#5B21B6' : smp.status === 'REJECTED' ? '#C62828' : '#F57F17'
+                            }}>
+                              {smp.status}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 10px', fontSize: '0.78rem', color: '#8E9B94' }}>
+                            {new Date(smp.created_at).toLocaleDateString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

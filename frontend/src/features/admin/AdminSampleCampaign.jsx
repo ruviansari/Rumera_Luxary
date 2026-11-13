@@ -51,14 +51,20 @@ export default function AdminSampleCampaign({ currentUser }) {
   const loadData = async () => {
     setLoading(true);
     try {
+      const queryParams = {};
+      if (statusFilter && statusFilter !== 'ALL') {
+        queryParams.status = statusFilter;
+      }
+      if (searchQuery && searchQuery.trim()) {
+        queryParams.search = searchQuery.trim();
+      }
+
       const [reqList, cfg] = await Promise.all([
-        api.admin.getSampleRequests({
-          status: statusFilter !== 'ALL' ? statusFilter : undefined,
-          search: searchQuery || undefined
-        }),
+        api.admin.getSampleRequests(queryParams),
         api.admin.getSampleCampaignSettings()
       ]);
-      setRequests(Array.isArray(reqList) ? reqList : (reqList.results || []));
+      const list = Array.isArray(reqList) ? reqList : (reqList?.results || []);
+      setRequests(list);
       setSettings(cfg);
     } catch (err) {
       console.error("Failed to load sample campaign data:", err);

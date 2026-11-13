@@ -153,7 +153,7 @@ class SampleRequestPublicClaimView(APIView):
             first_err = "Invalid submission details."
             for k, v in errors.items():
                 if isinstance(v, list) and len(v) > 0:
-                    first_err = f"{k.replace('_', ' ').capitalize()}: {v[0]}"
+                    first_err = v[0] if k == 'non_field_errors' else f"{k.replace('_', ' ').capitalize()}: {v[0]}"
                     break
                 elif isinstance(v, str):
                     first_err = v
@@ -202,21 +202,24 @@ class AdminSampleRequestListView(generics.ListAPIView):
     def get_queryset(self):
         qs = SampleRequest.objects.all().order_by('-created_at')
         status_param = self.request.query_params.get('status')
-        if status_param and status_param.upper() != 'ALL':
-            qs = qs.filter(status=status_param.upper())
+        if status_param:
+            status_clean = status_param.strip().upper()
+            if status_clean not in ['ALL', 'UNDEFINED', 'NULL', '']:
+                qs = qs.filter(status=status_clean)
 
         search = self.request.query_params.get('search')
         if search:
             search = search.strip()
-            qs = qs.filter(
-                Q(request_id__icontains=search) |
-                Q(full_name__icontains=search) |
-                Q(email__icontains=search) |
-                Q(phone__icontains=search) |
-                Q(preferred_product_name__icontains=search) |
-                Q(city__icontains=search) |
-                Q(tracking_number__icontains=search)
-            )
+            if search.lower() not in ['undefined', 'null', '']:
+                qs = qs.filter(
+                    Q(request_id__icontains=search) |
+                    Q(full_name__icontains=search) |
+                    Q(email__icontains=search) |
+                    Q(phone__icontains=search) |
+                    Q(preferred_product_name__icontains=search) |
+                    Q(city__icontains=search) |
+                    Q(tracking_number__icontains=search)
+                )
         return qs
 
 
@@ -283,8 +286,10 @@ class AdminSampleExportCSVView(APIView):
 
         qs = SampleRequest.objects.all().order_by('-created_at')
         status_param = request.query_params.get('status')
-        if status_param and status_param.upper() != 'ALL':
-            qs = qs.filter(status=status_param.upper())
+        if status_param:
+            status_clean = status_param.strip().upper()
+            if status_clean not in ['ALL', 'UNDEFINED', 'NULL', '']:
+                qs = qs.filter(status=status_clean)
 
         for r in qs:
             writer.writerow([

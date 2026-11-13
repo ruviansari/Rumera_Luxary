@@ -42,6 +42,18 @@ export const resolveImageUrl = (url) => {
   return url;
 };
 
+export const buildQueryString = (params = {}) => {
+  if (!params || typeof params !== 'object') return '';
+  const cleanParams = {};
+  Object.entries(params).forEach(([key, val]) => {
+    if (val !== undefined && val !== null && val !== '' && val !== 'undefined' && val !== 'null') {
+      cleanParams[key] = val;
+    }
+  });
+  const q = new URLSearchParams(cleanParams).toString();
+  return q ? `?${q}` : '';
+};
+
 // Core Request Wrapper (Dynamically supports Port 8000 or 8001)
 export async function apiRequest(endpoint, { method = 'GET', body = null, isAuth = false } = {}) {
   const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
@@ -130,10 +142,7 @@ export const api = {
 
   // Catalog
   getCategories: () => apiRequest('/categories/'),
-  getProducts: (params = {}) => {
-    const query = new URLSearchParams(params).toString();
-    return apiRequest(`/products/${query ? `?${query}` : ''}`);
-  },
+  getProducts: (params = {}) => apiRequest(`/products/${buildQueryString(params)}`),
   getProductDetail: (slug) => apiRequest(`/products/${slug}/`),
 
   // Cart
@@ -170,17 +179,15 @@ export const api = {
   // Admin ERP APIs
   admin: {
     getAnalytics: () => apiRequest('/admin/analytics/dashboard/'),
-    getSampleRequests: (params = {}) => {
-      const q = new URLSearchParams(params).toString();
-      return apiRequest(`/admin/samples/${q ? `?${q}` : ''}`);
-    },
+    getSampleRequests: (params = {}) => apiRequest(`/admin/samples/${buildQueryString(params)}`),
     updateSampleRequest: (id, data) => apiRequest(`/admin/samples/${id}/`, { method: 'PATCH', body: data }),
     getSampleCampaignSettings: () => apiRequest('/admin/samples/campaign-settings/'),
     updateSampleCampaignSettings: (data) => apiRequest('/admin/samples/campaign-settings/', { method: 'PATCH', body: data }),
     downloadSamplesCSV: async (statusFilter = 'ALL') => {
       const token = getAuthToken();
       const base = detectedBase || 'http://127.0.0.1:8001/api/v1';
-      const url = `${base}/admin/samples/export/?status=${encodeURIComponent(statusFilter)}`;
+      const cleanFilter = (!statusFilter || statusFilter === 'ALL') ? '' : statusFilter;
+      const url = `${base}/admin/samples/export/${buildQueryString({ status: cleanFilter })}`;
       const res = await fetch(url, {
         headers: {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -197,10 +204,7 @@ export const api = {
       a.remove();
       window.URL.revokeObjectURL(downloadUrl);
     },
-    getUsers: (params = {}) => {
-      const q = new URLSearchParams(params).toString();
-      return apiRequest(`/auth/admin/users/${q ? `?${q}` : ''}`);
-    },
+    getUsers: (params = {}) => apiRequest(`/auth/admin/users/${buildQueryString(params)}`),
     createUser: (data) => apiRequest('/auth/admin/users/', { method: 'POST', body: data }),
     updateUser: (id, data) => apiRequest(`/auth/admin/users/${id}/`, { method: 'PATCH', body: data }),
     deleteUser: (id) => apiRequest(`/auth/admin/users/${id}/`, { method: 'DELETE' }),
@@ -212,18 +216,12 @@ export const api = {
     createCategory: (data) => apiRequest('/admin/categories/', { method: 'POST', body: data }),
     updateCategory: (id, data) => apiRequest(`/admin/categories/${id}/`, { method: 'PATCH', body: data }),
     deleteCategory: (id) => apiRequest(`/admin/categories/${id}/`, { method: 'DELETE' }),
-    getReviews: (params = {}) => {
-      const q = new URLSearchParams(params).toString();
-      return apiRequest(`/admin/reviews/${q ? `?${q}` : ''}`);
-    },
+    getReviews: (params = {}) => apiRequest(`/admin/reviews/${buildQueryString(params)}`),
     updateReview: (id, data) => apiRequest(`/admin/reviews/${id}/`, { method: 'PATCH', body: data }),
     deleteReview: (id) => apiRequest(`/admin/reviews/${id}/`, { method: 'DELETE' }),
     getStockMovements: (variantId) => apiRequest(`/admin/inventory/movements/${variantId ? `?variant=${variantId}` : ''}`),
     adjustStock: (data) => apiRequest('/admin/inventory/adjust/', { method: 'POST', body: data }),
-    getOrders: (params = {}) => {
-      const q = new URLSearchParams(params).toString();
-      return apiRequest(`/admin/orders/${q ? `?${q}` : ''}`);
-    },
+    getOrders: (params = {}) => apiRequest(`/admin/orders/${buildQueryString(params)}`),
     updateOrderStatus: (orderNumber, data) => apiRequest(`/admin/orders/${orderNumber}/status/`, { method: 'PATCH', body: data }),
     getCoupons: () => apiRequest('/admin/coupons/'),
     createCoupon: (data) => apiRequest('/admin/coupons/', { method: 'POST', body: data }),
