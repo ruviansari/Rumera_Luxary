@@ -163,9 +163,40 @@ export const api = {
   getContentPage: (slug) => apiRequest(`/content/pages/${slug}/`),
   getContentPages: () => apiRequest('/content/pages/'),
 
+  // Free Sample Marketing Campaign
+  getSampleCampaignConfig: () => apiRequest('/samples/config/'),
+  claimFreeSample: (data) => apiRequest('/samples/claim/', { method: 'POST', body: data }),
+
   // Admin ERP APIs
   admin: {
     getAnalytics: () => apiRequest('/admin/analytics/dashboard/'),
+    getSampleRequests: (params = {}) => {
+      const q = new URLSearchParams(params).toString();
+      return apiRequest(`/admin/samples/${q ? `?${q}` : ''}`);
+    },
+    updateSampleRequest: (id, data) => apiRequest(`/admin/samples/${id}/`, { method: 'PATCH', body: data }),
+    getSampleCampaignSettings: () => apiRequest('/admin/samples/campaign-settings/'),
+    updateSampleCampaignSettings: (data) => apiRequest('/admin/samples/campaign-settings/', { method: 'PATCH', body: data }),
+    downloadSamplesCSV: async (statusFilter = 'ALL') => {
+      const token = getAuthToken();
+      const base = detectedBase || 'http://127.0.0.1:8001/api/v1';
+      const url = `${base}/admin/samples/export/?status=${encodeURIComponent(statusFilter)}`;
+      const res = await fetch(url, {
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+      if (!res.ok) throw new Error("Failed to download CSV export");
+      const blob = await res.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = `rumera_sample_requests_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+    },
     getUsers: (params = {}) => {
       const q = new URLSearchParams(params).toString();
       return apiRequest(`/auth/admin/users/${q ? `?${q}` : ''}`);

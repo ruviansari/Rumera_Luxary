@@ -181,6 +181,29 @@ export default function Header({
             >
               Heritage
             </button>
+            <button
+              onClick={() => onNavigate('free-sample')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '4px 12px',
+                borderRadius: '50px',
+                backgroundColor: 'rgba(212, 175, 55, 0.16)',
+                border: '1px solid #D4AF37',
+                color: '#E8CA89',
+                fontSize: '0.74rem',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              title="Claim your complimentary discovery flacon"
+            >
+              <Sparkles size={11} color="#D4AF37" />
+              <span>Free Sample</span>
+            </button>
           </nav>
         </div>
 
@@ -540,6 +563,22 @@ export default function Header({
               style={{ textAlign: 'left', color: '#F8F4EC', fontSize: '1.1rem', fontFamily: 'var(--font-serif)' }}
             >
               Kannauj & Assam Heritage
+            </button>
+            <button
+              onClick={() => { onNavigate('free-sample'); setMobileMenuOpen(false); }}
+              style={{
+                textAlign: 'left',
+                color: '#D4AF37',
+                fontSize: '1.05rem',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 0',
+              }}
+            >
+              <Sparkles size={16} color="#D4AF37" />
+              <span>Claim Free Perfume Sample</span>
             </button>
             <button
               onClick={() => { onNavigate('order-tracking'); setMobileMenuOpen(false); }}

@@ -5,9 +5,10 @@ import {
   AlertTriangle, Truck, Search, Edit2, LogOut, ArrowUpRight,
   Trash2, X, Upload, Menu, ShoppingBag, MessageSquare, Download,
   UserPlus, Key, Eye, EyeOff, Check, Ban, ExternalLink, Mail, Phone,
-  ChevronDown, Star, Filter, ShieldCheck, Crown, Sparkles
+  ChevronDown, Star, Filter, ShieldCheck, Crown, Sparkles, Gift
 } from 'lucide-react';
 import { api, resolveImageUrl } from '../../services/api';
+import AdminSampleCampaign from './AdminSampleCampaign';
 
 export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
   // Determine Role & RBAC Permissions
@@ -636,6 +637,7 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
       { id: 'products', label: 'Product Catalog', icon: Package, roles: ['SUPER_ADMIN', 'STORE_MANAGER'] },
       { id: 'categories', label: 'Categories & Vaults', icon: Tag, roles: ['SUPER_ADMIN', 'STORE_MANAGER'] },
       { id: 'coupons', label: 'Coupons & Promos', icon: Tag, roles: ['SUPER_ADMIN', 'STORE_MANAGER'] },
+      { id: 'free-samples', label: 'Free Sample Campaign', icon: Gift, roles: ['SUPER_ADMIN', 'STORE_MANAGER', 'ORDER_FULFILMENT'] },
       { id: 'abandoned-carts', label: 'Abandoned Carts (Recovery)', icon: ShoppingBag, count: abandonedCarts?.total_abandoned_carts, roles: ['SUPER_ADMIN', 'STORE_MANAGER'] },
       { id: 'reviews', label: 'Customer Reviews (Appraisals)', icon: MessageSquare, count: reviews.filter(r => !r.is_approved).length, roles: ['SUPER_ADMIN', 'STORE_MANAGER'] },
       { id: 'team', label: 'Team & Role Access (RBAC)', icon: Users, roles: ['SUPER_ADMIN'] },
@@ -2130,6 +2132,13 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
               </div>
             )}
           </div>
+        )}
+
+        {/* ========================================================
+            TAB 12: FREE SAMPLE MARKETING CAMPAIGN
+           ======================================================== */}
+        {activeTab === 'free-samples' && (
+          <AdminSampleCampaign currentUser={currentUser} />
         )}
       </main>
 

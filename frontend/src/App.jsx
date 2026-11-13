@@ -13,6 +13,8 @@ import AccountPage from './features/account/AccountPage';
 import PolicyPage from './features/content/PolicyPage';
 import AdminDashboard from './features/admin/AdminDashboard';
 import WishlistPage from './features/catalog/WishlistPage';
+import FreeSampleModal from './features/campaign/FreeSampleModal';
+import FreeSamplePopup from './features/campaign/FreeSamplePopup';
 import { api, getStoredUser, clearAuth } from './services/api';
 
 export default function App() {
@@ -27,6 +29,9 @@ export default function App() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [ownerProfile, setOwnerProfile] = useState(null);
   const [notification, setNotification] = useState('');
+  const [campaignConfig, setCampaignConfig] = useState(null);
+  const [availableSampleFragrances, setAvailableSampleFragrances] = useState([]);
+  const [sampleModalOpen, setSampleModalOpen] = useState(false);
 
   // Fetch initial global data
   const refreshCart = async () => {
@@ -58,6 +63,12 @@ export default function App() {
     }).catch(console.error);
     api.getOwnerProfile().then(setOwnerProfile).catch(console.error);
 
+    // Load Free Sample Campaign configuration
+    api.getSampleCampaignConfig().then((res) => {
+      if (res?.campaign) setCampaignConfig(res.campaign);
+      if (res?.available_fragrances) setAvailableSampleFragrances(res.available_fragrances);
+    }).catch(console.warn);
+
     // Refresh profile if token exists
     if (getStoredUser()) {
       api.getProfile().then(setCurrentUser).catch(() => {
@@ -80,6 +91,10 @@ export default function App() {
   };
 
   const navigate = (route, params = {}) => {
+    if (route === 'free-sample') {
+      setSampleModalOpen(true);
+      return;
+    }
     setCurrentRoute(route);
     setRouteParams(params);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -192,6 +207,8 @@ export default function App() {
             onQuickAdd={(varId) => handleAddToCart(varId, 1)}
             wishlist={wishlist}
             onToggleWishlist={handleToggleWishlist}
+            campaignConfig={campaignConfig}
+            onOpenSampleModal={() => setSampleModalOpen(true)}
           />
         )}
 
@@ -299,6 +316,20 @@ export default function App() {
         <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#25D366', boxShadow: '0 0 8px #25D366' }}></span>
         <span>Atelier Concierge</span>
       </a>
+
+      {/* Free Sample Promotion Modal */}
+      <FreeSampleModal
+        isOpen={sampleModalOpen}
+        onClose={() => setSampleModalOpen(false)}
+        campaignConfig={campaignConfig}
+        availableFragrances={availableSampleFragrances}
+        onNavigateToShop={() => navigate('shop')}
+      />
+
+      {/* Free Sample Promotion Popup (5-8s session-limited) */}
+      <FreeSamplePopup
+        onOpenClaimModal={() => setSampleModalOpen(true)}
+      />
 
       {/* Shared Luxury Footer */}
       <Footer onNavigate={navigate} />

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Droplets, Award, Compass, Shield, Trees, ShieldCheck, Hourglass, CheckCircle2, Crown, Gem, Eye, X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from '../../components/catalog/ProductCard';
+import FreeSampleBanner from '../campaign/FreeSampleBanner';
+import SampleTestimonials from '../campaign/SampleTestimonials';
 
 const ROYAL_FLACONS = [
   {
@@ -179,7 +181,9 @@ export default function HomePage({
   onNavigate,
   onQuickAdd,
   wishlist = [],
-  onToggleWishlist
+  onToggleWishlist,
+  campaignConfig = null,
+  onOpenSampleModal = () => {}
 }) {
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
   const [selectedFlacon, setSelectedFlacon] = useState(null);
@@ -584,6 +588,12 @@ export default function HomePage({
 
 
 
+      {/* 3.5. Free Perfume Sample Marketing Campaign Hero Banner */}
+      <FreeSampleBanner
+        campaignConfig={campaignConfig}
+        onOpenClaimModal={onOpenSampleModal}
+      />
+
       {/* 4. Featured Masterpiece Reserves */}
       <section style={{ padding: '80px 0', backgroundColor: '#FFFFFF', borderTop: '1px solid #E5DFC9', borderBottom: '1px solid #E5DFC9' }}>
         <div className="container">
@@ -828,6 +838,12 @@ export default function HomePage({
           </div>
         </div>
       )}
+
+      {/* 5.5. Free Sample Patron Testimonials & Conversion Section */}
+      <SampleTestimonials
+        onOpenClaimModal={onOpenSampleModal}
+        onNavigateToShop={() => onNavigate('shop')}
+      />
 
       <style>{`
         /* 1. Perfume Floating / Levitation Animation */
