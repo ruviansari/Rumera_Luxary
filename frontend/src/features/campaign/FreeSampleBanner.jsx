@@ -385,3 +385,4 @@ export default function FreeSampleBanner({ campaignConfig, onOpenClaimModal }) {
     </section>
   );
 }
+

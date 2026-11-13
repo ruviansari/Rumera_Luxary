@@ -193,3 +193,4 @@ export default function FreeSamplePopup({ onOpenClaimModal }) {
     </div>
   );
 }
+

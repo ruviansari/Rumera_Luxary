@@ -36,6 +36,7 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
   const [ownerProfile, setOwnerProfile] = useState({});
   const [users, setUsers] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [sampleRequests, setSampleRequests] = useState([]);
 
   // Search & Filter States
   const [orderSearch, setOrderSearch] = useState('');
@@ -114,7 +115,7 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [anRes, prodRes, ordRes, cpnRes, movRes, audRes, ownRes, catRes, cartRes, usrRes, revRes] = await Promise.all([
+      const [anRes, prodRes, ordRes, cpnRes, movRes, audRes, ownRes, catRes, cartRes, usrRes, revRes, smpRes] = await Promise.all([
         api.admin.getAnalytics().catch(() => null),
         api.admin.getProducts().catch(() => ({ results: [] })),
         api.admin.getOrders().catch(() => ({ results: [] })),
@@ -126,6 +127,7 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
         api.admin.getAbandonedCarts().catch(() => ({ total_abandoned_carts: 0, results: [] })),
         api.admin.getUsers().catch(() => ({ results: [] })),
         api.admin.getReviews().catch(() => ({ results: [] })),
+        api.admin.getSampleRequests().catch(() => ({ results: [] })),
       ]);
 
       setAnalytics(anRes);
@@ -139,6 +141,7 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
       setAbandonedCarts(cartRes || { total_abandoned_carts: 0, results: [] });
       setUsers(usrRes?.results || usrRes || []);
       setReviews(revRes?.results || revRes || []);
+      setSampleRequests(smpRes?.results || smpRes || []);
     } catch (err) {
       console.error("Failed to load admin data:", err);
     } finally {
@@ -637,7 +640,7 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
       { id: 'products', label: 'Product Catalog', icon: Package, roles: ['SUPER_ADMIN', 'STORE_MANAGER'] },
       { id: 'categories', label: 'Categories & Vaults', icon: Tag, roles: ['SUPER_ADMIN', 'STORE_MANAGER'] },
       { id: 'coupons', label: 'Coupons & Promos', icon: Tag, roles: ['SUPER_ADMIN', 'STORE_MANAGER'] },
-      { id: 'free-samples', label: 'Free Sample Campaign', icon: Gift, roles: ['SUPER_ADMIN', 'STORE_MANAGER', 'ORDER_FULFILMENT'] },
+      { id: 'free-samples', label: 'Free Sample Campaign', icon: Gift, count: (sampleRequests || []).filter(s => s.status === 'PENDING').length, roles: ['SUPER_ADMIN', 'STORE_MANAGER', 'ORDER_FULFILMENT'] },
       { id: 'abandoned-carts', label: 'Abandoned Carts (Recovery)', icon: ShoppingBag, count: abandonedCarts?.total_abandoned_carts, roles: ['SUPER_ADMIN', 'STORE_MANAGER'] },
       { id: 'reviews', label: 'Customer Reviews (Appraisals)', icon: MessageSquare, count: reviews.filter(r => !r.is_approved).length, roles: ['SUPER_ADMIN', 'STORE_MANAGER'] },
       { id: 'team', label: 'Team & Role Access (RBAC)', icon: Users, roles: ['SUPER_ADMIN'] },
@@ -647,7 +650,7 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
 
     if (isSuperAdmin) return allItems;
     return allItems.filter(item => item.roles.includes(userRole));
-  }, [isSuperAdmin, userRole, orders, analytics, abandonedCarts, reviews]);
+  }, [isSuperAdmin, userRole, orders, analytics, abandonedCarts, reviews, sampleRequests]);
 
   const roleBadgeStyle = (role) => {
     switch (role) {
@@ -957,6 +960,33 @@ export default function AdminDashboard({ currentUser, onNavigate, onLogout }) {
                   <div style={{ fontSize: '0.75rem', color: '#2A684C', marginTop: '4px' }}>Team & Patrons</div>
                 </div>
               )}
+
+              <div
+                onClick={() => setActiveTab('free-samples')}
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  padding: '22px',
+                  borderRadius: '8px',
+                  border: '1px solid #E5DFC9',
+                  boxShadow: 'var(--shadow-sm)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#B78B45'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E5DFC9'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ fontSize: '0.74rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#8E9B94' }}>Free Sample Requests</div>
+                  <Gift size={16} color="#B78B45" />
+                </div>
+                <div style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', fontWeight: 700, color: '#D4AF37', marginTop: '4px' }}>
+                  {sampleRequests.length}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: '#B78B45', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
+                  <span>{(sampleRequests || []).filter(s => s.status === 'PENDING').length} Pending Review</span>
+                  <span>• View Details →</span>
+                </div>
+              </div>
             </div>
 
             {/* Low Stock Warning Strip */}
