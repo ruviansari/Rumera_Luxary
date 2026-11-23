@@ -1368,3 +1368,136 @@ a {
     font-size: 1.85rem !important;
   }
 }
+
+/* =========================================================================
+   MAISON RUMÉRA ULTRA-LUXURY HEADER & LOGO BRAND SYSTEM
+   ========================================================================= */
+
+/* 1. Regal Gold Wordmark */
+.rumera-wordmark-gold {
+  font-family: var(--font-serif);
+  letter-spacing: 0.24em;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FDF3DB 20%, #E8CA89 45%, #D4AF37 70%, #A88235 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+  display: inline-block;
+  line-height: 1;
+}
+
+/* 2. Emblem Glass Medallion */
+.rumera-emblem-medallion {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: radial-gradient(circle at 50% 30%, rgba(28, 48, 38, 0.75) 0%, rgba(8, 15, 12, 0.95) 90%);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65), 0 0 16px rgba(212, 175, 55, 0.18), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rumera-emblem-medallion:hover {
+  border-color: #D4AF37;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 24px rgba(212, 175, 55, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* 3. Luxury Free Sample Button */
+.rumera-btn-free-sample {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #F8E7BE 0%, #D4AF37 50%, #B78B35 100%);
+  border: 1px solid rgba(255, 250, 230, 0.8);
+  color: #060B08 !important;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.rumera-btn-free-sample::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+
+.rumera-btn-free-sample:hover::after {
+  left: 200%;
+}
+
+.rumera-btn-free-sample:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 24px rgba(212, 175, 55, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+  filter: brightness(1.06);
+}
+
+/* 4. Luxury Cart Bag Pill */
+.rumera-cart-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px 0 12px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #FAF7F0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rumera-cart-pill:hover {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: #D4AF37;
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.35);
+  transform: translateY(-1px);
+}
+
+.rumera-cart-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #FDF0D0 0%, #D4AF37 55%, #AA8238 100%);
+  color: #060B08;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 8px rgba(212, 175, 55, 0.6);
+}
+
+/* 5. Luxury Nav Link Active Jewel */
+.rumera-nav-jewel {
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #D4AF37;
+  box-shadow: 0 0 8px #D4AF37, 0 0 14px rgba(212, 175, 55, 0.8);
+}
+

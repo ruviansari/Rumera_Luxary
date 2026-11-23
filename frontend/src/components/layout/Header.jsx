@@ -124,45 +124,49 @@ export default function Header({
   return (
     <header className="sticky top-0 z-[1000] w-full select-none font-sans text-white">
       {/* =========================================================================
-          TIER 1: TOP ANNOUNCEMENT BAR (Slim, h-9, #080A08)
+          TIER 1: TOP ANNOUNCEMENT BAR (Slim, h-9, #050806)
           ========================================================================= */}
-      <div className="bg-[#080A08] border-b border-white/10 text-[11px] tracking-[0.14em] uppercase text-[#E8CA89] h-9 flex items-center px-4 sm:px-6 lg:px-10">
+      <div className="bg-[#050806] border-b border-[#D4AF37]/15 text-[10.5px] tracking-[0.18em] uppercase text-[#E8CA89] h-9 flex items-center px-4 sm:px-6 lg:px-10 relative overflow-hidden">
+        {/* Subtle Gold Hairline at Bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent pointer-events-none" />
+
         <div className="max-w-[1440px] w-full mx-auto flex items-center justify-between">
           {/* Left: Royal Maison Title */}
-          <div className="flex items-center gap-2 font-medium">
-            <span className="flex items-center gap-1.5 text-[#E8CA89] font-semibold">
-              👑 <span>MAISON RUMÉRA</span>
+          <div className="flex items-center gap-2.5 font-medium">
+            <span className="flex items-center gap-1.5 text-[#E8CA89] font-bold tracking-[0.22em]">
+              <Crown size={12} className="text-[#D4AF37] fill-[#D4AF37]/25" />
+              <span>MAISON RUMÉRA</span>
             </span>
             <span style={{ color: 'rgba(212, 175, 55, 0.45)' }}>•</span>
             <span
-              className="hidden sm:inline font-semibold"
-              style={{ color: '#FAF7F0', letterSpacing: '0.16em' }}
+              className="hidden sm:inline font-medium tracking-[0.2em]"
+              style={{ color: '#FAF7F0' }}
             >
               THE FRAGRANCE OF ROYALTY
             </span>
           </div>
 
           {/* Right: Founder & Contact Details with subtle dividers */}
-          <div className="flex items-center gap-3 sm:gap-4 text-[11px] font-medium text-white/80">
-            <span className="hidden md:inline text-[#FAF7F0]">
+          <div className="flex items-center gap-3 sm:gap-5 text-[10.5px] font-medium text-white/80">
+            <span className="hidden md:inline tracking-[0.16em] text-[#FAF7F0]">
               FOUNDER: <strong className="text-[#E8CA89] font-semibold">ER. RUMANA ANSARI</strong>
             </span>
-            <span className="hidden md:inline text-white/20">|</span>
+            <span className="hidden md:inline text-[#D4AF37]/30">|</span>
             <a
               href="tel:+919305988767"
-              className="inline-flex items-center gap-1.5 text-[#D4AF37] hover:text-[#F3E5AB] transition-colors"
+              className="inline-flex items-center gap-1.5 text-[#D4AF37] hover:text-[#FFF5DC] tracking-[0.14em] transition-all"
               title="Call Master Perfumer Concierge"
             >
-              <Phone size={11} className="text-[#D4AF37]" />
+              <Phone size={10} className="text-[#D4AF37]" />
               <span className="font-semibold">+91 9305988767</span>
             </a>
-            <span className="hidden lg:inline text-white/20">|</span>
+            <span className="hidden lg:inline text-[#D4AF37]/30">|</span>
             <a
               href="mailto:ruviansari144@gmail.com"
-              className="hidden lg:inline-flex items-center gap-1.5 text-white/70 hover:text-white transition-colors"
+              className="hidden lg:inline-flex items-center gap-1.5 text-white/70 hover:text-[#FAF7F0] tracking-[0.12em] transition-all"
               title="Concierge Email"
             >
-              <Mail size={11} className="text-[#D4AF37]" />
+              <Mail size={10} className="text-[#D4AF37]" />
               <span>ruviansari144@gmail.com</span>
             </a>
           </div>
@@ -173,17 +177,23 @@ export default function Header({
           TIER 2: MAIN GLASSMORPHIC NAVIGATION BAR
           ========================================================================= */}
       <div
-        className={`w-full transition-all duration-300 border-b border-[#D4AF37]/20 ${
+        className={`w-full transition-all duration-300 relative border-b border-[#D4AF37]/20 ${
           scrolled
-            ? 'h-16 bg-[#080C0A]/95 backdrop-blur-xl shadow-[0_10px_35px_rgba(0,0,0,0.8)]'
-            : 'h-20 bg-[#0E130E]/90 backdrop-blur-md shadow-[0_4px_25px_rgba(0,0,0,0.4)]'
+            ? 'h-16 bg-[#040806]/98 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.85)]'
+            : 'h-20 bg-[#070D0A]/92 backdrop-blur-xl shadow-[0_6px_30px_rgba(0,0,0,0.5)]'
         }`}
       >
-        <div className="max-w-[1440px] h-full mx-auto px-4 sm:px-6 lg:px-10 flex items-center justify-between gap-4">
+        {/* Micro gold gradient accent line at bottom of navbar */}
+        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/45 to-transparent pointer-events-none" />
+
+        {/* Ambient gold glow highlight at center */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-full bg-gradient-to-b from-[#D4AF37]/[0.035] to-transparent pointer-events-none blur-xl" />
+
+        <div className="max-w-[1440px] h-full mx-auto px-4 sm:px-6 lg:px-10 flex items-center justify-between gap-4 relative z-10">
           {/* -------------------------------------------------------------------
               LEFT: BRAND IDENTITY (Logo & Wordmark) + MOBILE TOGGLE
               ------------------------------------------------------------------- */}
-          <div className="flex items-center gap-3 sm:gap-5 shrink-0">
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
             {/* Mobile Hamburger Toggle for < xl screens */}
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -193,26 +203,43 @@ export default function Header({
               <Menu size={22} />
             </button>
 
-            {/* Monogram Emblem & Brand Wordmark */}
+            {/* Regal Monogram Emblem & Brand Wordmark */}
             <div
               onClick={() => onNavigate('home')}
-              className="flex items-center gap-2.5 sm:gap-3.5 cursor-pointer select-none group shrink-0"
-              title="Maison Ruméra — The Fragrance of Royalty"
+              className="flex items-center gap-3 sm:gap-3.5 cursor-pointer select-none group shrink-0"
+              title="Maison Ruméra — Haute Parfumerie"
             >
-              <img
-                src="/images/rumera_crest_emblem.png"
-                alt="Ruméra Insignia"
-                className={`w-auto object-contain filter drop-shadow-[0_2px_10px_rgba(212,175,55,0.45)] transition-all duration-300 group-hover:scale-105 ${
-                  scrolled ? 'h-8 sm:h-9' : 'h-9 sm:h-11'
-                }`}
-              />
-              <div className="flex flex-col">
-                <span className="font-serif text-xl sm:text-2xl tracking-[0.2em] text-[#FAF7F0] font-normal leading-none group-hover:text-white transition-colors">
-                  RUMÉRA
-                </span>
-                <span className="text-[8px] sm:text-[9px] tracking-[0.25em] uppercase text-[#D4AF37] font-semibold mt-1">
-                  The Fragrance of Royalty
-                </span>
+              {/* Luxury Glass Medallion Housing the Monogram Crest */}
+              <div className={`rumera-emblem-medallion ${scrolled ? 'p-1.5' : 'p-2'}`}>
+                <img
+                  src="/images/rumera_crest_emblem.png"
+                  alt="Ruméra Royal Insignia"
+                  className={`w-auto object-contain transition-all duration-300 filter drop-shadow-[0_2px_8px_rgba(212,175,55,0.65)] brightness-110 contrast-115 group-hover:scale-105 ${
+                    scrolled ? 'h-7 sm:h-8' : 'h-8 sm:h-10'
+                  }`}
+                />
+              </div>
+
+              {/* 24K Gold Foil Typography Wordmark */}
+              <div className="flex flex-col justify-center">
+                <div className="flex items-center gap-2">
+                  <span className={`rumera-wordmark-gold transition-all duration-300 ${
+                    scrolled ? 'text-lg sm:text-2xl' : 'text-xl sm:text-[25px]'
+                  }`}>
+                    RUMÉRA
+                  </span>
+                  <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-[#D4AF37]/50" />
+                  <span className="hidden sm:inline-block text-[8.5px] tracking-[0.24em] uppercase text-[#D4AF37]/80 font-serif italic">
+                    Awadh Atelier
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="text-[6px] text-[#D4AF37]/60">◆</span>
+                  <span className="text-[7.5px] sm:text-[8.5px] tracking-[0.32em] uppercase text-[#D4AF37] font-semibold">
+                    The Fragrance of Royalty
+                  </span>
+                  <span className="text-[6px] text-[#D4AF37]/60">◆</span>
+                </div>
               </div>
             </div>
           </div>
@@ -220,7 +247,7 @@ export default function Header({
           {/* -------------------------------------------------------------------
               CENTER: CLEANLY SPACED NAVIGATION LINKS (With Animated Underline)
               ------------------------------------------------------------------- */}
-          <nav className="hidden xl:flex items-center gap-7 2xl:gap-8">
+          <nav className="hidden xl:flex items-center gap-8 2xl:gap-9">
             {[
               { label: 'THE HOUSE', route: 'home' },
               { label: 'COLLECTION', route: 'shop' },
@@ -233,18 +260,20 @@ export default function Header({
                 <button
                   key={item.label}
                   onClick={() => onNavigate(item.route, item.params || {})}
-                  className="relative py-2 text-xs tracking-[0.18em] font-semibold uppercase transition-colors whitespace-nowrap group hover:text-white cursor-pointer"
-                  style={{ color: isActive ? '#FAF7F0' : '#E5DFD3' }}
+                  className="relative py-2.5 text-[11px] tracking-[0.22em] font-semibold uppercase transition-all duration-300 whitespace-nowrap group cursor-pointer"
+                  style={{ color: isActive ? '#FAF7F0' : '#D1CBC0' }}
                 >
-                  <span>{item.label}</span>
+                  <span className="group-hover:text-white transition-colors">{item.label}</span>
                   {/* Smooth Animated Gold Underline */}
                   <span
-                    className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent transition-all duration-300 ${
+                    className={`absolute bottom-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent transition-all duration-300 ${
                       isActive
                         ? 'w-full shadow-[0_0_8px_rgba(212,175,55,0.8)]'
-                        : 'w-0 group-hover:w-full group-hover:shadow-[0_0_8px_rgba(212,175,55,0.5)]'
+                        : 'w-0 group-hover:w-full group-hover:shadow-[0_0_6px_rgba(212,175,55,0.4)]'
                     }`}
                   />
+                  {/* Luminous Jewel Dot when Active */}
+                  {isActive && <span className="rumera-nav-jewel" />}
                 </button>
               );
             })}
@@ -253,49 +282,43 @@ export default function Header({
           {/* -------------------------------------------------------------------
               RIGHT: ACTION GROUP (Non-Overlapping Pills & Utility Icons)
               ------------------------------------------------------------------- */}
-          <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
-            {/* FREE SAMPLE Solid Champagne Gold Pill */}
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+            {/* FREE SAMPLE 24K Champagne Gold Jewel Pill */}
             <button
               onClick={() => onNavigate('free-sample')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[11px] tracking-[0.15em] font-extrabold uppercase whitespace-nowrap transition-all duration-200 cursor-pointer hover:brightness-110"
-              style={{
-                backgroundColor: '#D4AF37',
-                color: '#0A0A0A',
-                border: '1px solid #D4AF37',
-                boxShadow: '0 0 16px rgba(212, 175, 55, 0.45)'
-              }}
-              title="Claim Complimentary Discovery Flacon"
+              className="rumera-btn-free-sample"
+              title="Claim Complimentary Haute Parfumerie Flacon"
             >
-              <Sparkles size={12} color="#0A0A0A" />
-              <span style={{ color: '#0A0A0A', fontWeight: 800 }}>Free Sample</span>
+              <Sparkles size={12} className="text-[#060B08] animate-pulse" />
+              <span>Free Sample</span>
             </button>
 
-            {/* Subtle Divider between Action Pills & Utility Icons */}
-            <div className="hidden sm:block h-5 w-[1px] bg-[#D4AF37]/25 mx-0.5" />
+            {/* Vertical Gold Hairline Divider */}
+            <div className="hidden sm:block h-6 w-[1px] bg-gradient-to-b from-transparent via-[#D4AF37]/35 to-transparent mx-0.5" />
 
             {/* Utility Icons Group: Search, Profile Dropdown, Wishlist, Cart */}
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               {/* Search Toggle Icon */}
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className="p-2 text-white/80 hover:text-[#D4AF37] hover:scale-105 transition-all cursor-pointer rounded-full hover:bg-white/[0.04]"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:bg-white/[0.06] border border-transparent hover:border-[#D4AF37]/30 transition-all cursor-pointer"
                 title="Search Fragrance Catalog"
                 aria-label="Search"
               >
-                <Search size={18} />
+                <Search size={17} />
               </button>
 
               {/* Profile Dropdown (Tucking ADMIN ERP neatly inside!) */}
               <div className="relative" ref={profileDropdownRef}>
                 <button
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                  className="flex items-center gap-1.5 p-2 text-white/80 hover:text-[#FAF7F0] rounded-full hover:bg-white/[0.06] transition-all cursor-pointer"
+                  className="h-9 px-2.5 rounded-full flex items-center gap-1.5 text-white/80 hover:text-[#FAF7F0] hover:bg-white/[0.06] border border-transparent hover:border-[#D4AF37]/30 transition-all cursor-pointer"
                   title={currentUser ? currentUser.first_name || currentUser.email : 'Account'}
                   aria-label="User Account Menu"
                 >
-                  <UserIcon size={18} className="text-[#D4AF37]" />
+                  <UserIcon size={16} className="text-[#D4AF37]" />
                   {currentUser && (
-                    <span className="hidden md:inline text-xs font-medium text-[#FAF7F0] max-w-[80px] truncate">
+                    <span className="hidden md:inline text-[11px] font-semibold text-[#FAF7F0] max-w-[80px] truncate">
                       {currentUser.first_name || currentUser.email.split('@')[0]}
                     </span>
                   )}
@@ -305,7 +328,7 @@ export default function Header({
                       title="Super Admin Access Available"
                     />
                   )}
-                  <ChevronDown size={13} className={`text-white/60 transition-transform duration-200 ${profileMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={12} className={`text-white/60 transition-transform duration-200 ${profileMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* Luxury Glassmorphic Profile Dropdown Menu */}
@@ -430,27 +453,27 @@ export default function Header({
               {/* Wishlist Heart Icon with Gold Badge */}
               <button
                 onClick={() => onNavigate('wishlist')}
-                className="relative p-2 text-white/80 hover:text-[#D4AF37] hover:scale-105 transition-all cursor-pointer rounded-full hover:bg-white/[0.04]"
+                className="relative w-9 h-9 rounded-full flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:bg-white/[0.06] border border-transparent hover:border-[#D4AF37]/30 transition-all cursor-pointer"
                 title="Royal Wishlist"
                 aria-label="Wishlist"
               >
-                <Heart size={18} className="text-[#D4AF37]" />
+                <Heart size={17} className="text-[#D4AF37]" />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-[#D4AF37] text-black text-[10px] font-bold flex items-center justify-center shadow-[0_0_6px_rgba(212,175,55,0.6)]">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-gradient-to-r from-[#F8E7BE] to-[#D4AF37] text-[#060B08] text-[9.5px] font-black flex items-center justify-center shadow-[0_0_8px_rgba(212,175,55,0.7)]">
                     {wishlistCount}
                   </span>
                 )}
               </button>
 
-              {/* Shopping Bag Cart Icon with Pill Counter */}
+              {/* Haute Parfumerie Shopping Bag Pill */}
               <button
                 onClick={onOpenCart}
-                className="relative flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-full bg-white/[0.06] hover:bg-[#D4AF37]/20 border border-[#D4AF37]/35 text-[#FAF7F0] hover:border-[#D4AF37] transition-all cursor-pointer shadow-[0_2px_10px_rgba(0,0,0,0.3)]"
+                className="rumera-cart-pill"
                 title="View Shopping Cart"
                 aria-label="Shopping Cart"
               >
-                <ShoppingBag size={17} className="text-[#D4AF37]" />
-                <span className="text-xs font-bold text-[#FAF7F0]">{cartCount}</span>
+                <ShoppingBag size={16} className="text-[#D4AF37]" />
+                <span className="rumera-cart-badge">{cartCount}</span>
               </button>
             </div>
           </div>
@@ -597,18 +620,20 @@ export default function Header({
             <div>
               {/* Header inside drawer */}
               <div className="flex items-center justify-between pb-5 border-b border-[#D4AF37]/20">
-                <div className="flex items-center gap-2.5">
-                  <img
-                    src="/images/rumera_crest_emblem.png"
-                    alt="Ruméra"
-                    className="h-8 w-auto object-contain"
-                  />
+                <div className="flex items-center gap-3">
+                  <div className="rumera-emblem-medallion p-1.5">
+                    <img
+                      src="/images/rumera_crest_emblem.png"
+                      alt="Ruméra"
+                      className="h-7 w-auto object-contain filter drop-shadow-[0_2px_6px_rgba(212,175,55,0.6)] brightness-110"
+                    />
+                  </div>
                   <div>
-                    <span className="font-serif text-lg tracking-[0.2em] text-[#FAF7F0] font-normal leading-none block">
+                    <span className="rumera-wordmark-gold text-lg block leading-none">
                       RUMÉRA
                     </span>
-                    <span className="text-[8px] tracking-[0.2em] uppercase text-[#D4AF37] font-semibold mt-0.5 block">
-                      Haute Parfumerie
+                    <span className="text-[7.5px] tracking-[0.26em] uppercase text-[#D4AF37] font-semibold mt-1 block">
+                      The Fragrance of Royalty
                     </span>
                   </div>
                 </div>
