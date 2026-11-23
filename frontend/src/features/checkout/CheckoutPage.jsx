@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, ArrowRight, ArrowLeft, CheckCircle, Lock, Truck, CreditCard, Banknote, Phone, Mail } from 'lucide-react';
+import { ShieldCheck, ArrowRight, ArrowLeft, CheckCircle, Lock, Truck, CreditCard, Banknote, Phone, Mail, QrCode, Smartphone, X, AlertTriangle, Sparkles, RefreshCw } from 'lucide-react';
 import { api } from '../../services/api';
 
 const INDIAN_STATES = [
@@ -37,6 +37,12 @@ export default function CheckoutPage({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [orderConfirmed, setOrderConfirmed] = useState(null);
+
+  // Interactive Razorpay Test Gateway Simulation State
+  const [testGatewayModal, setTestGatewayModal] = useState(null);
+  const [testProcessing, setTestProcessing] = useState(false);
+  const [testPaymentTab, setTestPaymentTab] = useState('UPI'); // 'UPI' | 'CARD'
+  const [testUpiId, setTestUpiId] = useState('patron@okhdfcbank');
 
   const subtotal = cart?.subtotal || 0;
   const discountAmount = appliedCoupon ? appliedCoupon.discount : 0;
@@ -78,48 +84,60 @@ export default function CheckoutPage({
 
       // Online payment via Razorpay / Verified Gateway
       if (formData.payment_method === 'ONLINE') {
-        try {
-          const rzpData = await api.createRazorpayOrder(order.order_number);
+        const rzpData = await api.createRazorpayOrder(order.order_number);
 
-          if (window.Razorpay) {
-            const options = {
-              key: rzpData.key_id,
-              amount: rzpData.amount,
-              currency: rzpData.currency || 'INR',
-              name: rzpData.name,
-              description: rzpData.description,
-              image: rzpData.image,
-              order_id: rzpData.gateway_order_id,
-              handler: async function (response) {
+        // Check if a registered real key is present
+        const isRealKey = rzpData.key_id && !rzpData.key_id.includes('test_rumera_luxury');
+
+        if (window.Razorpay && isRealKey) {
+          const options = {
+            key: rzpData.key_id,
+            amount: rzpData.amount,
+            currency: rzpData.currency || 'INR',
+            name: rzpData.name,
+            description: rzpData.description,
+            image: rzpData.image || '/images/rumera_crest_emblem.png',
+            order_id: rzpData.gateway_order_id,
+            handler: async function (response) {
+              try {
                 await api.verifyPayment({
                   order_number: order.order_number,
                   transaction_id: response.razorpay_payment_id || `rzp_${Date.now()}`,
+                  gateway_order_id: response.razorpay_order_id || rzpData.gateway_order_id,
                   signature: response.razorpay_signature || '',
                   provider: 'RAZORPAY',
                 });
                 setOrderConfirmed(order);
                 onOrderSuccess();
-              },
-              prefill: rzpData.prefill,
-              theme: rzpData.theme,
-            };
-            const rzpInstance = new window.Razorpay(options);
-            rzpInstance.open();
-            setLoading(false);
-            return;
-          }
-        } catch (rzpErr) {
-          console.warn("Razorpay flow:", rzpErr);
+              } catch (verErr) {
+                setError(verErr.message || 'Payment verification failed.');
+              }
+            },
+            modal: {
+              ondismiss: function () {
+                setLoading(false);
+                setError('Payment window was closed. You can retry whenever ready.');
+              }
+            },
+            prefill: rzpData.prefill,
+            theme: {
+              color: '#D4AF37',
+              backdrop_color: 'rgba(7, 13, 10, 0.85)'
+            },
+          };
+          const rzpInstance = new window.Razorpay(options);
+          rzpInstance.open();
+          setLoading(false);
+          return;
         }
 
-        // Instant verified settlement
-        const txnId = 'txn_rzp_' + Math.random().toString(36).substring(2, 10).toUpperCase();
-        await api.verifyPayment({
-          order_number: order.order_number,
-          transaction_id: txnId,
-          provider: 'RAZORPAY',
-          signature: 'sig_verified_gateway_2026',
+        // Open interactive Razorpay Test Simulator Modal
+        setTestGatewayModal({
+          order,
+          rzpData
         });
+        setLoading(false);
+        return;
       }
 
       setOrderConfirmed(order);
@@ -128,6 +146,40 @@ export default function CheckoutPage({
       setError(err.message || 'Checkout could not be processed. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCompleteTestPayment = async (simulatedSuccess = true) => {
+    if (!testGatewayModal) return;
+    setTestProcessing(true);
+    const { order, rzpData } = testGatewayModal;
+
+    // Simulate realistic 1s bank network authorization
+    await new Promise((r) => setTimeout(r, 1000));
+
+    if (!simulatedSuccess) {
+      setTestProcessing(false);
+      setTestGatewayModal(null);
+      setError('Payment was simulated as CANCELLED or DECLINED. Order remains in pending state.');
+      return;
+    }
+
+    try {
+      const simulatedTxnId = 'pay_' + Math.random().toString(36).substring(2, 12).toUpperCase();
+      await api.verifyPayment({
+        order_number: order.order_number,
+        transaction_id: simulatedTxnId,
+        gateway_order_id: rzpData?.gateway_order_id || `rzp_order_${order.order_number}`,
+        signature: 'simulated_rzp_sig_verified_2026',
+        provider: 'RAZORPAY',
+      });
+      setTestGatewayModal(null);
+      setOrderConfirmed(order);
+      onOrderSuccess();
+    } catch (err) {
+      setError(err.message || 'Payment verification failed.');
+    } finally {
+      setTestProcessing(false);
     }
   };
 
@@ -521,6 +573,182 @@ export default function CheckoutPage({
           </div>
         </div>
       </div>
+
+      {/* =========================================================================
+          INTERACTIVE RAZORPAY TEST PAYMENT GATEWAY MODAL (Visual Simulation)
+          ========================================================================= */}
+      {testGatewayModal && (
+        <div className="fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="max-w-[440px] w-full bg-[#0B1511] border border-[#D4AF37]/50 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_35px_rgba(212,175,55,0.25)] overflow-hidden text-white animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="bg-[#060C09] px-5 py-4 border-b border-[#D4AF37]/30 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src="/images/rumera_crest_emblem.png"
+                  alt="Rumera"
+                  className="h-7 w-auto object-contain filter drop-shadow-[0_0_6px_rgba(212,175,55,0.6)]"
+                />
+                <div>
+                  <div className="font-serif text-sm font-bold tracking-wider text-[#FAF7F0] leading-none">
+                    MAISON RUMÉRA
+                  </div>
+                  <div className="text-[9px] tracking-widest uppercase text-[#D4AF37] font-semibold mt-0.5">
+                    Razorpay Gateway Simulator
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded-full bg-[#D4AF37] text-black text-[9px] font-extrabold uppercase tracking-wider">
+                  Test Mode
+                </span>
+                <button
+                  onClick={() => {
+                    if (!testProcessing) {
+                      setTestGatewayModal(null);
+                      setError('Payment window closed. Order is still pending.');
+                    }
+                  }}
+                  disabled={testProcessing}
+                  className="text-white/60 hover:text-white p-1 rounded-md transition-colors"
+                  aria-label="Close"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Amount Banner */}
+            <div className="px-6 py-5 bg-gradient-to-b from-[#0F1E19] to-[#0A130F] border-b border-white/5 text-center">
+              <div className="text-xs uppercase tracking-widest text-[#D4AF37]/80 font-medium">
+                Amount Payable for Order #{testGatewayModal.order.order_number}
+              </div>
+              <div className="font-serif text-3xl font-bold text-[#FAF7F0] mt-1 text-transparent bg-clip-text bg-gradient-to-r from-white via-[#F5DE98] to-[#D4AF37]">
+                ₹{Number(testGatewayModal.order.total_amount).toLocaleString('en-IN')}
+              </div>
+              <div className="text-[11px] text-white/50 mt-1">
+                Recipient: <strong className="text-white/80">{testGatewayModal.order.recipient_name}</strong> • {testGatewayModal.order.phone}
+              </div>
+            </div>
+
+            {/* Payment Method Selector Tabs */}
+            <div className="p-5">
+              <div className="grid grid-cols-2 gap-2 p-1 bg-white/[0.04] rounded-xl border border-white/10 mb-4">
+                <button
+                  type="button"
+                  onClick={() => setTestPaymentTab('UPI')}
+                  className={`py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+                    testPaymentTab === 'UPI'
+                      ? 'bg-[#D4AF37] text-black shadow-md font-bold'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  <Smartphone size={14} />
+                  <span>UPI / QR</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTestPaymentTab('CARD')}
+                  className={`py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+                    testPaymentTab === 'CARD'
+                      ? 'bg-[#D4AF37] text-black shadow-md font-bold'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  <CreditCard size={14} />
+                  <span>Cards</span>
+                </button>
+              </div>
+
+              {/* Tab 1: UPI Simulator */}
+              {testPaymentTab === 'UPI' && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white/[0.03] border border-white/10">
+                    {['GPay', 'PhonePe', 'Paytm', 'BHIM'].map((app) => (
+                      <button
+                        key={app}
+                        type="button"
+                        onClick={() => setTestUpiId(`patron@${app.toLowerCase()}`)}
+                        className="flex-1 py-1.5 px-2 rounded-lg bg-white/[0.05] hover:bg-[#D4AF37]/20 border border-white/10 hover:border-[#D4AF37]/60 text-[11px] font-semibold text-center transition-all cursor-pointer"
+                      >
+                        {app}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] uppercase tracking-wider text-white/60 block mb-1">
+                      Simulated Virtual Payment Address (VPA)
+                    </label>
+                    <div className="flex items-center px-3 py-2 bg-black/50 border border-[#D4AF37]/40 rounded-xl text-sm font-mono text-[#D4AF37]">
+                      <span className="flex-1 truncate">{testUpiId}</span>
+                      <span className="text-emerald-400 text-xs font-bold flex items-center gap-1">
+                        ✓ Verified
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 2: Card Simulator */}
+              {testPaymentTab === 'CARD' && (
+                <div className="space-y-3">
+                  <div className="p-3.5 rounded-xl bg-gradient-to-br from-[#1C2C24] to-[#0A1410] border border-[#D4AF37]/35 text-xs font-mono space-y-2">
+                    <div className="flex justify-between items-center text-white/60">
+                      <span>Maison Imperial Card</span>
+                      <span className="text-[#D4AF37] font-bold">TEST MODE</span>
+                    </div>
+                    <div className="text-base tracking-widest text-[#FAF7F0] font-bold">
+                      4111 •••• •••• 4242
+                    </div>
+                    <div className="flex justify-between text-[11px] text-white/70">
+                      <span>EXP: 12/28</span>
+                      <span>CVV: 786</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="mt-5 space-y-2.5">
+                <button
+                  type="button"
+                  onClick={() => handleCompleteTestPayment(true)}
+                  disabled={testProcessing}
+                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#ECC880] via-[#D4AF37] to-[#AA8238] hover:brightness-110 text-black font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 transition-all shadow-[0_4px_16px_rgba(212,175,55,0.4)] cursor-pointer disabled:opacity-50"
+                >
+                  {testProcessing ? (
+                    <>
+                      <RefreshCw size={15} className="animate-spin text-black" />
+                      <span>Authorizing with Bank Gateway...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck size={16} />
+                      <span>Authorize & Pay ₹{Number(testGatewayModal.order.total_amount).toLocaleString('en-IN')} (Success)</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleCompleteTestPayment(false)}
+                  disabled={testProcessing}
+                  className="w-full py-2 px-3 rounded-xl bg-red-950/40 hover:bg-red-950/60 border border-red-500/30 text-red-300 text-[11px] font-semibold transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  Simulate Payment Decline / Failure
+                </button>
+              </div>
+
+              {/* Security Badge */}
+              <div className="mt-4 pt-3 border-t border-white/10 text-center text-[10px] text-white/40 flex items-center justify-center gap-1.5">
+                <Lock size={11} className="text-[#D4AF37]" />
+                <span>256-Bit SSL Encrypted Razorpay Sandbox Simulation</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         .checkout-layout-grid {
