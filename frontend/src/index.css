@@ -75,17 +75,19 @@ a {
   text-decoration: none;
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
-  transition: var(--transition-smooth);
-}
+@layer base {
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    transition: var(--transition-smooth);
+  }
 
-input, select, textarea {
-  font-family: inherit;
-  font-size: 0.95rem;
+  input, select, textarea {
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
 }
 
 /* Luxury UI Utilities */

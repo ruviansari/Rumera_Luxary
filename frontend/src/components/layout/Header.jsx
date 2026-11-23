@@ -133,8 +133,11 @@ export default function Header({
             <span className="flex items-center gap-1.5 text-[#E8CA89] font-semibold">
               👑 <span>MAISON RUMÉRA</span>
             </span>
-            <span className="text-white/20">•</span>
-            <span className="hidden sm:inline text-white/80 font-normal">
+            <span style={{ color: 'rgba(212, 175, 55, 0.45)' }}>•</span>
+            <span
+              className="hidden sm:inline font-semibold"
+              style={{ color: '#FAF7F0', letterSpacing: '0.16em' }}
+            >
               THE FRAGRANCE OF ROYALTY
             </span>
           </div>
@@ -230,9 +233,8 @@ export default function Header({
                 <button
                   key={item.label}
                   onClick={() => onNavigate(item.route, item.params || {})}
-                  className={`relative py-2 text-xs tracking-[0.18em] font-medium uppercase transition-colors whitespace-nowrap group ${
-                    isActive ? 'text-[#FAF7F0]' : 'text-[#DCD7CE] hover:text-[#FAF7F0]'
-                  }`}
+                  className="relative py-2 text-xs tracking-[0.18em] font-semibold uppercase transition-colors whitespace-nowrap group hover:text-white cursor-pointer"
+                  style={{ color: isActive ? '#FAF7F0' : '#E5DFD3' }}
                 >
                   <span>{item.label}</span>
                   {/* Smooth Animated Gold Underline */}
@@ -255,25 +257,33 @@ export default function Header({
             {/* 1. 3D EXPERIENCE Pill Button */}
             <button
               onClick={() => onNavigate('experience')}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[11px] tracking-[0.15em] font-semibold uppercase whitespace-nowrap transition-all duration-200 cursor-pointer ${
-                currentRoute === 'experience'
-                  ? 'bg-[#D4AF37] text-black shadow-[0_0_15px_rgba(212,175,55,0.45)]'
-                  : 'border border-[#D4AF37]/60 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black hover:shadow-[0_0_12px_rgba(212,175,55,0.3)]'
-              }`}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[11px] tracking-[0.15em] font-semibold uppercase whitespace-nowrap transition-all duration-200 cursor-pointer"
+              style={{
+                backgroundColor: currentRoute === 'experience' ? '#D4AF37' : 'rgba(212, 175, 55, 0.12)',
+                color: currentRoute === 'experience' ? '#0A0A0A' : '#D4AF37',
+                border: '1px solid #D4AF37',
+                boxShadow: currentRoute === 'experience' ? '0 0 16px rgba(212,175,55,0.45)' : 'none'
+              }}
               title="Explore 3D Interactive Perfume Atelier"
             >
-              <Sparkles size={12} className={currentRoute === 'experience' ? 'text-black' : 'text-[#D4AF37]'} />
+              <Sparkles size={12} color={currentRoute === 'experience' ? '#0A0A0A' : '#D4AF37'} />
               <span>3D Experience</span>
             </button>
 
             {/* 2. FREE SAMPLE Solid Champagne Gold Pill */}
             <button
               onClick={() => onNavigate('free-sample')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[11px] tracking-[0.15em] font-bold uppercase whitespace-nowrap bg-[#D4AF37] text-black hover:bg-[#E5C158] transition-all duration-200 shadow-[0_0_12px_rgba(212,175,55,0.25)] cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[11px] tracking-[0.15em] font-extrabold uppercase whitespace-nowrap transition-all duration-200 cursor-pointer hover:brightness-110"
+              style={{
+                backgroundColor: '#D4AF37',
+                color: '#0A0A0A',
+                border: '1px solid #D4AF37',
+                boxShadow: '0 0 16px rgba(212, 175, 55, 0.45)'
+              }}
               title="Claim Complimentary Discovery Flacon"
             >
-              <Sparkles size={12} className="text-black" />
-              <span>Free Sample</span>
+              <Sparkles size={12} color="#0A0A0A" />
+              <span style={{ color: '#0A0A0A', fontWeight: 800 }}>Free Sample</span>
             </button>
 
             {/* Subtle Divider between Action Pills & Utility Icons */}
