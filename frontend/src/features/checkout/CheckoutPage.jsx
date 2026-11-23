@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, ArrowRight, ArrowLeft, CheckCircle, Lock, Truck, CreditCard, Banknote, Phone, Mail, QrCode, Smartphone, X, AlertTriangle, Sparkles, RefreshCw } from 'lucide-react';
+import { ShieldCheck, ArrowRight, ArrowLeft, CheckCircle, Lock, Truck, CreditCard, Banknote, Phone, Mail, QrCode, Smartphone, X, AlertTriangle, Sparkles, RefreshCw, Building2, Landmark, Clock, Check, Zap } from 'lucide-react';
 import { api } from '../../services/api';
 
 const INDIAN_STATES = [
@@ -41,8 +41,31 @@ export default function CheckoutPage({
   // Interactive Razorpay Test Gateway Simulation State
   const [testGatewayModal, setTestGatewayModal] = useState(null);
   const [testProcessing, setTestProcessing] = useState(false);
-  const [testPaymentTab, setTestPaymentTab] = useState('UPI'); // 'UPI' | 'CARD'
+  const [testPaymentTab, setTestPaymentTab] = useState('CARD'); // 'CARD' | 'UPI' | 'NETBANKING'
   const [testUpiId, setTestUpiId] = useState('patron@okhdfcbank');
+  const [testUpiMode, setTestUpiMode] = useState('APPS'); // 'APPS' | 'QR'
+  const [testCardNumber, setTestCardNumber] = useState('4111 2222 3333 4242');
+  const [testCardExpiry, setTestCardExpiry] = useState('12/28');
+  const [testCardCvv, setTestCardCvv] = useState('786');
+  const [testCardName, setTestCardName] = useState('');
+  const [testCardBrand, setTestCardBrand] = useState('VISA');
+  const [testSelectedBank, setTestSelectedBank] = useState('HDFC');
+  const [testSaveCard, setTestSaveCard] = useState(true);
+
+  const detectCardBrand = (num) => {
+    const clean = (num || '').replace(/\s+/g, '');
+    if (clean.startsWith('4')) return 'VISA';
+    if (clean.startsWith('5')) return 'MASTERCARD';
+    if (clean.startsWith('6') || clean.startsWith('35')) return 'RUPAY';
+    return 'VISA';
+  };
+
+  const handleCardNumberChange = (e) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 16);
+    const formatted = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+    setTestCardNumber(formatted);
+    setTestCardBrand(detectCardBrand(formatted));
+  };
 
   const subtotal = cart?.subtotal || 0;
   const discountAmount = appliedCoupon ? appliedCoupon.discount : 0;
@@ -136,6 +159,7 @@ export default function CheckoutPage({
           order,
           rzpData
         });
+        setTestCardName(order.recipient_name || 'HAYA KHAN');
         setLoading(false);
         return;
       }
@@ -575,33 +599,33 @@ export default function CheckoutPage({
       </div>
 
       {/* =========================================================================
-          INTERACTIVE RAZORPAY TEST PAYMENT GATEWAY MODAL (Ultra-Luxury Elevated Edition)
+          INTERACTIVE RAZORPAY TEST PAYMENT GATEWAY MODAL (Real-World Easy-to-Use Edition)
           ========================================================================= */}
       {testGatewayModal && (
-        <div className="fixed inset-0 z-[1500] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-lg animate-in fade-in duration-200">
-          <div className="max-w-[500px] w-full min-h-[660px] flex flex-col justify-between bg-gradient-to-b from-[#13241C] via-[#0A1410] to-[#040806] border border-[#D4AF37]/50 rounded-[32px] shadow-[0_35px_100px_rgba(0,0,0,0.98),0_0_50px_rgba(212,175,55,0.3)] overflow-hidden text-white animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[1500] flex items-center justify-center p-3 sm:p-5 bg-black/90 backdrop-blur-lg animate-in fade-in duration-200 overflow-y-auto">
+          <div className="max-w-[490px] w-full bg-gradient-to-b from-[#13241C] via-[#0A1410] to-[#040806] border border-[#D4AF37]/50 rounded-[30px] shadow-[0_30px_90px_rgba(0,0,0,0.98),0_0_50px_rgba(212,175,55,0.28)] overflow-hidden text-white animate-in zoom-in-95 duration-200 my-auto">
             {/* Modal Header with High-Contrast Provenance */}
-            <div className="bg-[#050A08] px-7 py-5 border-b border-[#D4AF37]/30 flex items-center justify-between">
-              <div className="flex items-center gap-3.5">
-                <div className="rumera-emblem-medallion p-2 rounded-2xl shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+            <div className="bg-[#050A08] px-6 py-4 sm:px-7 sm:py-4.5 border-b border-[#D4AF37]/30 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="rumera-emblem-medallion p-1.5 sm:p-2 rounded-2xl shadow-[0_0_15px_rgba(212,175,55,0.3)]">
                   <img
                     src="/images/rumera_crest_emblem.png"
                     alt="Rumera"
-                    className="h-7 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(212,175,55,0.7)] brightness-110"
+                    className="h-6 sm:h-7 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(212,175,55,0.7)] brightness-110"
                   />
                 </div>
                 <div>
-                  <div className="rumera-wordmark-gold text-base sm:text-lg block leading-none">
+                  <div className="rumera-wordmark-gold text-sm sm:text-base block leading-none">
                     MAISON RUMÉRA
                   </div>
-                  <div className="text-[9px] tracking-[0.26em] uppercase text-[#D4AF37] font-semibold mt-1">
+                  <div className="text-[8.5px] sm:text-[9px] tracking-[0.24em] uppercase text-[#D4AF37] font-semibold mt-1">
                     Razorpay Gateway Simulator
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <span className="px-3.5 py-1 rounded-full bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] text-[9.5px] font-black uppercase tracking-[0.18em] shadow-[0_0_12px_rgba(212,175,55,0.5)]">
+              <div className="flex items-center gap-2.5">
+                <span className="px-3 py-0.5 rounded-full bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] text-[9px] font-black uppercase tracking-[0.16em] shadow-[0_0_10px_rgba(212,175,55,0.4)]">
                   Test Sandbox
                 </span>
                 <button
@@ -612,23 +636,23 @@ export default function CheckoutPage({
                     }
                   }}
                   disabled={testProcessing}
-                  className="w-9 h-9 rounded-full flex items-center justify-center bg-white/[0.05] hover:bg-white/[0.15] border border-white/10 hover:border-[#D4AF37] text-white/70 hover:text-[#D4AF37] transition-all duration-300 hover:rotate-90 hover:scale-105 cursor-pointer disabled:opacity-50"
+                  className="w-8 h-8 rounded-full flex items-center justify-center bg-white/[0.05] hover:bg-white/[0.15] border border-white/10 hover:border-[#D4AF37] text-white/70 hover:text-[#D4AF37] transition-all duration-300 hover:rotate-90 hover:scale-105 cursor-pointer disabled:opacity-50"
                   aria-label="Close Payment Modal"
                 >
-                  <X size={17} />
+                  <X size={16} />
                 </button>
               </div>
             </div>
 
-            {/* Expanded Amount Section with Regal Glow */}
-            <div className="px-7 py-7 bg-gradient-to-b from-[#162A21]/80 to-[#0B1612]/95 border-b border-[#D4AF37]/25 text-center relative overflow-hidden">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.05] border border-[#D4AF37]/40 text-[11px] uppercase tracking-[0.22em] text-[#D4AF37] font-semibold mb-2">
+            {/* Amount Banner Section */}
+            <div className="px-6 py-5 bg-gradient-to-b from-[#162A21]/80 to-[#0B1612]/95 border-b border-[#D4AF37]/25 text-center relative overflow-hidden">
+              <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-white/[0.05] border border-[#D4AF37]/35 text-[10.5px] uppercase tracking-[0.2em] text-[#D4AF37] font-semibold mb-1.5">
                 <span>Imperial Consignment #{testGatewayModal.order.order_number}</span>
               </div>
-              <div className="font-serif text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFF9E6] via-[#F4DE98] to-[#D4AF37] tracking-tight filter drop-shadow-[0_4px_16px_rgba(212,175,55,0.45)] mt-1">
+              <div className="font-serif text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFF9E6] via-[#F4DE98] to-[#D4AF37] tracking-tight filter drop-shadow-[0_3px_12px_rgba(212,175,55,0.4)]">
                 ₹{Number(testGatewayModal.order.total_amount).toLocaleString('en-IN')}
               </div>
-              <div className="text-[12px] text-white/60 mt-2 flex items-center justify-center gap-2">
+              <div className="text-[11.5px] text-white/60 mt-1 flex items-center justify-center gap-2">
                 <span className="text-[#D4AF37]/80">Patron:</span>
                 <strong className="text-[#FAF7F0] font-semibold tracking-wide">{testGatewayModal.order.recipient_name}</strong>
                 <span className="text-[#D4AF37]/50">•</span>
@@ -636,95 +660,418 @@ export default function CheckoutPage({
               </div>
             </div>
 
-            {/* Payment Method Section - Generous Height & Spacing */}
-            <div className="p-7 flex-1 flex flex-col justify-between space-y-6">
-              {/* Payment Method Selector Tabs - Fully Rounded Pill Capsule */}
-              <div>
-                <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/60 rounded-full border border-[#D4AF37]/35 mb-6 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)]">
-                  <button
-                    type="button"
-                    onClick={() => setTestPaymentTab('UPI')}
-                    className={`py-2.5 px-4 rounded-full text-xs tracking-[0.18em] uppercase font-extrabold flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
-                      testPaymentTab === 'UPI'
-                        ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_15px_rgba(212,175,55,0.55)] scale-[1.02]'
-                        : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
-                    }`}
-                  >
-                    <Smartphone size={15} />
-                    <span>UPI / QR Code</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTestPaymentTab('CARD')}
-                    className={`py-2.5 px-4 rounded-full text-xs tracking-[0.18em] uppercase font-extrabold flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
-                      testPaymentTab === 'CARD'
-                        ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_15px_rgba(212,175,55,0.55)] scale-[1.02]'
-                        : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
-                    }`}
-                  >
-                    <CreditCard size={15} />
-                    <span>Cards / NetBanking</span>
-                  </button>
-                </div>
-
-                {/* Tab 1: UPI Simulator - Rounded Pills with Hover */}
-                {testPaymentTab === 'UPI' && (
-                  <div className="space-y-4">
-                    {/* Quick UPI App Selector Pills with Luxury Hover Dynamics */}
-                    <div className="grid grid-cols-4 gap-2.5">
-                      {['GPay', 'PhonePe', 'Paytm', 'BHIM'].map((app) => {
-                        const isSelected = testUpiId.includes(app.toLowerCase());
-                        return (
-                          <button
-                            key={app}
-                            type="button"
-                            onClick={() => setTestUpiId(`patron@${app.toLowerCase()}`)}
-                            className={`rumera-app-pill ${isSelected ? 'active' : ''}`}
-                            title={`Select ${app}`}
-                          >
-                            <span>{app}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] uppercase tracking-[0.18em] text-white/50 block mb-2 px-1">
-                        Simulated Virtual Payment Address (VPA)
-                      </label>
-                      <div className="flex items-center px-4 py-3 bg-black/65 border border-[#D4AF37]/50 hover:border-[#D4AF37] rounded-full text-sm font-mono text-[#D4AF37] shadow-[inset_0_2px_8px_rgba(0,0,0,0.7)] transition-all duration-300">
-                        <span className="flex-1 truncate tracking-wide">{testUpiId}</span>
-                        <span className="px-3 py-1 rounded-full bg-emerald-950/90 border border-emerald-500/60 text-emerald-300 text-[10.5px] font-bold flex items-center gap-1.5 shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.3)]">
-                          ✓ Verified Patron
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab 2: Card Simulator - Rounded Edition */}
-                {testPaymentTab === 'CARD' && (
-                  <div className="space-y-4">
-                    <div className="p-5 rounded-3xl bg-gradient-to-br from-[#1F3327] via-[#0F1E17] to-[#070D0A] border border-[#D4AF37]/45 text-xs font-mono space-y-2.5 shadow-[0_10px_25px_rgba(0,0,0,0.6)]">
-                      <div className="flex justify-between items-center text-white/60">
-                        <span className="text-[10.5px] uppercase tracking-[0.18em] text-[#D4AF37] font-semibold">Maison Imperial Card</span>
-                        <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF37]/25 border border-[#D4AF37]/50 text-[#FAF7F0] text-[9.5px] font-bold">TEST MODE</span>
-                      </div>
-                      <div className="text-lg tracking-[0.22em] text-[#FAF7F0] font-bold pt-1.5">
-                        4111 •••• •••• 4242
-                      </div>
-                      <div className="flex justify-between text-[11.5px] text-white/70 pt-2 border-t border-white/10">
-                        <span>EXP: 12/28</span>
-                        <span>CVV: 786</span>
-                        <span className="text-[#D4AF37]">DOMESTIC / INT</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+            {/* Payment Method Selector Tabs: Card | UPI / QR | NetBanking */}
+            <div className="p-5 sm:p-6 space-y-5">
+              <div className="grid grid-cols-3 gap-1.5 p-1 bg-black/60 rounded-full border border-[#D4AF37]/35 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)]">
+                <button
+                  type="button"
+                  onClick={() => setTestPaymentTab('CARD')}
+                  className={`py-2 px-2.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase font-extrabold flex items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer ${
+                    testPaymentTab === 'CARD'
+                      ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_15px_rgba(212,175,55,0.55)] scale-[1.02]'
+                      : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
+                  }`}
+                >
+                  <CreditCard size={14} />
+                  <span>Card</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTestPaymentTab('UPI')}
+                  className={`py-2 px-2.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase font-extrabold flex items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer ${
+                    testPaymentTab === 'UPI'
+                      ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_15px_rgba(212,175,55,0.55)] scale-[1.02]'
+                      : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
+                  }`}
+                >
+                  <Smartphone size={14} />
+                  <span>UPI / QR</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTestPaymentTab('NETBANKING')}
+                  className={`py-2 px-2.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase font-extrabold flex items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer ${
+                    testPaymentTab === 'NETBANKING'
+                      ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_15px_rgba(212,175,55,0.55)] scale-[1.02]'
+                      : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
+                  }`}
+                >
+                  <Building2 size={14} />
+                  <span>NetBank</span>
+                </button>
               </div>
 
+              {/* =========================================================
+                  TAB 1: REAL-WORLD CARD PAYMENT EXPERIENCE
+                  ========================================================= */}
+              {testPaymentTab === 'CARD' && (
+                <div className="space-y-4">
+                  {/* Interactive Visual Luxury Card Preview */}
+                  <div className="relative w-full rounded-2xl p-4 sm:p-5 bg-gradient-to-tr from-[#0F2219] via-[#162D22] to-[#0A1711] border border-[#D4AF37]/50 shadow-[0_12px_35px_rgba(0,0,0,0.8),inset_0_1px_2px_rgba(255,255,255,0.2)] flex flex-col justify-between space-y-4 overflow-hidden">
+                    <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-[#D4AF37]/15 blur-2xl pointer-events-none" />
+
+                    {/* Top Row: EMV Chip + Contactless Wave + Brand Logo */}
+                    <div className="flex items-center justify-between z-10">
+                      <div className="flex items-center gap-3">
+                        {/* Golden EMV Chip */}
+                        <div className="w-9 h-6.5 rounded bg-gradient-to-br from-[#FFE79A] via-[#D4AF37] to-[#8C6D23] border border-[#FFF8DE]/70 p-1 flex flex-col justify-between shadow-[0_2px_6px_rgba(0,0,0,0.4)]">
+                          <div className="h-0.5 bg-black/35 rounded" />
+                          <div className="h-0.5 bg-black/35 rounded" />
+                          <div className="h-0.5 bg-black/35 rounded" />
+                        </div>
+                        {/* Contactless waves icon */}
+                        <svg className="w-4.5 h-4.5 text-[#D4AF37]/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M8.5 16.5a5 5 0 0 1 0-9" />
+                          <path d="M12 19a8.5 8.5 0 0 0 0-14" />
+                          <path d="M15.5 21.5a12 12 0 0 0 0-19" />
+                        </svg>
+                      </div>
+
+                      {/* Dynamic Brand Logo */}
+                      <span className="px-3 py-0.5 rounded-full bg-black/50 border border-[#D4AF37]/45 text-[#FAF7F0] font-black tracking-widest text-[11px] uppercase shadow-[0_0_8px_rgba(212,175,55,0.25)]">
+                        {testCardBrand}
+                      </span>
+                    </div>
+
+                    {/* Card Number formatted with Gold Gradient */}
+                    <div className="z-10 tracking-[0.22em] font-mono text-base sm:text-lg text-transparent bg-clip-text bg-gradient-to-r from-[#FFF8DE] via-[#F4DE98] to-[#D4AF37] font-bold filter drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+                      {testCardNumber || '•••• •••• •••• ••••'}
+                    </div>
+
+                    {/* Bottom Row: Cardholder Name + Valid Thru */}
+                    <div className="flex items-end justify-between z-10 text-white/80 pt-1">
+                      <div>
+                        <div className="text-[8px] uppercase tracking-[0.2em] text-[#D4AF37]/75 font-semibold">Cardholder</div>
+                        <div className="text-xs sm:text-[13px] font-semibold tracking-wider text-[#FAF7F0] uppercase truncate max-w-[200px]">
+                          {testCardName || testGatewayModal.order.recipient_name || 'MAISON PATRON'}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[8px] uppercase tracking-[0.2em] text-[#D4AF37]/75 font-semibold">Valid Thru</div>
+                        <div className="text-xs sm:text-[13px] font-mono font-bold tracking-widest text-[#FAF7F0]">
+                          {testCardExpiry || 'MM/YY'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 1-Click Test Cards Bar */}
+                  <div className="flex items-center justify-between text-[11px] px-1">
+                    <span className="text-white/50 text-[10.5px] uppercase tracking-wider flex items-center gap-1">
+                      <Zap size={12} className="text-[#D4AF37]" />
+                      <span>1-Click Test Presets:</span>
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTestCardNumber('4111 2222 3333 4242');
+                          setTestCardExpiry('12/28');
+                          setTestCardCvv('786');
+                          setTestCardBrand('VISA');
+                        }}
+                        className="px-2.5 py-1 rounded-full bg-white/[0.06] hover:bg-[#D4AF37]/25 border border-white/10 hover:border-[#D4AF37] text-[10px] font-bold tracking-wider text-white hover:text-[#D4AF37] transition-all cursor-pointer"
+                      >
+                        Visa
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTestCardNumber('5123 4567 8901 2345');
+                          setTestCardExpiry('08/29');
+                          setTestCardCvv('452');
+                          setTestCardBrand('MASTERCARD');
+                        }}
+                        className="px-2.5 py-1 rounded-full bg-white/[0.06] hover:bg-[#D4AF37]/25 border border-white/10 hover:border-[#D4AF37] text-[10px] font-bold tracking-wider text-white hover:text-[#D4AF37] transition-all cursor-pointer"
+                      >
+                        Mastercard
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTestCardNumber('6071 8293 0192 8374');
+                          setTestCardExpiry('11/27');
+                          setTestCardCvv('910');
+                          setTestCardBrand('RUPAY');
+                        }}
+                        className="px-2.5 py-1 rounded-full bg-white/[0.06] hover:bg-[#D4AF37]/25 border border-white/10 hover:border-[#D4AF37] text-[10px] font-bold tracking-wider text-white hover:text-[#D4AF37] transition-all cursor-pointer"
+                      >
+                        RuPay
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Real-World Input Form */}
+                  <div className="space-y-3">
+                    {/* Card Number Input */}
+                    <div>
+                      <label className="text-[10.5px] uppercase tracking-[0.16em] text-white/50 block mb-1 px-1">
+                        Card Number
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={testCardNumber}
+                          onChange={handleCardNumberChange}
+                          placeholder="4111 2222 3333 4242"
+                          maxLength={19}
+                          className="w-full px-4 py-2.5 pr-14 bg-black/60 border border-[#D4AF37]/40 focus:border-[#D4AF37] rounded-xl text-sm font-mono text-[#FAF7F0] tracking-wider outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)] transition-all"
+                        />
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 rounded bg-black/70 border border-white/15 text-[9.5px] font-bold tracking-wider text-[#D4AF37]">
+                          {testCardBrand}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Expiry & CVV Input */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[10.5px] uppercase tracking-[0.16em] text-white/50 block mb-1 px-1">
+                          Valid Thru (MM/YY)
+                        </label>
+                        <input
+                          type="text"
+                          value={testCardExpiry}
+                          onChange={(e) => {
+                            let val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                            if (val.length >= 2) val = val.slice(0, 2) + '/' + val.slice(2);
+                            setTestCardExpiry(val);
+                          }}
+                          placeholder="MM / YY"
+                          maxLength={5}
+                          className="w-full px-4 py-2.5 bg-black/60 border border-[#D4AF37]/40 focus:border-[#D4AF37] rounded-xl text-sm font-mono text-[#FAF7F0] tracking-wider outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)] transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10.5px] uppercase tracking-[0.16em] text-white/50 block mb-1 px-1">
+                          CVV
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="password"
+                            value={testCardCvv}
+                            onChange={(e) => setTestCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                            placeholder="•••"
+                            maxLength={4}
+                            className="w-full px-4 py-2.5 pr-8 bg-black/60 border border-[#D4AF37]/40 focus:border-[#D4AF37] rounded-xl text-sm font-mono text-[#FAF7F0] tracking-wider outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)] transition-all"
+                          />
+                          <Lock size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Cardholder Name Input */}
+                    <div>
+                      <label className="text-[10.5px] uppercase tracking-[0.16em] text-white/50 block mb-1 px-1">
+                        Name on Card
+                      </label>
+                      <input
+                        type="text"
+                        value={testCardName}
+                        onChange={(e) => setTestCardName(e.target.value)}
+                        placeholder="Cardholder Name"
+                        className="w-full px-4 py-2.5 bg-black/60 border border-[#D4AF37]/40 focus:border-[#D4AF37] rounded-xl text-sm text-[#FAF7F0] tracking-wide outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)] transition-all uppercase"
+                      />
+                    </div>
+
+                    {/* RBI Tokenization Checkbox */}
+                    <label className="flex items-center gap-2 px-1 pt-1 cursor-pointer select-none text-[11px] text-white/60 hover:text-white transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={testSaveCard}
+                        onChange={(e) => setTestSaveCard(e.target.checked)}
+                        className="accent-[#D4AF37] w-3.5 h-3.5 rounded"
+                      />
+                      <span>Securely save card as per RBI tokenization guidelines</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {/* =========================================================
+                  TAB 2: REAL-WORLD UPI & QR CODE EXPERIENCE
+                  ========================================================= */}
+              {testPaymentTab === 'UPI' && (
+                <div className="space-y-4">
+                  {/* UPI Sub-Mode Switch: Quick Apps vs Scan QR */}
+                  <div className="grid grid-cols-2 gap-2 p-1 bg-black/50 rounded-xl border border-white/10 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setTestUpiMode('APPS')}
+                      className={`py-2 px-3 rounded-lg font-bold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                        testUpiMode === 'APPS'
+                          ? 'bg-[#D4AF37]/25 border border-[#D4AF37] text-white shadow-[0_0_12px_rgba(212,175,55,0.3)]'
+                          : 'text-white/60 hover:text-white'
+                      }`}
+                    >
+                      <Smartphone size={14} />
+                      <span>UPI Apps / ID</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTestUpiMode('QR')}
+                      className={`py-2 px-3 rounded-lg font-bold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                        testUpiMode === 'QR'
+                          ? 'bg-[#D4AF37]/25 border border-[#D4AF37] text-white shadow-[0_0_12px_rgba(212,175,55,0.3)]'
+                          : 'text-white/60 hover:text-white'
+                      }`}
+                    >
+                      <QrCode size={14} />
+                      <span>Scan QR Code</span>
+                    </button>
+                  </div>
+
+                  {testUpiMode === 'APPS' ? (
+                    <div className="space-y-3.5">
+                      {/* Quick UPI App Selector Pills */}
+                      <div className="grid grid-cols-4 gap-2">
+                        {['GPay', 'PhonePe', 'Paytm', 'BHIM'].map((app) => {
+                          const isSelected = testUpiId.toLowerCase().includes(app.toLowerCase());
+                          return (
+                            <button
+                              key={app}
+                              type="button"
+                              onClick={() => setTestUpiId(`patron@${app.toLowerCase()}`)}
+                              className={`rumera-app-pill ${isSelected ? 'active' : ''}`}
+                              title={`Select ${app}`}
+                            >
+                              <span>{app}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Editable VPA input */}
+                      <div>
+                        <label className="text-[10.5px] uppercase tracking-[0.16em] text-white/50 block mb-1.5 px-1">
+                          Virtual Payment Address (UPI ID)
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={testUpiId}
+                            onChange={(e) => setTestUpiId(e.target.value)}
+                            className="w-full px-4 py-2.5 pr-28 bg-black/60 border border-[#D4AF37]/40 focus:border-[#D4AF37] rounded-xl text-sm font-mono text-[#D4AF37] tracking-wide outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)]"
+                          />
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold flex items-center gap-1 shadow-[0_0_8px_rgba(16,185,129,0.3)]">
+                            <Check size={11} /> Verified
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Real-world step instructions card */}
+                      <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-[11.5px] text-white/70 space-y-1.5">
+                        <div className="text-[#D4AF37] font-semibold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                          <Clock size={13} /> Real-World Flow Simulation
+                        </div>
+                        <div className="flex items-center gap-2 text-white/80">
+                          <span className="w-4 h-4 rounded-full bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-bold flex items-center justify-center">1</span>
+                          <span>Click Authorize & Pay to transmit collect request.</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-white/80">
+                          <span className="w-4 h-4 rounded-full bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-bold flex items-center justify-center">2</span>
+                          <span>Open {testUpiId.split('@')[1] ? testUpiId.split('@')[1].toUpperCase() : 'UPI'} app and approve payment.</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Scan QR Code Mode */
+                    <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-black/60 border border-[#D4AF37]/35 space-y-3">
+                      <div className="relative p-3 bg-white rounded-xl shadow-[0_0_25px_rgba(212,175,55,0.35)]">
+                        <svg className="w-36 h-36" viewBox="0 0 100 100" fill="none">
+                          <rect width="100" height="100" fill="#0A1410" rx="4" />
+                          {/* Corner Finders */}
+                          <rect x="8" y="8" width="26" height="26" fill="#D4AF37" rx="3" />
+                          <rect x="12" y="12" width="18" height="18" fill="#0A1410" rx="2" />
+                          <rect x="16" y="16" width="10" height="10" fill="#D4AF37" rx="1.5" />
+
+                          <rect x="66" y="8" width="26" height="26" fill="#D4AF37" rx="3" />
+                          <rect x="70" y="12" width="18" height="18" fill="#0A1410" rx="2" />
+                          <rect x="74" y="16" width="10" height="10" fill="#D4AF37" rx="1.5" />
+
+                          <rect x="8" y="66" width="26" height="26" fill="#D4AF37" rx="3" />
+                          <rect x="12" y="70" width="18" height="18" fill="#0A1410" rx="2" />
+                          <rect x="16" y="74" width="10" height="10" fill="#D4AF37" rx="1.5" />
+
+                          {/* Data dots */}
+                          <rect x="38" y="10" width="6" height="6" fill="#F4DE98" />
+                          <rect x="48" y="10" width="6" height="6" fill="#D4AF37" />
+                          <rect x="40" y="20" width="8" height="6" fill="#D4AF37" />
+                          <rect x="52" y="22" width="6" height="6" fill="#F4DE98" />
+                          <rect x="10" y="38" width="6" height="6" fill="#F4DE98" />
+                          <rect x="20" y="42" width="6" height="8" fill="#D4AF37" />
+                          <rect x="68" y="38" width="8" height="6" fill="#D4AF37" />
+                          <rect x="80" y="42" width="6" height="8" fill="#F4DE98" />
+                          <rect x="38" y="70" width="8" height="8" fill="#D4AF37" />
+                          <rect x="50" y="74" width="6" height="6" fill="#F4DE98" />
+                          <rect x="70" y="68" width="6" height="6" fill="#F4DE98" />
+                          <rect x="80" y="72" width="8" height="8" fill="#D4AF37" />
+
+                          {/* Center Ruméra Gold Emblem */}
+                          <circle cx="50" cy="50" r="13" fill="#050A08" stroke="#D4AF37" strokeWidth="1.5" />
+                          <circle cx="50" cy="50" r="10" fill="#D4AF37" />
+                          <text x="50" y="54" textAnchor="middle" fill="#060B08" fontSize="10" fontWeight="900" fontFamily="serif">R</text>
+                        </svg>
+                      </div>
+
+                      <div className="text-center">
+                        <div className="text-xs font-semibold text-white/90">
+                          Scan with Any UPI App (GPay, PhonePe, Paytm, CRED)
+                        </div>
+                        <div className="text-[11px] text-[#D4AF37] font-mono mt-0.5 flex items-center justify-center gap-1.5">
+                          <Clock size={12} /> QR Valid for 09:45 mins
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* =========================================================
+                  TAB 3: REAL-WORLD NETBANKING EXPERIENCE
+                  ========================================================= */}
+              {testPaymentTab === 'NETBANKING' && (
+                <div className="space-y-3.5">
+                  <div className="text-[11px] uppercase tracking-[0.16em] text-white/50 px-1">
+                    Select Popular Indian Bank
+                  </div>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    {[
+                      { id: 'HDFC', name: 'HDFC Bank', code: '01' },
+                      { id: 'SBI', name: 'State Bank of India', code: '02' },
+                      { id: 'ICICI', name: 'ICICI Bank', code: '03' },
+                      { id: 'AXIS', name: 'Axis Bank', code: '04' },
+                    ].map((bank) => {
+                      const isSelected = testSelectedBank === bank.id;
+                      return (
+                        <button
+                          key={bank.id}
+                          type="button"
+                          onClick={() => setTestSelectedBank(bank.id)}
+                          className={`p-3 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#D4AF37]/20 border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.35)]'
+                              : 'bg-white/[0.04] border-white/10 hover:border-white/30 text-white/70 hover:text-white'
+                          }`}
+                        >
+                          <div>
+                            <div className="text-xs font-bold text-white">{bank.name}</div>
+                            <div className="text-[10px] text-white/40 tracking-wider">Fast Authorization</div>
+                          </div>
+                          {isSelected && <Check size={14} className="text-[#D4AF37]" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 text-[11px] text-white/60 flex items-center gap-2">
+                    <Landmark size={14} className="text-[#D4AF37] shrink-0" />
+                    <span>Secure redirect to your bank's authenticated gateway upon authorization.</span>
+                  </div>
+                </div>
+              )}
+
               {/* Action Buttons with Proper Premium Typography & Hover */}
-              <div className="space-y-3 pt-2">
+              <div className="space-y-3 pt-1">
                 {/* Primary Button: Fully Rounded 24K Gold Pill with Dynamic Hover */}
                 <button
                   type="button"
@@ -733,7 +1080,7 @@ export default function CheckoutPage({
                   className="rumera-pay-btn-luxury group"
                 >
                   {testProcessing ? (
-                    <div className="flex items-center justify-center gap-3 py-4">
+                    <div className="flex items-center justify-center gap-3 py-3.5">
                       <RefreshCw size={18} className="animate-spin text-[#060B08]" />
                       <span className="text-xs sm:text-[13px] tracking-[0.24em] font-black uppercase text-[#060B08]">
                         Authorizing with Bank Gateway...
@@ -759,7 +1106,7 @@ export default function CheckoutPage({
                   type="button"
                   onClick={() => handleCompleteTestPayment(false)}
                   disabled={testProcessing}
-                  className="w-full py-3 px-5 rounded-full bg-rose-950/20 hover:bg-rose-950/45 border border-rose-500/30 hover:border-rose-400/70 text-rose-300 hover:text-white text-[11px] sm:text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,63,94,0.35)] hover:-translate-y-0.5 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 group"
+                  className="w-full py-2.5 px-4 rounded-full bg-rose-950/20 hover:bg-rose-950/45 border border-rose-500/30 hover:border-rose-400/70 text-rose-300 hover:text-white text-[11px] font-bold tracking-[0.18em] uppercase transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,63,94,0.35)] hover:-translate-y-0.5 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 group"
                 >
                   <X size={14} className="text-rose-400 group-hover:rotate-90 transition-transform duration-300" />
                   <span>Simulate Payment Decline / Cancel</span>
@@ -767,7 +1114,7 @@ export default function CheckoutPage({
               </div>
 
               {/* Security Badge */}
-              <div className="pt-2 text-center text-[10.5px] text-white/40 flex items-center justify-center gap-2">
+              <div className="text-center text-[10.5px] text-white/40 flex items-center justify-center gap-2">
                 <Lock size={12} className="text-[#D4AF37]" />
                 <span className="tracking-wide">256-Bit SSL Encrypted Razorpay Sandbox Protocol</span>
               </div>
