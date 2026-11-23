@@ -15,6 +15,7 @@ import AdminDashboard from './features/admin/AdminDashboard';
 import WishlistPage from './features/catalog/WishlistPage';
 import FreeSampleModal from './features/campaign/FreeSampleModal';
 import FreeSamplePopup from './features/campaign/FreeSamplePopup';
+import RumeraExperiencePage from './features/experience/RumeraExperiencePage';
 import { api, getStoredUser, clearAuth } from './services/api';
 
 export default function App() {
@@ -161,6 +162,37 @@ export default function App() {
         onNavigate={navigate}
         onLogout={handleLogout}
       />
+    );
+  }
+
+  // If in 3D Interactive Scroll Experience view, render dedicated full-viewport luxury layout
+  if (currentRoute === 'experience') {
+    return (
+      <div style={{ minHeight: '100vh', backgroundColor: '#0A0A0A' }}>
+        <RumeraExperiencePage
+          onNavigate={navigate}
+          onAddToCart={(varId) => handleAddToCart(varId, 1)}
+          onOpenCart={() => setCartOpen(true)}
+          cartCount={cart?.total_items || 0}
+        />
+        <CartDrawer
+          isOpen={cartOpen}
+          onClose={() => setCartOpen(false)}
+          cart={cart}
+          onUpdateQuantity={handleUpdateCartQuantity}
+          onCheckout={() => navigate('checkout')}
+          appliedCoupon={appliedCoupon}
+          onApplyCoupon={(cpn) => setAppliedCoupon(cpn)}
+          onRemoveCoupon={() => setAppliedCoupon(null)}
+        />
+        <FreeSampleModal
+          isOpen={sampleModalOpen}
+          onClose={() => setSampleModalOpen(false)}
+          campaignConfig={campaignConfig}
+          availableFragrances={availableSampleFragrances}
+          onNavigateToShop={() => navigate('shop')}
+        />
+      </div>
     );
   }
 

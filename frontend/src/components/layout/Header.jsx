@@ -182,6 +182,30 @@ export default function Header({
               Heritage
             </button>
             <button
+              onClick={() => onNavigate('experience')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '4px 12px',
+                borderRadius: '50px',
+                backgroundColor: currentRoute === 'experience' ? '#D4AF37' : 'rgba(212, 175, 55, 0.15)',
+                border: '1px solid #D4AF37',
+                color: currentRoute === 'experience' ? '#0A0A0A' : '#FAF7F0',
+                fontSize: '0.74rem',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                boxShadow: '0 0 14px rgba(212, 175, 55, 0.25)'
+              }}
+              title="Experience 3D Interactive Perfume Atelier"
+            >
+              <Sparkles size={11} color={currentRoute === 'experience' ? '#0A0A0A' : '#D4AF37'} />
+              <span>3D Experience</span>
+            </button>
+            <button
               onClick={() => onNavigate('free-sample')}
               style={{
                 display: 'inline-flex',
@@ -563,6 +587,22 @@ export default function Header({
               style={{ textAlign: 'left', color: '#F8F4EC', fontSize: '1.1rem', fontFamily: 'var(--font-serif)' }}
             >
               Kannauj & Assam Heritage
+            </button>
+            <button
+              onClick={() => { onNavigate('experience'); setMobileMenuOpen(false); }}
+              style={{
+                textAlign: 'left',
+                color: '#FAF7F0',
+                fontSize: '1.05rem',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 0',
+              }}
+            >
+              <Sparkles size={16} color="#D4AF37" />
+              <span>3D Interactive Flacon Experience</span>
             </button>
             <button
               onClick={() => { onNavigate('free-sample'); setMobileMenuOpen(false); }}

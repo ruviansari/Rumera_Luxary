@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Droplets, Award, Compass, Shield, Trees, ShieldCheck, Hourglass, CheckCircle2, Crown, Gem, Eye, X, ZoomIn, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Droplets, Award, Compass, Shield, Trees, ShieldCheck, Hourglass, CheckCircle2, Crown, Gem, Eye, X, ZoomIn, ChevronLeft, ChevronRight, Sparkles, Gift, Layers } from 'lucide-react';
 import ProductCard from '../../components/catalog/ProductCard';
 import FreeSampleBanner from '../campaign/FreeSampleBanner';
 import SampleTestimonials from '../campaign/SampleTestimonials';
@@ -243,6 +243,31 @@ export default function HomePage({
                 >
                   <span>Explore The Collection</span>
                   <ArrowRight size={18} className="hero-btn-arrow" />
+                </button>
+
+                <button
+                  onClick={() => onNavigate('experience')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '12px 22px',
+                    borderRadius: '4px',
+                    backgroundColor: 'rgba(212, 175, 55, 0.15)',
+                    border: '1px solid #D4AF37',
+                    color: '#FAF7F0',
+                    fontSize: '0.88rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease',
+                    boxShadow: '0 0 15px rgba(212, 175, 55, 0.25)'
+                  }}
+                  title="Explore 3D Scroll Interactive Atelier"
+                >
+                  <Sparkles size={16} color="#D4AF37" />
+                  <span>3D Experience</span>
                 </button>
 
                 <button
@@ -593,6 +618,108 @@ export default function HomePage({
         campaignConfig={campaignConfig}
         onOpenClaimModal={onOpenSampleModal}
       />
+
+      {/* 3.6. 3D Scroll Interactive Atelier Teaser Banner */}
+      <section style={{ backgroundColor: '#0A0A0A', borderTop: '1px solid rgba(212,175,55,0.3)', borderBottom: '1px solid rgba(212,175,55,0.3)', padding: '64px 0', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, opacity: 0.15, backgroundImage: 'radial-gradient(circle at 75% 50%, #D4AF37 0%, transparent 60%)', pointerEvents: 'none' }} />
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '36px', alignItems: 'center' }}>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '5px 14px', borderRadius: '50px', backgroundColor: 'rgba(212,175,55,0.12)', border: '1px solid rgba(212,175,55,0.35)', color: '#D4AF37', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '14px' }}>
+                <Sparkles size={13} color="#D4AF37" />
+                <span>Scroll-Driven Editorial Experience</span>
+              </div>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.9rem, 3.6vw, 2.8rem)', color: '#FAF7F0', fontWeight: 400, lineHeight: 1.2, marginBottom: '16px' }}>
+                The Descending Flacon & Bespoke Velvet Coffret
+              </h2>
+              <p style={{ color: '#DCD7CE', fontSize: '0.98rem', lineHeight: 1.7, marginBottom: '24px', maxWidth: '520px' }}>
+                Immerse yourself in our continuous 3-stage scroll choreography: watch the crystal flacon descend from its pedestal, explore the floating fragrance pyramid, and custom-engrave your velvet coffret.
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px' }}>
+                <button
+                  onClick={() => onNavigate('experience')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '14px 28px',
+                    borderRadius: '4px',
+                    backgroundColor: '#D4AF37',
+                    color: '#0A0A0A',
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    fontSize: '0.84rem',
+                    cursor: 'pointer',
+                    border: 'none',
+                    boxShadow: '0 0 25px rgba(212,175,55,0.4)',
+                    transition: 'all 0.25s ease'
+                  }}
+                >
+                  <span>Launch 3D Atelier</span>
+                  <ArrowRight size={16} />
+                </button>
+                <button
+                  onClick={() => onNavigate('shop')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '14px 24px',
+                    borderRadius: '4px',
+                    backgroundColor: 'transparent',
+                    color: '#FAF7F0',
+                    border: '1px solid rgba(212,175,55,0.4)',
+                    fontWeight: 600,
+                    fontSize: '0.84rem',
+                    letterSpacing: '0.04em',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <span>Browse Catalog</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Visual Teaser Right Card */}
+            <div
+              onClick={() => onNavigate('experience')}
+              style={{
+                position: 'relative',
+                borderRadius: '16px',
+                padding: '24px',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
+                border: '1px solid rgba(212,175,55,0.25)',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.8), inset 0 1px 0 rgba(212,175,55,0.2)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ position: 'relative', width: '180px', height: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img
+                  src="/images/showcase/royal_emerald_flacon.jpg"
+                  alt="Ruméra 3D Interactive Flacon"
+                  style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', borderRadius: '8px', filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.9)) drop-shadow(0 0 20px rgba(212,175,55,0.3))' }}
+                />
+              </div>
+              <div style={{ marginTop: '16px' }}>
+                <div style={{ color: '#E8CA89', fontSize: '0.74rem', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}>
+                  Stage 1 → 2 → 3
+                </div>
+                <div style={{ fontFamily: 'var(--font-serif)', color: '#FAF7F0', fontSize: '1.25rem', marginTop: '4px' }}>
+                  Pedestal • Pyramid • Coffret
+                </div>
+                <div style={{ color: '#9CA3AF', fontSize: '0.78rem', marginTop: '4px' }}>
+                  Click to enter full-screen scroll experience →
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 4. Featured Masterpiece Reserves */}
       <section style={{ padding: '80px 0', backgroundColor: '#FFFFFF', borderTop: '1px solid #E5DFC9', borderBottom: '1px solid #E5DFC9' }}>
