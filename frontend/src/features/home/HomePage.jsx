@@ -189,9 +189,15 @@ export default function HomePage({
   const [selectedFlacon, setSelectedFlacon] = useState(null);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
+  // Automatic Smooth Flacon Cycling with Falling-Down & Fix Animation
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    const timer = setInterval(() => {
+      setActiveHeroIndex((prev) => (prev + 1) % ROYAL_FLACONS.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [isAutoPlaying]);
 
-
-  // Hero showcase image is fixed on the iconic Royal Amber Crystal Flacon
   const activeFlacon = ROYAL_FLACONS[activeHeroIndex];
 
   return (
@@ -270,7 +276,11 @@ export default function HomePage({
 
             {/* Right: Interactive Flacon Masterpiece Showcase with Hanging Flacons */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '22px', position: 'relative', width: '100%' }}>
-              <div className="hero-showcase-wrapper">
+              <div
+                className="hero-showcase-wrapper"
+                onMouseEnter={() => setIsAutoPlaying(false)}
+                onMouseLeave={() => setIsAutoPlaying(true)}
+              >
                 {/* 4 Professional Hanging Miniature Rumera Flacons with Rumera Logo Mark Suspended Outside */}
                 {HERO_HANGING_FLACONS.map((flacon) => (
                   <div
@@ -390,7 +400,11 @@ export default function HomePage({
               </div>
 
               {/* 6 Flacon Thumbnail Selector Dock with Fixed Bottle Indicator */}
-              <div className="hanging-bottles-dock">
+              <div
+                className="hanging-bottles-dock"
+                onMouseEnter={() => setIsAutoPlaying(false)}
+                onMouseLeave={() => setIsAutoPlaying(true)}
+              >
                 {ROYAL_FLACONS.map((flacon, idx) => {
                   const isActive = idx === activeHeroIndex;
                   return (
