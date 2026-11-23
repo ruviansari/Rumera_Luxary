@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, Sparkles, MessageCircle, ShieldCheck, Mail, Heart, CheckCircle2 } from 'lucide-react';
 
-export default function VIPCircleFooter({ onNavigate = null }) {
+export default function VIPCircleFooter({ onNavigate = () => {} }) {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -16,126 +16,121 @@ export default function VIPCircleFooter({ onNavigate = null }) {
   };
 
   return (
-    <footer className="bg-[#050807] text-[#FAF7F0] border-t border-[#D4AF37]/25 relative overflow-hidden">
+    <footer className="bg-[#F8F5EE] text-[#1C1B1A] border-t border-[#EAE4D9] relative overflow-hidden select-none">
       {/* VIP Circle Inner Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-20 relative z-10">
-        <div className="relative rounded-3xl p-8 sm:p-14 bg-gradient-to-b from-[#0C1512] to-[#070C0A] border border-[#D4AF37]/35 shadow-[0_25px_60px_rgba(0,0,0,0.8)] text-center max-w-4xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest text-[#E8CA89] bg-[#D4AF37]/15 border border-[#D4AF37]/30 mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 relative z-10">
+        <div className="rounded-3xl p-8 sm:p-14 bg-white border border-[#EAE4D9] shadow-[0_20px_50px_rgba(40,30,15,0.06)] text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest text-[#9A7B38] bg-[#C5A059]/12 border border-[#C5A059]/25 mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />
             Private Reserve Allocation
           </div>
 
-          <h3 className="font-serif text-3xl sm:text-4xl text-[#FAF7F0] font-normal mb-3">
+          <h3 className="font-serif text-3xl sm:text-4xl text-[#1C1B1A] font-normal mb-3">
             Join the Ruméra Inner Circle
           </h3>
 
-          <p className="text-xs sm:text-sm text-[#8E9B94] max-w-lg mx-auto mb-8 leading-relaxed">
-            Receive private allocations of seasonal hydro-distillations, invitations to olfactory tastings,
-            and exclusive invitations before flacons enter the public vault.
+          <p className="text-xs sm:text-sm text-[#635F59] max-w-lg mx-auto mb-8 leading-relaxed">
+            Subscribers receive first access to serialized seasonal harvests, private vault decants, and invitations to masterclass ateliers.
           </p>
 
           {subscribed ? (
-            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#10B981]/15 border border-[#10B981] text-[#A7F3D0] text-sm font-semibold">
-              <CheckCircle2 className="w-4 h-4 text-[#10B981]" />
-              Welcome to the Inner Circle. Private invitation dispatched to your inbox.
+            <div className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-300">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span>You are now inscribed in the private registry. Welcome.</span>
             </div>
           ) : (
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email for private invitations..."
-                className="flex-1 px-4 py-3 rounded-full bg-[#070D0B] border border-[#D4AF37]/35 text-xs sm:text-sm text-[#FAF7F0] focus:outline-none focus:border-[#D4AF37] placeholder-[#666]"
-              />
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row items-center gap-3 max-w-md mx-auto">
+              <div className="relative w-full">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A89E90]" />
+                <input
+                  type="email"
+                  placeholder="Enter your private email address..."
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3.5 rounded-full bg-[#FAF8F5] border border-[#EAE4D9] focus:border-[#C5A059] text-xs sm:text-sm text-[#1C1B1A] outline-none shadow-sm transition-all"
+                  required
+                />
+              </div>
               <button
                 type="submit"
-                className="py-3 px-6 rounded-full font-bold text-xs uppercase tracking-wider bg-gradient-to-r from-[#D4AF37] to-[#B78B45] text-[#0A0E0C] hover:shadow-[0_4px_18px_rgba(212,175,55,0.4)] transition-all flex items-center justify-center gap-1.5"
+                className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#1C1B1A] hover:bg-black text-white text-xs font-bold uppercase tracking-widest transition-all shrink-0 cursor-pointer shadow-sm"
               >
-                <span>Subscribe</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                Inscribe
               </button>
             </form>
           )}
-
-          <div className="flex items-center justify-center gap-6 mt-6 text-[11px] text-[#A0A0A0]">
-            <span>• 100% Non-Alcoholic Formulations</span>
-            <span>• Complimentary Pan-India Courier</span>
-            <span>• Serialized Authenticity Seals</span>
-          </div>
         </div>
 
-        {/* Navigation & Brand Links Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-10 border-t border-[#D4AF37]/15">
+        {/* Footer Navigation Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-10 border-t border-[#EAE4D9]">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5 mb-3">
               <img src="/images/rumera_crest_emblem.png" alt="Rumera Emblem" className="w-7 h-7 object-contain" />
-              <span className="font-serif text-xl tracking-widest text-[#FAF7F0] font-bold">
+              <span className="font-serif text-xl tracking-widest text-[#1C1B1A] font-bold">
                 RUMÉRA
               </span>
             </div>
-            <p className="text-xs text-[#8E9B94] max-w-sm leading-relaxed mb-4">
+            <p className="text-xs text-[#635F59] max-w-sm leading-relaxed mb-4">
               Maison Ruméra Luxury Atra is India’s premier Haute Parfumerie house, preserving royal Awadh Deg-Bhapka distillation in small serialized batches.
             </p>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <a
                 href="https://wa.me/919305988767"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#14231F] border border-[#D4AF37]/30 text-xs text-[#E8CA89] hover:border-[#D4AF37]"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#EAE4D9] text-xs text-[#1C1B1A] hover:border-[#C5A059] shadow-xs"
               >
                 <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
-                WhatsApp Atelier Concierge
+                <span>WhatsApp Concierge</span>
               </a>
               <a
                 href="https://instagram.com/rumeraluxury"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#14231F] border border-[#D4AF37]/30 text-xs text-[#E8CA89] hover:border-[#D4AF37]"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#EAE4D9] text-xs text-[#1C1B1A] hover:border-[#C5A059] shadow-xs"
               >
                 <svg className="w-3.5 h-3.5 text-[#E1306C]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
                   <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
                 </svg>
-                @rumeraluxury
+                <span>@rumeraluxury</span>
               </a>
             </div>
           </div>
 
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#D4AF37] mb-3">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#9A7B38] mb-3">
               Olfactory Vaults
             </h4>
-            <ul className="space-y-2 text-xs text-[#8E9B94]">
-              <li><button onClick={() => onNavigate ? onNavigate('shop') : null} className="hover:text-[#FAF7F0]">Pure Dehn Al Oud</button></li>
-              <li><button onClick={() => onNavigate ? onNavigate('shop') : null} className="hover:text-[#FAF7F0]">Kannauj Hydro-Distillates</button></li>
-              <li><button onClick={() => onNavigate ? onNavigate('shop') : null} className="hover:text-[#FAF7F0]">Golden Amber & Musk</button></li>
-              <li><button onClick={() => onNavigate ? onNavigate('shop') : null} className="hover:text-[#FAF7F0]">Bespoke Gift Coffrets</button></li>
+            <ul className="space-y-2 text-xs text-[#635F59]">
+              <li><button onClick={() => onNavigate('shop')} className="hover:text-[#1C1B1A] cursor-pointer">Pure Dehn Al Oud</button></li>
+              <li><button onClick={() => onNavigate('shop')} className="hover:text-[#1C1B1A] cursor-pointer">Kannauj Hydro-Distillates</button></li>
+              <li><button onClick={() => onNavigate('shop')} className="hover:text-[#1C1B1A] cursor-pointer">Golden Amber & Musk</button></li>
+              <li><button onClick={() => onNavigate('shop')} className="hover:text-[#1C1B1A] cursor-pointer">Bespoke Gift Coffrets</button></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#D4AF37] mb-3">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#9A7B38] mb-3">
               The House
             </h4>
-            <ul className="space-y-2 text-xs text-[#8E9B94]">
-              <li><button onClick={() => onNavigate ? onNavigate('owner') : null} className="hover:text-[#FAF7F0]">Master Perfumer Profile</button></li>
-              <li><button onClick={() => onNavigate ? onNavigate('about') : null} className="hover:text-[#FAF7F0]">Kannauj Heritage Stills</button></li>
-              <li><button onClick={() => onNavigate ? onNavigate('free-sample') : null} className="hover:text-[#FAF7F0] text-[#D4AF37]">Complimentary Discovery Sample</button></li>
-              <li><button onClick={() => onNavigate ? onNavigate('order-tracking') : null} className="hover:text-[#FAF7F0]">Track Consignment Order</button></li>
+            <ul className="space-y-2 text-xs text-[#635F59]">
+              <li><button onClick={() => onNavigate('owner')} className="hover:text-[#1C1B1A] cursor-pointer">Master Perfumer Profile</button></li>
+              <li><button onClick={() => onNavigate('about')} className="hover:text-[#1C1B1A] cursor-pointer">Kannauj Heritage Stills</button></li>
+              <li><button onClick={() => onNavigate('free-sample')} className="hover:text-[#C5A059] font-bold text-[#9A7B38] cursor-pointer">Claim Free Discovery Sample</button></li>
+              <li><button onClick={() => onNavigate('order-tracking')} className="hover:text-[#1C1B1A] cursor-pointer">Track Consignment Order</button></li>
             </ul>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="pt-8 border-t border-[#D4AF37]/15 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#666] gap-3">
-          <span>© 2026 Maison Ruméra Luxury Atra. All Rights Reserved. Master formulation by Er. Rumana Ansari.</span>
+        <div className="pt-8 border-t border-[#EAE4D9] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#8C8477] gap-3">
+          <span>© 2026 Maison Ruméra Luxury Atra. All Rights Reserved. Formulated by Er. Rumana Ansari.</span>
           <div className="flex gap-4">
-            <span className="hover:text-[#8E9B94] cursor-pointer" onClick={() => onNavigate ? onNavigate('policy') : null}>Privacy Policy</span>
-            <span className="hover:text-[#8E9B94] cursor-pointer" onClick={() => onNavigate ? onNavigate('policy') : null}>Terms of Service</span>
-            <span className="hover:text-[#8E9B94] cursor-pointer" onClick={() => onNavigate ? onNavigate('about') : null}>Heritage Registry</span>
+            <span className="hover:text-[#1C1B1A] cursor-pointer" onClick={() => onNavigate('policy')}>Privacy Policy</span>
+            <span className="hover:text-[#1C1B1A] cursor-pointer" onClick={() => onNavigate('policy')}>Terms of Service</span>
+            <span className="hover:text-[#1C1B1A] cursor-pointer" onClick={() => onNavigate('about')}>Heritage Registry</span>
           </div>
         </div>
       </div>
