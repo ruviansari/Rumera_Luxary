@@ -345,7 +345,10 @@ export default function HomePage({
                   {/* 5. Obsidian Mirror Reflection Base */}
                   <div className="obsidian-mirror-base" />
 
-                  {/* 6. Animated Floating Perfume Flacon */}
+                  {/* Impact Shockwave Ripple when bottle lands & fixes */}
+                  <div key={`ripple-${activeFlacon.id}`} className="pedestal-impact-ripple" />
+
+                  {/* 6. Animated Falling Down & Fixing Perfume Flacon */}
                   <div className="perfume-floating-wrapper">
                     <img
                       key={activeFlacon.id}
@@ -357,10 +360,9 @@ export default function HomePage({
                         display: 'block',
                         objectFit: 'contain',
                         padding: '28px 16px 24px',
-                        filter: 'drop-shadow(0 14px 28px rgba(0,0,0,0.7))',
-                        animation: 'bottleSwitchLuxury 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                        filter: 'drop-shadow(0 14px 28px rgba(0,0,0,0.7))'
                       }}
-                      className="hero-bottle-img"
+                      className="hero-bottle-img bottle-falling-fix"
                     />
                   </div>
                 </div>
@@ -387,7 +389,7 @@ export default function HomePage({
                 </button>
               </div>
 
-              {/* 5 Flacon Thumbnail Selector with Hanging Small Bottles Animation */}
+              {/* 6 Flacon Thumbnail Selector Dock with Fixed Bottle Indicator */}
               <div className="hanging-bottles-dock">
                 {ROYAL_FLACONS.map((flacon, idx) => {
                   const isActive = idx === activeHeroIndex;
@@ -404,6 +406,11 @@ export default function HomePage({
                         alt={flacon.title}
                         className="hanging-bottle-img"
                       />
+                      {isActive && (
+                        <span className="hanging-bottle-fixed-crown" title="Active & Fixed in Showcase">
+                          👑
+                        </span>
+                      )}
                       <span className="hanging-bottle-tooltip">{flacon.title}</span>
                     </button>
                   );

@@ -466,20 +466,87 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: floatPerfumeFlacon 6s ease-in-out infinite;
   will-change: transform;
 }
 
-@keyframes floatPerfumeFlacon {
+/* Bottle Falling Down & Fixing Into Position Animation */
+.bottle-falling-fix {
+  animation: bottleFallDownFix 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes bottleFallDownFix {
   0% {
-    transform: translateY(0px) rotate(0deg);
+    transform: translateY(-140px) scale(1.14) rotate(-5deg);
+    opacity: 0;
+    filter: blur(5px) drop-shadow(0 45px 40px rgba(0, 0, 0, 0.9));
   }
-  50% {
-    transform: translateY(-10px) rotate(0.4deg);
+  48% {
+    opacity: 1;
+    filter: blur(0px) drop-shadow(0 22px 30px rgba(0, 0, 0, 0.8));
+  }
+  65% {
+    /* Touchdown impact on pedestal */
+    transform: translateY(9px) scaleX(1.05) scaleY(0.95) rotate(1.2deg);
+  }
+  82% {
+    /* Gentle luxury rebound cushion */
+    transform: translateY(-4px) scaleX(0.99) scaleY(1.01) rotate(-0.5deg);
   }
   100% {
-    transform: translateY(0px) rotate(0deg);
+    /* Lock & fix solidly into place */
+    transform: translateY(0px) scale(1) rotate(0deg);
+    opacity: 1;
+    filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.7));
   }
+}
+
+/* Pedestal Shockwave Impact Wave when bottle lands and fixes */
+.pedestal-impact-ripple {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid #D4AF37;
+  pointer-events: none;
+  z-index: 2;
+  animation: pedestalRippleExpand 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pedestalRippleExpand {
+  0% {
+    transform: translateX(-50%) scale(0.2);
+    opacity: 0;
+  }
+  45% {
+    opacity: 0.95;
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.9), 0 0 50px rgba(183, 139, 69, 0.5);
+  }
+  100% {
+    transform: translateX(-50%) scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* Fixed Crown indicator on Active Bottle in 6-bottle Dock */
+.hanging-bottle-fixed-crown {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.95));
+  animation: crownBounce 1.4s ease-in-out infinite;
+  z-index: 25;
+  pointer-events: none;
+}
+
+@keyframes crownBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-3px); }
 }
 
 /* 2. Ambient Golden Liquid Caustic Breathing Aura */
