@@ -254,23 +254,7 @@ export default function Header({
               RIGHT: ACTION GROUP (Non-Overlapping Pills & Utility Icons)
               ------------------------------------------------------------------- */}
           <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
-            {/* 1. 3D EXPERIENCE Pill Button */}
-            <button
-              onClick={() => onNavigate('experience')}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[11px] tracking-[0.15em] font-semibold uppercase whitespace-nowrap transition-all duration-200 cursor-pointer"
-              style={{
-                backgroundColor: currentRoute === 'experience' ? '#D4AF37' : 'rgba(212, 175, 55, 0.12)',
-                color: currentRoute === 'experience' ? '#0A0A0A' : '#D4AF37',
-                border: '1px solid #D4AF37',
-                boxShadow: currentRoute === 'experience' ? '0 0 16px rgba(212,175,55,0.45)' : 'none'
-              }}
-              title="Explore 3D Interactive Perfume Atelier"
-            >
-              <Sparkles size={12} color={currentRoute === 'experience' ? '#0A0A0A' : '#D4AF37'} />
-              <span>3D Experience</span>
-            </button>
-
-            {/* 2. FREE SAMPLE Solid Champagne Gold Pill */}
+            {/* 1. FREE SAMPLE Solid Champagne Gold Pill */}
             <button
               onClick={() => onNavigate('free-sample')}
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[11px] tracking-[0.15em] font-extrabold uppercase whitespace-nowrap transition-all duration-200 cursor-pointer hover:brightness-110"
@@ -659,28 +643,13 @@ export default function Header({
                   </button>
                 ))}
 
-                {/* 3D Experience Drawer Pill */}
-                <button
-                  onClick={() => {
-                    onNavigate('experience');
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center justify-between p-3 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-[#FAF7F0] font-semibold text-xs tracking-wider uppercase mt-4"
-                >
-                  <span className="flex items-center gap-2">
-                    <Sparkles size={14} className="text-[#D4AF37]" />
-                    <span>3D Interactive Experience</span>
-                  </span>
-                  <ArrowRight size={14} className="text-[#D4AF37]" />
-                </button>
-
                 {/* Free Sample Drawer Pill */}
                 <button
                   onClick={() => {
                     onNavigate('free-sample');
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-between p-3 rounded-xl bg-[#D4AF37] text-black font-bold text-xs tracking-wider uppercase shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+                  className="w-full flex items-center justify-between p-3 rounded-xl bg-[#D4AF37] text-black font-bold text-xs tracking-wider uppercase shadow-[0_0_15px_rgba(212,175,55,0.3)] mt-4"
                 >
                   <span className="flex items-center gap-2">
                     <Sparkles size={14} className="text-black" />
