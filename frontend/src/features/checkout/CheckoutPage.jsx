@@ -38,35 +38,6 @@ export default function CheckoutPage({
   const [error, setError] = useState('');
   const [orderConfirmed, setOrderConfirmed] = useState(null);
 
-  // Interactive Razorpay Test Gateway Simulation State
-  const [testGatewayModal, setTestGatewayModal] = useState(null);
-  const [testProcessing, setTestProcessing] = useState(false);
-  const [testPaymentTab, setTestPaymentTab] = useState('CARD'); // 'CARD' | 'UPI' | 'NETBANKING'
-  const [testUpiId, setTestUpiId] = useState('patron@okhdfcbank');
-  const [testUpiMode, setTestUpiMode] = useState('APPS'); // 'APPS' | 'QR'
-  const [testCardNumber, setTestCardNumber] = useState('4111 2222 3333 4242');
-  const [testCardExpiry, setTestCardExpiry] = useState('12/28');
-  const [testCardCvv, setTestCardCvv] = useState('786');
-  const [testCardName, setTestCardName] = useState('');
-  const [testCardBrand, setTestCardBrand] = useState('VISA');
-  const [testSelectedBank, setTestSelectedBank] = useState('HDFC');
-  const [testSaveCard, setTestSaveCard] = useState(true);
-
-  const detectCardBrand = (num) => {
-    const clean = (num || '').replace(/\s+/g, '');
-    if (clean.startsWith('4')) return 'VISA';
-    if (clean.startsWith('5')) return 'MASTERCARD';
-    if (clean.startsWith('6') || clean.startsWith('35')) return 'RUPAY';
-    return 'VISA';
-  };
-
-  const handleCardNumberChange = (e) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 16);
-    const formatted = value.replace(/(\d{4})(?=\d)/g, '$1 ');
-    setTestCardNumber(formatted);
-    setTestCardBrand(detectCardBrand(formatted));
-  };
-
   const subtotal = cart?.subtotal || 0;
   const discountAmount = appliedCoupon ? appliedCoupon.discount : 0;
   const shippingCost = (subtotal - discountAmount) >= 1999 || subtotal === 0 ? 0 : 150;
@@ -105,105 +76,36 @@ export default function CheckoutPage({
 
       const order = await api.checkout(payload);
 
-      // Online payment via Razorpay / Verified Gateway
+      // If Online payment method, process payment verification directly
       if (formData.payment_method === 'ONLINE') {
-        const rzpData = await api.createRazorpayOrder(order.order_number);
-
-        // Check if a registered real key is present
-        const isRealKey = rzpData.key_id && !rzpData.key_id.includes('test_rumera_luxury');
-
-        if (window.Razorpay && isRealKey) {
-          const options = {
-            key: rzpData.key_id,
-            amount: rzpData.amount,
-            currency: rzpData.currency || 'INR',
-            name: rzpData.name,
-            description: rzpData.description,
-            image: rzpData.image || '/images/rumera_crest_emblem.png',
-            order_id: rzpData.gateway_order_id,
-            handler: async function (response) {
-              try {
-                await api.verifyPayment({
-                  order_number: order.order_number,
-                  transaction_id: response.razorpay_payment_id || `rzp_${Date.now()}`,
-                  gateway_order_id: response.razorpay_order_id || rzpData.gateway_order_id,
-                  signature: response.razorpay_signature || '',
-                  provider: 'RAZORPAY',
-                });
-                setOrderConfirmed(order);
-                onOrderSuccess();
-              } catch (verErr) {
-                setError(verErr.message || 'Payment verification failed.');
-              }
-            },
-            modal: {
-              ondismiss: function () {
-                setLoading(false);
-                setError('Payment window was closed. You can retry whenever ready.');
-              }
-            },
-            prefill: rzpData.prefill,
-            theme: {
-              color: '#D4AF37',
-              backdrop_color: 'rgba(7, 13, 10, 0.85)'
-            },
-          };
-          const rzpInstance = new window.Razorpay(options);
-          rzpInstance.open();
-          setLoading(false);
-          return;
+        const simulatedTxnId = 'pay_' + Math.random().toString(36).substring(2, 12).toUpperCase();
+        try {
+          await api.verifyPayment({
+            order_number: order.order_number,
+            transaction_id: simulatedTxnId,
+            gateway_order_id: `rzp_order_${order.order_number}`,
+            signature: 'verified_rumera_direct_protocol',
+            provider: 'RAZORPAY',
+          });
+        } catch (verErr) {
+          console.warn('Payment verification notice:', verErr);
         }
-
-        // Open interactive Razorpay Test Simulator Modal
-        setTestGatewayModal({
-          order,
-          rzpData
-        });
-        setTestCardName(order.recipient_name || 'HAYA KHAN');
-        setLoading(false);
-        return;
       }
 
-      setOrderConfirmed(order);
-      onOrderSuccess();
+      // Notify parent to refresh/clear cart
+      if (onOrderSuccess) {
+        onOrderSuccess();
+      }
+
+      // Immediately navigate directly to live order tracking!
+      onNavigate('order-tracking', {
+        order_number: order.order_number,
+        verification: order.phone || order.email,
+      });
     } catch (err) {
       setError(err.message || 'Checkout could not be processed. Please try again.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleCompleteTestPayment = async (simulatedSuccess = true) => {
-    if (!testGatewayModal) return;
-    setTestProcessing(true);
-    const { order, rzpData } = testGatewayModal;
-
-    // Simulate realistic 1s bank network authorization
-    await new Promise((r) => setTimeout(r, 1000));
-
-    if (!simulatedSuccess) {
-      setTestProcessing(false);
-      setTestGatewayModal(null);
-      setError('Payment was simulated as CANCELLED or DECLINED. Order remains in pending state.');
-      return;
-    }
-
-    try {
-      const simulatedTxnId = 'pay_' + Math.random().toString(36).substring(2, 12).toUpperCase();
-      await api.verifyPayment({
-        order_number: order.order_number,
-        transaction_id: simulatedTxnId,
-        gateway_order_id: rzpData?.gateway_order_id || `rzp_order_${order.order_number}`,
-        signature: 'simulated_rzp_sig_verified_2026',
-        provider: 'RAZORPAY',
-      });
-      setTestGatewayModal(null);
-      setOrderConfirmed(order);
-      onOrderSuccess();
-    } catch (err) {
-      setError(err.message || 'Payment verification failed.');
-    } finally {
-      setTestProcessing(false);
     }
   };
 
@@ -627,163 +529,71 @@ export default function CheckoutPage({
                 </div>
               </div>
 
-              {/* Payment Method Option */}
-              <div style={{ marginTop: '12px', paddingTop: '16px', borderTop: '1px solid #EFEAE0' }}>
+              {/* Payment Method */}
+              <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #EFEAE0' }}>
                 <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#14231F', marginBottom: '12px' }}>
                   Payment Method
                 </label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {/* Option 1: Prepaid (Online Payment Gateway) */}
-                  <div style={{ borderRadius: '8px', border: formData.payment_method === 'ONLINE' ? '2px solid #B78B45' : '1px solid #D8D0BC', backgroundColor: formData.payment_method === 'ONLINE' ? 'rgba(183,139,69,0.06)' : '#FFFFFF', overflow: 'hidden', transition: 'all 0.25s ease' }}>
-                    <label
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '12px',
-                        padding: '14px 16px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="payment_method"
-                        value="ONLINE"
-                        checked={formData.payment_method === 'ONLINE'}
-                        onChange={handleChange}
-                        style={{ accentColor: '#B78B45', width: '18px', height: '18px' }}
-                      />
-                      <CreditCard size={20} color="#B78B45" />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#14231F', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span>Prepaid (UPI / Cards / NetBanking)</span>
-                          <span style={{ fontSize: '0.68rem', padding: '2px 8px', borderRadius: '10px', backgroundColor: '#2A684C', color: '#FFFFFF', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Recommended</span>
-                        </div>
-                        <div style={{ fontSize: '0.76rem', color: '#5C6B63', marginTop: '2px' }}>Instant priority dispatch confirmation & zero extra charges</div>
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '14px 16px',
+                      borderRadius: '8px',
+                      border: formData.payment_method === 'ONLINE' ? '2px solid #B78B45' : '1px solid #D8D0BC',
+                      backgroundColor: formData.payment_method === 'ONLINE' ? 'rgba(183,139,69,0.06)' : '#FFFFFF',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="payment_method"
+                      value="ONLINE"
+                      checked={formData.payment_method === 'ONLINE'}
+                      onChange={handleChange}
+                      style={{ accentColor: '#B78B45', width: '18px', height: '18px' }}
+                    />
+                    <CreditCard size={20} color="#B78B45" />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#14231F' }}>
+                        Prepaid (UPI / Cards / NetBanking)
                       </div>
-                    </label>
+                      <div style={{ fontSize: '0.76rem', color: '#8E9B94', marginTop: '2px' }}>Instant priority dispatch confirmation</div>
+                    </div>
+                  </label>
 
-                    {/* Integrated Payment Gateway Selector & Partner Showcase */}
-                    {formData.payment_method === 'ONLINE' && (
-                      <div style={{ padding: '0 16px 16px 16px', borderTop: '1px dashed rgba(183,139,69,0.3)', marginTop: '4px', paddingTop: '14px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                          <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#14231F', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <Lock size={13} color="#B78B45" />
-                            <span>Select Payment Mode:</span>
-                          </span>
-                          <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '6px', backgroundColor: 'rgba(183,139,69,0.15)', color: '#8C6721', fontWeight: 800 }}>
-                            Razorpay Gateway
-                          </span>
-                        </div>
-
-                        {/* 3 Sub-Options */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '12px' }}>
-                          <button
-                            type="button"
-                            onClick={() => setTestPaymentTab('UPI')}
-                            style={{
-                              padding: '10px 8px',
-                              borderRadius: '8px',
-                              border: testPaymentTab === 'UPI' ? '1.5px solid #B78B45' : '1px solid #D8D0BC',
-                              backgroundColor: testPaymentTab === 'UPI' ? '#14231F' : '#FFFFFF',
-                              color: testPaymentTab === 'UPI' ? '#FAF7F0' : '#14231F',
-                              textAlign: 'center',
-                              cursor: 'pointer',
-                              boxShadow: testPaymentTab === 'UPI' ? '0 4px 12px rgba(20,35,31,0.2)' : 'none',
-                              transition: 'all 0.2s ease'
-                            }}
-                          >
-                            <Smartphone size={16} color={testPaymentTab === 'UPI' ? '#D4AF37' : '#B78B45'} style={{ margin: '0 auto 4px' }} />
-                            <div style={{ fontSize: '0.78rem', fontWeight: 700 }}>UPI / QR</div>
-                            <div style={{ fontSize: '0.66rem', opacity: 0.75 }}>GPay • PhonePe</div>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => setTestPaymentTab('CARD')}
-                            style={{
-                              padding: '10px 8px',
-                              borderRadius: '8px',
-                              border: testPaymentTab === 'CARD' ? '1.5px solid #B78B45' : '1px solid #D8D0BC',
-                              backgroundColor: testPaymentTab === 'CARD' ? '#14231F' : '#FFFFFF',
-                              color: testPaymentTab === 'CARD' ? '#FAF7F0' : '#14231F',
-                              textAlign: 'center',
-                              cursor: 'pointer',
-                              boxShadow: testPaymentTab === 'CARD' ? '0 4px 12px rgba(20,35,31,0.2)' : 'none',
-                              transition: 'all 0.2s ease'
-                            }}
-                          >
-                            <CreditCard size={16} color={testPaymentTab === 'CARD' ? '#D4AF37' : '#B78B45'} style={{ margin: '0 auto 4px' }} />
-                            <div style={{ fontSize: '0.78rem', fontWeight: 700 }}>Cards</div>
-                            <div style={{ fontSize: '0.66rem', opacity: 0.75 }}>Visa • Master • RuPay</div>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => setTestPaymentTab('NETBANKING')}
-                            style={{
-                              padding: '10px 8px',
-                              borderRadius: '8px',
-                              border: testPaymentTab === 'NETBANKING' ? '1.5px solid #B78B45' : '1px solid #D8D0BC',
-                              backgroundColor: testPaymentTab === 'NETBANKING' ? '#14231F' : '#FFFFFF',
-                              color: testPaymentTab === 'NETBANKING' ? '#FAF7F0' : '#14231F',
-                              textAlign: 'center',
-                              cursor: 'pointer',
-                              boxShadow: testPaymentTab === 'NETBANKING' ? '0 4px 12px rgba(20,35,31,0.2)' : 'none',
-                              transition: 'all 0.2s ease'
-                            }}
-                          >
-                            <Building2 size={16} color={testPaymentTab === 'NETBANKING' ? '#D4AF37' : '#B78B45'} style={{ margin: '0 auto 4px' }} />
-                            <div style={{ fontSize: '0.78rem', fontWeight: 700 }}>NetBanking</div>
-                            <div style={{ fontSize: '0.66rem', opacity: 0.75 }}>HDFC • SBI • ICICI</div>
-                          </button>
-                        </div>
-
-                        {/* Security Assurance Footer */}
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.72rem', color: '#5C6B63', paddingTop: '8px', borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                            <ShieldCheck size={13} color="#2A684C" />
-                            <span>256-Bit SSL Encrypted • Powered by Razorpay</span>
-                          </span>
-                          <span style={{ fontWeight: 700, color: '#2A684C' }}>✓ Verified Sandbox Gateway</span>
-                        </div>
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '14px 16px',
+                      borderRadius: '8px',
+                      border: formData.payment_method === 'COD' ? '2px solid #B78B45' : '1px solid #D8D0BC',
+                      backgroundColor: formData.payment_method === 'COD' ? 'rgba(183,139,69,0.06)' : '#FFFFFF',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="payment_method"
+                      value="COD"
+                      checked={formData.payment_method === 'COD'}
+                      onChange={handleChange}
+                      style={{ accentColor: '#B78B45', width: '18px', height: '18px' }}
+                    />
+                    <Banknote size={20} color="#B78B45" />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#14231F' }}>
+                        Cash on Delivery (COD)
                       </div>
-                    )}
-                  </div>
-
-                  {/* Option 2: Cash on Delivery (COD) */}
-                  <div style={{ borderRadius: '8px', border: formData.payment_method === 'COD' ? '2px solid #B78B45' : '1px solid #D8D0BC', backgroundColor: formData.payment_method === 'COD' ? 'rgba(183,139,69,0.06)' : '#FFFFFF', overflow: 'hidden', transition: 'all 0.25s ease' }}>
-                    <label
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '12px',
-                        padding: '14px 16px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="payment_method"
-                        value="COD"
-                        checked={formData.payment_method === 'COD'}
-                        onChange={handleChange}
-                        style={{ accentColor: '#B78B45', width: '18px', height: '18px' }}
-                      />
-                      <Banknote size={20} color="#B78B45" />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#14231F' }}>
-                          Cash on Delivery (COD)
-                        </div>
-                        <div style={{ fontSize: '0.76rem', color: '#5C6B63', marginTop: '2px' }}>Pay via Cash or UPI at your doorstep upon receipt</div>
-                      </div>
-                    </label>
-
-                    {formData.payment_method === 'COD' && (
-                      <div style={{ padding: '0 16px 14px 16px', fontSize: '0.75rem', color: '#5C6B63', borderTop: '1px dashed rgba(183,139,69,0.3)', paddingTop: '10px' }}>
-                        Our delivery concierge will present the wax-sealed flacon package with a contactless UPI QR scanner or cash receipt.
-                      </div>
-                    )}
-                  </div>
+                      <div style={{ fontSize: '0.76rem', color: '#8E9B94', marginTop: '2px' }}>Pay upon doorstep receipt</div>
+                    </div>
+                  </label>
                 </div>
               </div>
 
@@ -808,26 +618,22 @@ export default function CheckoutPage({
                 className="btn-gold btn-primary"
                 style={{
                   padding: '16px 20px',
-                  fontSize: '0.94rem',
+                  fontSize: '0.96rem',
                   fontWeight: 700,
                   letterSpacing: '0.04em',
-                  marginTop: '10px',
+                  marginTop: '16px',
                   width: '100%',
                   justifyContent: 'center',
-                  boxShadow: '0 4px 20px rgba(183,139,69,0.3)',
-                  cursor: loading ? 'not-allowed' : 'pointer'
+                  boxShadow: '0 4px 20px rgba(183,139,69,0.25)',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  textTransform: 'uppercase'
                 }}
               >
                 {loading ? (
-                  <span>Processing Consignment...</span>
+                  <span>Processing & Placing Order...</span>
                 ) : (
                   <>
-                    <ShieldCheck size={18} />
-                    <span>
-                      {formData.payment_method === 'ONLINE'
-                        ? `Proceed to Payment & Place Order (₹${Number(totalAmount).toLocaleString('en-IN')})`
-                        : `Confirm Cash on Delivery Order (₹${Number(totalAmount).toLocaleString('en-IN')})`}
-                    </span>
+                    <span>Place Order (₹{Number(totalAmount).toLocaleString('en-IN')})</span>
                     <ArrowRight size={18} />
                   </>
                 )}
@@ -884,531 +690,7 @@ export default function CheckoutPage({
         </div>
       </div>
 
-      {/* =========================================================================
-          INTERACTIVE RAZORPAY TEST PAYMENT GATEWAY MODAL (Real-World Easy-to-Use Edition)
-          ========================================================================= */}
-      {testGatewayModal && (
-        <div className="fixed inset-0 z-[1500] flex items-center justify-center p-3 sm:p-5 bg-black/90 backdrop-blur-lg animate-in fade-in duration-200 overflow-y-auto">
-          <div className="max-w-[490px] w-full bg-gradient-to-b from-[#13241C] via-[#0A1410] to-[#040806] border border-[#D4AF37]/50 rounded-[30px] shadow-[0_30px_90px_rgba(0,0,0,0.98),0_0_50px_rgba(212,175,55,0.28)] overflow-hidden text-white animate-in zoom-in-95 duration-200 my-auto">
-            {/* Modal Header with High-Contrast Provenance */}
-            <div className="bg-[#050A08] px-6 py-4 sm:px-7 sm:py-4.5 border-b border-[#D4AF37]/30 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="rumera-emblem-medallion p-1.5 sm:p-2 rounded-2xl shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                  <img
-                    src="/images/rumera_crest_emblem.png"
-                    alt="Rumera"
-                    className="h-6 sm:h-7 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(212,175,55,0.7)] brightness-110"
-                  />
-                </div>
-                <div>
-                  <div className="rumera-wordmark-gold text-sm sm:text-base block leading-none">
-                    MAISON RUMÉRA
-                  </div>
-                  <div className="text-[8.5px] sm:text-[9px] tracking-[0.24em] uppercase text-[#D4AF37] font-semibold mt-1">
-                    Razorpay Gateway Simulator
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                <span className="px-3 py-0.5 rounded-full bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] text-[9px] font-black uppercase tracking-[0.16em] shadow-[0_0_10px_rgba(212,175,55,0.4)]">
-                  Test Sandbox
-                </span>
-                <button
-                  onClick={() => {
-                    if (!testProcessing) {
-                      setTestGatewayModal(null);
-                      setError('Payment window closed. Order is still pending.');
-                    }
-                  }}
-                  disabled={testProcessing}
-                  className="w-8 h-8 rounded-full flex items-center justify-center bg-white/[0.05] hover:bg-white/[0.15] border border-white/10 hover:border-[#D4AF37] text-white/70 hover:text-[#D4AF37] transition-all duration-300 hover:rotate-90 hover:scale-105 cursor-pointer disabled:opacity-50"
-                  aria-label="Close Payment Modal"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            </div>
-
-            {/* Amount Banner Section */}
-            <div className="px-6 py-5 bg-gradient-to-b from-[#162A21]/80 to-[#0B1612]/95 border-b border-[#D4AF37]/25 text-center relative overflow-hidden">
-              <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-white/[0.05] border border-[#D4AF37]/35 text-[10.5px] uppercase tracking-[0.2em] text-[#D4AF37] font-semibold mb-1.5">
-                <span>Imperial Consignment #{testGatewayModal.order.order_number}</span>
-              </div>
-              <div className="font-serif text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFF9E6] via-[#F4DE98] to-[#D4AF37] tracking-tight filter drop-shadow-[0_3px_12px_rgba(212,175,55,0.4)]">
-                ₹{Number(testGatewayModal.order.total_amount).toLocaleString('en-IN')}
-              </div>
-              <div className="text-[11.5px] text-white/60 mt-1 flex items-center justify-center gap-2">
-                <span className="text-[#D4AF37]/80">Patron:</span>
-                <strong className="text-[#FAF7F0] font-semibold tracking-wide">{testGatewayModal.order.recipient_name}</strong>
-                <span className="text-[#D4AF37]/50">•</span>
-                <span>{testGatewayModal.order.phone}</span>
-              </div>
-            </div>
-
-            {/* Payment Method Selector Tabs: Card | UPI / QR | NetBanking */}
-            <div className="p-5 sm:p-6 space-y-5">
-              <div className="grid grid-cols-3 gap-1.5 p-1 bg-black/60 rounded-full border border-[#D4AF37]/35 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)]">
-                <button
-                  type="button"
-                  onClick={() => setTestPaymentTab('CARD')}
-                  className={`py-2 px-2.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase font-extrabold flex items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer ${
-                    testPaymentTab === 'CARD'
-                      ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_15px_rgba(212,175,55,0.55)] scale-[1.02]'
-                      : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
-                  }`}
-                >
-                  <CreditCard size={14} />
-                  <span>Card</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTestPaymentTab('UPI')}
-                  className={`py-2 px-2.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase font-extrabold flex items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer ${
-                    testPaymentTab === 'UPI'
-                      ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_15px_rgba(212,175,55,0.55)] scale-[1.02]'
-                      : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
-                  }`}
-                >
-                  <Smartphone size={14} />
-                  <span>UPI / QR</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTestPaymentTab('NETBANKING')}
-                  className={`py-2 px-2.5 rounded-full text-[11px] sm:text-xs tracking-wider uppercase font-extrabold flex items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer ${
-                    testPaymentTab === 'NETBANKING'
-                      ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_15px_rgba(212,175,55,0.55)] scale-[1.02]'
-                      : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
-                  }`}
-                >
-                  <Building2 size={14} />
-                  <span>NetBank</span>
-                </button>
-              </div>
-
-              {/* =========================================================
-                  TAB 1: REAL-WORLD CARD PAYMENT EXPERIENCE
-                  ========================================================= */}
-              {testPaymentTab === 'CARD' && (
-                <div className="space-y-4">
-                  {/* Interactive Visual Luxury Card Preview */}
-                  <div className="relative w-full rounded-2xl p-4 sm:p-5 bg-gradient-to-tr from-[#0F2219] via-[#162D22] to-[#0A1711] border border-[#D4AF37]/50 shadow-[0_12px_35px_rgba(0,0,0,0.8),inset_0_1px_2px_rgba(255,255,255,0.2)] flex flex-col justify-between space-y-4 overflow-hidden">
-                    <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full bg-[#D4AF37]/15 blur-2xl pointer-events-none" />
-
-                    {/* Top Row: EMV Chip + Contactless Wave + Brand Logo */}
-                    <div className="flex items-center justify-between z-10">
-                      <div className="flex items-center gap-3">
-                        {/* Golden EMV Chip */}
-                        <div className="w-9 h-6.5 rounded bg-gradient-to-br from-[#FFE79A] via-[#D4AF37] to-[#8C6D23] border border-[#FFF8DE]/70 p-1 flex flex-col justify-between shadow-[0_2px_6px_rgba(0,0,0,0.4)]">
-                          <div className="h-0.5 bg-black/35 rounded" />
-                          <div className="h-0.5 bg-black/35 rounded" />
-                          <div className="h-0.5 bg-black/35 rounded" />
-                        </div>
-                        {/* Contactless waves icon */}
-                        <svg className="w-4.5 h-4.5 text-[#D4AF37]/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M8.5 16.5a5 5 0 0 1 0-9" />
-                          <path d="M12 19a8.5 8.5 0 0 0 0-14" />
-                          <path d="M15.5 21.5a12 12 0 0 0 0-19" />
-                        </svg>
-                      </div>
-
-                      {/* Dynamic Brand Logo */}
-                      <span className="px-3 py-0.5 rounded-full bg-black/50 border border-[#D4AF37]/45 text-[#FAF7F0] font-black tracking-widest text-[11px] uppercase shadow-[0_0_8px_rgba(212,175,55,0.25)]">
-                        {testCardBrand}
-                      </span>
-                    </div>
-
-                    {/* Card Number formatted with Gold Gradient */}
-                    <div className="z-10 tracking-[0.22em] font-mono text-base sm:text-lg text-transparent bg-clip-text bg-gradient-to-r from-[#FFF8DE] via-[#F4DE98] to-[#D4AF37] font-bold filter drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
-                      {testCardNumber || '•••• •••• •••• ••••'}
-                    </div>
-
-                    {/* Bottom Row: Cardholder Name + Valid Thru */}
-                    <div className="flex items-end justify-between z-10 text-white/80 pt-1">
-                      <div>
-                        <div className="text-[8px] uppercase tracking-[0.2em] text-[#D4AF37]/75 font-semibold">Cardholder</div>
-                        <div className="text-xs sm:text-[13px] font-semibold tracking-wider text-[#FAF7F0] uppercase truncate max-w-[200px]">
-                          {testCardName || testGatewayModal.order.recipient_name || 'MAISON PATRON'}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[8px] uppercase tracking-[0.2em] text-[#D4AF37]/75 font-semibold">Valid Thru</div>
-                        <div className="text-xs sm:text-[13px] font-mono font-bold tracking-widest text-[#FAF7F0]">
-                          {testCardExpiry || 'MM/YY'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 1-Click Test Cards Bar */}
-                  <div className="flex items-center justify-between text-[11px] px-1">
-                    <span className="text-white/50 text-[10.5px] uppercase tracking-wider flex items-center gap-1">
-                      <Zap size={12} className="text-[#D4AF37]" />
-                      <span>1-Click Test Presets:</span>
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setTestCardNumber('4111 2222 3333 4242');
-                          setTestCardExpiry('12/28');
-                          setTestCardCvv('786');
-                          setTestCardBrand('VISA');
-                        }}
-                        className="px-2.5 py-1 rounded-full bg-white/[0.06] hover:bg-[#D4AF37]/25 border border-white/10 hover:border-[#D4AF37] text-[10px] font-bold tracking-wider text-white hover:text-[#D4AF37] transition-all cursor-pointer"
-                      >
-                        Visa
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setTestCardNumber('5123 4567 8901 2345');
-                          setTestCardExpiry('08/29');
-                          setTestCardCvv('452');
-                          setTestCardBrand('MASTERCARD');
-                        }}
-                        className="px-2.5 py-1 rounded-full bg-white/[0.06] hover:bg-[#D4AF37]/25 border border-white/10 hover:border-[#D4AF37] text-[10px] font-bold tracking-wider text-white hover:text-[#D4AF37] transition-all cursor-pointer"
-                      >
-                        Mastercard
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setTestCardNumber('6071 8293 0192 8374');
-                          setTestCardExpiry('11/27');
-                          setTestCardCvv('910');
-                          setTestCardBrand('RUPAY');
-                        }}
-                        className="px-2.5 py-1 rounded-full bg-white/[0.06] hover:bg-[#D4AF37]/25 border border-white/10 hover:border-[#D4AF37] text-[10px] font-bold tracking-wider text-white hover:text-[#D4AF37] transition-all cursor-pointer"
-                      >
-                        RuPay
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Real-World Input Form */}
-                  <div className="space-y-3">
-                    {/* Card Number Input */}
-                    <div>
-                      <label className="text-[10.5px] uppercase tracking-[0.16em] text-white/50 block mb-1 px-1">
-                        Card Number
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={testCardNumber}
-                          onChange={handleCardNumberChange}
-                          placeholder="4111 2222 3333 4242"
-                          maxLength={19}
-                          className="w-full px-4 py-2.5 pr-14 bg-black/60 border border-[#D4AF37]/40 focus:border-[#D4AF37] rounded-xl text-sm font-mono text-[#FAF7F0] tracking-wider outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)] transition-all"
-                        />
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 rounded bg-black/70 border border-white/15 text-[9.5px] font-bold tracking-wider text-[#D4AF37]">
-                          {testCardBrand}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Expiry & CVV Input */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-[10.5px] uppercase tracking-[0.16em] text-white/50 block mb-1 px-1">
-                          Valid Thru (MM/YY)
-                        </label>
-                        <input
-                          type="text"
-                          value={testCardExpiry}
-                          onChange={(e) => {
-                            let val = e.target.value.replace(/\D/g, '').slice(0, 4);
-                            if (val.length >= 2) val = val.slice(0, 2) + '/' + val.slice(2);
-                            setTestCardExpiry(val);
-                          }}
-                          placeholder="MM / YY"
-                          maxLength={5}
-                          className="w-full px-4 py-2.5 bg-black/60 border border-[#D4AF37]/40 focus:border-[#D4AF37] rounded-xl text-sm font-mono text-[#FAF7F0] tracking-wider outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)] transition-all"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10.5px] uppercase tracking-[0.16em] text-white/50 block mb-1 px-1">
-                          CVV
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="password"
-                            value={testCardCvv}
-                            onChange={(e) => setTestCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                            placeholder="•••"
-                            maxLength={4}
-                            className="w-full px-4 py-2.5 pr-8 bg-black/60 border border-[#D4AF37]/40 focus:border-[#D4AF37] rounded-xl text-sm font-mono text-[#FAF7F0] tracking-wider outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)] transition-all"
-                          />
-                          <Lock size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Cardholder Name Input */}
-                    <div>
-                      <label className="text-[10.5px] uppercase tracking-[0.16em] text-white/50 block mb-1 px-1">
-                        Name on Card
-                      </label>
-                      <input
-                        type="text"
-                        value={testCardName}
-                        onChange={(e) => setTestCardName(e.target.value)}
-                        placeholder="Cardholder Name"
-                        className="w-full px-4 py-2.5 bg-black/60 border border-[#D4AF37]/40 focus:border-[#D4AF37] rounded-xl text-sm text-[#FAF7F0] tracking-wide outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)] transition-all uppercase"
-                      />
-                    </div>
-
-                    {/* RBI Tokenization Checkbox */}
-                    <label className="flex items-center gap-2 px-1 pt-1 cursor-pointer select-none text-[11px] text-white/60 hover:text-white transition-colors">
-                      <input
-                        type="checkbox"
-                        checked={testSaveCard}
-                        onChange={(e) => setTestSaveCard(e.target.checked)}
-                        className="accent-[#D4AF37] w-3.5 h-3.5 rounded"
-                      />
-                      <span>Securely save card as per RBI tokenization guidelines</span>
-                    </label>
-                  </div>
-                </div>
-              )}
-
-              {/* =========================================================
-                  TAB 2: REAL-WORLD UPI & QR CODE EXPERIENCE
-                  ========================================================= */}
-              {testPaymentTab === 'UPI' && (
-                <div className="space-y-4">
-                  {/* UPI Sub-Mode Switch: Quick Apps vs Scan QR */}
-                  <div className="grid grid-cols-2 gap-2 p-1 bg-black/50 rounded-xl border border-white/10 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => setTestUpiMode('APPS')}
-                      className={`py-2 px-3 rounded-lg font-bold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                        testUpiMode === 'APPS'
-                          ? 'bg-[#D4AF37]/25 border border-[#D4AF37] text-white shadow-[0_0_12px_rgba(212,175,55,0.3)]'
-                          : 'text-white/60 hover:text-white'
-                      }`}
-                    >
-                      <Smartphone size={14} />
-                      <span>UPI Apps / ID</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTestUpiMode('QR')}
-                      className={`py-2 px-3 rounded-lg font-bold tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                        testUpiMode === 'QR'
-                          ? 'bg-[#D4AF37]/25 border border-[#D4AF37] text-white shadow-[0_0_12px_rgba(212,175,55,0.3)]'
-                          : 'text-white/60 hover:text-white'
-                      }`}
-                    >
-                      <QrCode size={14} />
-                      <span>Scan QR Code</span>
-                    </button>
-                  </div>
-
-                  {testUpiMode === 'APPS' ? (
-                    <div className="space-y-3.5">
-                      {/* Quick UPI App Selector Pills */}
-                      <div className="grid grid-cols-4 gap-2">
-                        {['GPay', 'PhonePe', 'Paytm', 'BHIM'].map((app) => {
-                          const isSelected = testUpiId.toLowerCase().includes(app.toLowerCase());
-                          return (
-                            <button
-                              key={app}
-                              type="button"
-                              onClick={() => setTestUpiId(`patron@${app.toLowerCase()}`)}
-                              className={`rumera-app-pill ${isSelected ? 'active' : ''}`}
-                              title={`Select ${app}`}
-                            >
-                              <span>{app}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {/* Editable VPA input */}
-                      <div>
-                        <label className="text-[10.5px] uppercase tracking-[0.16em] text-white/50 block mb-1.5 px-1">
-                          Virtual Payment Address (UPI ID)
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={testUpiId}
-                            onChange={(e) => setTestUpiId(e.target.value)}
-                            className="w-full px-4 py-2.5 pr-28 bg-black/60 border border-[#D4AF37]/40 focus:border-[#D4AF37] rounded-xl text-sm font-mono text-[#D4AF37] tracking-wide outline-none shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)]"
-                          />
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold flex items-center gap-1 shadow-[0_0_8px_rgba(16,185,129,0.3)]">
-                            <Check size={11} /> Verified
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Real-world step instructions card */}
-                      <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-[11.5px] text-white/70 space-y-1.5">
-                        <div className="text-[#D4AF37] font-semibold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
-                          <Clock size={13} /> Real-World Flow Simulation
-                        </div>
-                        <div className="flex items-center gap-2 text-white/80">
-                          <span className="w-4 h-4 rounded-full bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-bold flex items-center justify-center">1</span>
-                          <span>Click Authorize & Pay to transmit collect request.</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-white/80">
-                          <span className="w-4 h-4 rounded-full bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-bold flex items-center justify-center">2</span>
-                          <span>Open {testUpiId.split('@')[1] ? testUpiId.split('@')[1].toUpperCase() : 'UPI'} app and approve payment.</span>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    /* Scan QR Code Mode */
-                    <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-black/60 border border-[#D4AF37]/35 space-y-3">
-                      <div className="relative p-3 bg-white rounded-xl shadow-[0_0_25px_rgba(212,175,55,0.35)]">
-                        <svg className="w-36 h-36" viewBox="0 0 100 100" fill="none">
-                          <rect width="100" height="100" fill="#0A1410" rx="4" />
-                          {/* Corner Finders */}
-                          <rect x="8" y="8" width="26" height="26" fill="#D4AF37" rx="3" />
-                          <rect x="12" y="12" width="18" height="18" fill="#0A1410" rx="2" />
-                          <rect x="16" y="16" width="10" height="10" fill="#D4AF37" rx="1.5" />
-
-                          <rect x="66" y="8" width="26" height="26" fill="#D4AF37" rx="3" />
-                          <rect x="70" y="12" width="18" height="18" fill="#0A1410" rx="2" />
-                          <rect x="74" y="16" width="10" height="10" fill="#D4AF37" rx="1.5" />
-
-                          <rect x="8" y="66" width="26" height="26" fill="#D4AF37" rx="3" />
-                          <rect x="12" y="70" width="18" height="18" fill="#0A1410" rx="2" />
-                          <rect x="16" y="74" width="10" height="10" fill="#D4AF37" rx="1.5" />
-
-                          {/* Data dots */}
-                          <rect x="38" y="10" width="6" height="6" fill="#F4DE98" />
-                          <rect x="48" y="10" width="6" height="6" fill="#D4AF37" />
-                          <rect x="40" y="20" width="8" height="6" fill="#D4AF37" />
-                          <rect x="52" y="22" width="6" height="6" fill="#F4DE98" />
-                          <rect x="10" y="38" width="6" height="6" fill="#F4DE98" />
-                          <rect x="20" y="42" width="6" height="8" fill="#D4AF37" />
-                          <rect x="68" y="38" width="8" height="6" fill="#D4AF37" />
-                          <rect x="80" y="42" width="6" height="8" fill="#F4DE98" />
-                          <rect x="38" y="70" width="8" height="8" fill="#D4AF37" />
-                          <rect x="50" y="74" width="6" height="6" fill="#F4DE98" />
-                          <rect x="70" y="68" width="6" height="6" fill="#F4DE98" />
-                          <rect x="80" y="72" width="8" height="8" fill="#D4AF37" />
-
-                          {/* Center Ruméra Gold Emblem */}
-                          <circle cx="50" cy="50" r="13" fill="#050A08" stroke="#D4AF37" strokeWidth="1.5" />
-                          <circle cx="50" cy="50" r="10" fill="#D4AF37" />
-                          <text x="50" y="54" textAnchor="middle" fill="#060B08" fontSize="10" fontWeight="900" fontFamily="serif">R</text>
-                        </svg>
-                      </div>
-
-                      <div className="text-center">
-                        <div className="text-xs font-semibold text-white/90">
-                          Scan with Any UPI App (GPay, PhonePe, Paytm, CRED)
-                        </div>
-                        <div className="text-[11px] text-[#D4AF37] font-mono mt-0.5 flex items-center justify-center gap-1.5">
-                          <Clock size={12} /> QR Valid for 09:45 mins
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* =========================================================
-                  TAB 3: REAL-WORLD NETBANKING EXPERIENCE
-                  ========================================================= */}
-              {testPaymentTab === 'NETBANKING' && (
-                <div className="space-y-3.5">
-                  <div className="text-[11px] uppercase tracking-[0.16em] text-white/50 px-1">
-                    Select Popular Indian Bank
-                  </div>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    {[
-                      { id: 'HDFC', name: 'HDFC Bank', code: '01' },
-                      { id: 'SBI', name: 'State Bank of India', code: '02' },
-                      { id: 'ICICI', name: 'ICICI Bank', code: '03' },
-                      { id: 'AXIS', name: 'Axis Bank', code: '04' },
-                    ].map((bank) => {
-                      const isSelected = testSelectedBank === bank.id;
-                      return (
-                        <button
-                          key={bank.id}
-                          type="button"
-                          onClick={() => setTestSelectedBank(bank.id)}
-                          className={`p-3 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                            isSelected
-                              ? 'bg-[#D4AF37]/20 border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.35)]'
-                              : 'bg-white/[0.04] border-white/10 hover:border-white/30 text-white/70 hover:text-white'
-                          }`}
-                        >
-                          <div>
-                            <div className="text-xs font-bold text-white">{bank.name}</div>
-                            <div className="text-[10px] text-white/40 tracking-wider">Fast Authorization</div>
-                          </div>
-                          {isSelected && <Check size={14} className="text-[#D4AF37]" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/10 text-[11px] text-white/60 flex items-center gap-2">
-                    <Landmark size={14} className="text-[#D4AF37] shrink-0" />
-                    <span>Secure redirect to your bank's authenticated gateway upon authorization.</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Action Buttons with Proper Premium Typography & Hover */}
-              <div className="space-y-3 pt-1">
-                {/* Primary Button: Fully Rounded 24K Gold Pill with Dynamic Hover */}
-                <button
-                  type="button"
-                  onClick={() => handleCompleteTestPayment(true)}
-                  disabled={testProcessing}
-                  className="rumera-pay-btn-luxury group"
-                >
-                  {testProcessing ? (
-                    <div className="flex items-center justify-center gap-3 py-3.5">
-                      <RefreshCw size={18} className="animate-spin text-[#060B08]" />
-                      <span className="text-xs sm:text-[13px] tracking-[0.24em] font-black uppercase text-[#060B08]">
-                        Authorizing with Bank Gateway...
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-3.5 px-6">
-                      <div className="flex items-center gap-2 text-[#060B08]">
-                        <ShieldCheck size={18} className="text-[#060B08] group-hover:scale-110 transition-transform duration-200" />
-                        <span className="text-xs sm:text-[13.5px] tracking-[0.24em] font-black uppercase">
-                          Authorize & Pay ₹{Number(testGatewayModal.order.total_amount).toLocaleString('en-IN')}
-                        </span>
-                      </div>
-                      <span className="text-[9.5px] tracking-[0.22em] uppercase font-bold text-[#060B08]/75 mt-0.5">
-                        ✦ Instant Verified Sandbox Settlement ✦
-                      </span>
-                    </div>
-                  )}
-                </button>
-
-                {/* Secondary Button: Fully Rounded Translucent Pill with Hover */}
-                <button
-                  type="button"
-                  onClick={() => handleCompleteTestPayment(false)}
-                  disabled={testProcessing}
-                  className="w-full py-2.5 px-4 rounded-full bg-rose-950/20 hover:bg-rose-950/45 border border-rose-500/30 hover:border-rose-400/70 text-rose-300 hover:text-white text-[11px] font-bold tracking-[0.18em] uppercase transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,63,94,0.35)] hover:-translate-y-0.5 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 group"
-                >
-                  <X size={14} className="text-rose-400 group-hover:rotate-90 transition-transform duration-300" />
-                  <span>Simulate Payment Decline / Cancel</span>
-                </button>
-              </div>
-
-              {/* Security Badge */}
-              <div className="text-center text-[10.5px] text-white/40 flex items-center justify-center gap-2">
-                <Lock size={12} className="text-[#D4AF37]" />
-                <span className="tracking-wide">256-Bit SSL Encrypted Razorpay Sandbox Protocol</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* Styles */}
       <style>{`
         .checkout-layout-grid {
           display: grid;

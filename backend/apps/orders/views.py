@@ -187,8 +187,13 @@ class OrderTrackView(APIView):
         if not order:
             return Response({"error": "Order not found with provided reference."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Verify email or phone matches order
-        if order.email.lower() != verification and order.phone.strip() != verification:
+        # Verify email or phone matches order (flexible formatting support)
+        v_clean = verification.replace(' ', '').replace('+91', '').lower()
+        p_clean = order.phone.replace(' ', '').replace('+91', '').lower()
+        e_clean = order.email.strip().lower()
+
+        matches = (v_clean == p_clean) or (v_clean == e_clean) or (order.email.lower() == verification) or (order.phone.strip() == verification)
+        if not matches and not (request.user.is_authenticated and order.user == request.user):
             return Response(
                 {"error": "Verification details do not match the records for this order."},
                 status=status.HTTP_403_FORBIDDEN
