@@ -3,7 +3,6 @@ import { ArrowRight, Droplets, Award, Compass, Shield, Trees, ShieldCheck, Hourg
 import ProductCard from '../../components/catalog/ProductCard';
 import FreeSampleBanner from '../campaign/FreeSampleBanner';
 import SampleTestimonials from '../campaign/SampleTestimonials';
-import HomeScrollHero from './HomeScrollHero';
 
 const ROYAL_FLACONS = [
   {
@@ -197,11 +196,397 @@ export default function HomePage({
 
   return (
     <div>
-      {/* 1. Scroll-Linked Luxury Flacon Hero (Bottle Falls Down and Up with Scroll) */}
-      <HomeScrollHero
-        onNavigate={onNavigate}
-        onOpenSampleModal={onOpenSampleModal}
-      />
+      {/* 1. Dramatic Luxury Hero Section */}
+      <section
+        style={{
+          position: 'relative',
+          backgroundColor: '#14231F',
+          color: '#F8F4EC',
+          minHeight: '88vh',
+          display: 'flex',
+          alignItems: 'center',
+          overflow: 'hidden',
+          backgroundImage: 'radial-gradient(circle at 80% 35%, rgba(183, 139, 69, 0.22) 0%, rgba(20, 35, 31, 0.96) 72%)'
+        }}
+      >
+        <div className="container hero-container" style={{ position: 'relative', zIndex: 2, padding: '56px 24px' }}>
+          <div className="hero-content-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '48px', alignItems: 'center' }}>
+            {/* Left: Editorial Hero Content */}
+            <div style={{ maxWidth: '640px' }}>
+              {/* Royal House Insignia Badge */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '6px 16px', backgroundColor: 'rgba(20, 35, 31, 0.92)', border: '1px solid rgba(183, 139, 69, 0.55)', borderRadius: '24px', marginBottom: '20px', boxShadow: '0 4px 14px rgba(0,0,0,0.4)' }}>
+                <img src="/images/rumera_crest_emblem.png" alt="Rumera Crest" style={{ height: '22px', width: 'auto', filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.6))' }} />
+                <span style={{ fontSize: '0.76rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#FAF7F0', fontWeight: 700 }}>
+                  RUMERA <span style={{ color: '#D4AF37' }}>HAUTE PARFUMERIE</span>
+                </span>
+                <span style={{ color: 'rgba(183, 139, 69, 0.5)' }}>•</span>
+                <span style={{ fontSize: '0.7rem', letterSpacing: '0.12em', color: '#E8CA89', textTransform: 'uppercase' }}>
+                  Royal Awadh Atelier
+                </span>
+              </div>
+
+              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.4rem, 4.8vw, 4.2rem)', lineHeight: 1.12, marginBottom: '22px', fontWeight: 500, color: '#FAF7F0' }}>
+                <span style={{ display: 'block', fontSize: 'clamp(0.95rem, 1.8vw, 1.3rem)', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#D4AF37', fontWeight: 600, marginBottom: '8px', fontFamily: 'var(--font-sans)' }}>
+                  Maison Rumera Luxury Atra
+                </span>
+                The Sacred Symphony of Indian Perfumery.
+              </h1>
+
+              <p style={{ fontSize: '1.02rem', color: '#B6C4BC', lineHeight: 1.7, marginBottom: '30px' }}>
+                Meticulously hydro-distilled in traditional copper degs across Kannauj and Assam. Aged wild agarwood resins, pure morning Damascena roses, and ceremonial botanicals crafted for the truly discerning.
+              </p>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '30px' }}>
+                <button
+                  onClick={() => onNavigate('shop')}
+                  className="hero-btn-gold"
+                >
+                  <span>Explore The Collection</span>
+                  <ArrowRight size={18} className="hero-btn-arrow" />
+                </button>
+
+                <button
+                  onClick={() => onNavigate('owner')}
+                  className="hero-btn-outline"
+                >
+                  <span>Meet The Founder</span>
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap', fontSize: '0.78rem', color: '#D4DDD8', borderTop: '1px solid rgba(183,139,69,0.22)', paddingTop: '18px' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Droplets size={14} color="#D4AF37" /> 100% Pure Attar Extracts
+                </span>
+                <span style={{ color: '#B78B45' }}>•</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Crown size={14} color="#D4AF37" /> Rumera Serialized Flacons
+                </span>
+                <span style={{ color: '#B78B45' }}>•</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Award size={14} color="#D4AF37" /> Master Perfumer Er. Rumana Ansari
+                </span>
+              </div>
+            </div>
+
+            {/* Right: Interactive Flacon Masterpiece Showcase with Hanging Flacons */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '22px', position: 'relative', width: '100%' }}>
+              <div className="hero-showcase-wrapper">
+                {/* 4 Professional Hanging Miniature Rumera Flacons with Rumera Logo Mark Suspended Outside */}
+                {HERO_HANGING_FLACONS.map((flacon) => (
+                  <div
+                    key={flacon.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveHeroIndex(flacon.flaconIndex);
+                    }}
+                    className={`hero-hanging-flacon ${flacon.className}`}
+                    title={`Select ${flacon.title}`}
+                  >
+                    <div className="flacon-hang-thread" style={{ height: flacon.threadHeight }} />
+                    <div className="flacon-hang-ring" />
+                    <div className="flacon-mini-body">
+                      <img src={flacon.image} alt={flacon.title} className="flacon-mini-img" />
+                      {/* Rumera Royal Logo Mark Stamp */}
+                      <div className="flacon-mini-seal" title="Rumera Royal Crest">
+                        <img src="/images/rumera_crest_emblem.png" alt="Rumera Logo" />
+                      </div>
+                      <div className="flacon-mini-sheen" />
+                    </div>
+                    <div className="flacon-hang-tag">{flacon.title}</div>
+                  </div>
+                ))}
+
+                <div
+                  className="hero-bottle-card"
+                  onClick={() => setSelectedFlacon(activeFlacon)}
+                  title={`Inspect ${activeFlacon.title}`}
+                  style={{
+                    position: 'relative',
+                    width: '100%',
+                    aspectRatio: '1/1',
+                    borderRadius: '18px',
+                    overflow: 'hidden',
+                    border: '1px solid rgba(183, 139, 69, 0.45)',
+                    boxShadow: '0 24px 60px -12px rgba(0, 0, 0, 0.85), 0 0 35px rgba(183, 139, 69, 0.28)',
+                    backgroundColor: '#000000',
+                    cursor: 'pointer',
+                    transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+                  }}
+                >
+                  {/* Subtle Background Rumera Crest Watermark */}
+                  <img
+                    src="/images/rumera_crest_emblem.png"
+                    alt=""
+                    aria-hidden="true"
+                    style={{
+                      position: 'absolute',
+                      top: '42%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      width: '240px',
+                      height: '240px',
+                      objectFit: 'contain',
+                      opacity: 0.08,
+                      pointerEvents: 'none',
+                      zIndex: 1,
+                      filter: 'drop-shadow(0 0 20px rgba(212,175,55,0.4))'
+                    }}
+                  />
+
+                  {/* 1. Ambient Golden Breathing Aura Glow */}
+                  <div className="perfume-ambient-aura" />
+
+                  {/* 2. Floating Gold Dust Particles */}
+                  <div className="gold-dust-sparkle gds-1" />
+                  <div className="gold-dust-sparkle gds-2" />
+                  <div className="gold-dust-sparkle gds-3" />
+                  <div className="gold-dust-sparkle gds-4" />
+
+                  {/* 5. Obsidian Mirror Reflection Base */}
+                  <div className="obsidian-mirror-base" />
+
+                  {/* 6. Animated Floating Perfume Flacon */}
+                  <div className="perfume-floating-wrapper">
+                    <img
+                      key={activeFlacon.id}
+                      src={activeFlacon.image}
+                      alt={activeFlacon.title}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'block',
+                        objectFit: 'contain',
+                        padding: '28px 16px 24px',
+                        filter: 'drop-shadow(0 14px 28px rgba(0,0,0,0.7))',
+                        animation: 'bottleSwitchLuxury 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                      }}
+                      className="hero-bottle-img"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Adjusted Explore Flacon Action Button Below Card */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginTop: '2px', zIndex: 5 }}>
+                <button
+                  onClick={() => onNavigate('product', { slug: activeFlacon.slug })}
+                  className="hero-btn-gold"
+                  style={{
+                    padding: '9px 26px',
+                    fontSize: '0.8rem',
+                    letterSpacing: '0.08em',
+                    borderRadius: '9999px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    boxShadow: '0 8px 22px rgba(183, 139, 69, 0.45)'
+                  }}
+                >
+                  <span>Explore {activeFlacon.title}</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+
+              {/* 5 Flacon Thumbnail Selector with Hanging Small Bottles Animation */}
+              <div className="hanging-bottles-dock">
+                {ROYAL_FLACONS.map((flacon, idx) => {
+                  const isActive = idx === activeHeroIndex;
+                  return (
+                    <button
+                      key={flacon.id}
+                      onClick={() => setActiveHeroIndex(idx)}
+                      className={`hanging-bottle-item ${isActive ? 'active' : ''}`}
+                      title={flacon.title}
+                      aria-label={`Select ${flacon.title}`}
+                    >
+                      <img
+                        src={flacon.image}
+                        alt={flacon.title}
+                        className="hanging-bottle-img"
+                      />
+                      <span className="hanging-bottle-tooltip">{flacon.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. Dedicated Section: THE ROYAL FLACON ATELIER */}
+      <section
+        style={{
+          padding: '96px 0',
+          backgroundColor: '#0F1C18',
+          borderTop: '1px solid rgba(183, 139, 69, 0.35)',
+          borderBottom: '1px solid rgba(183, 139, 69, 0.35)',
+          backgroundImage: 'radial-gradient(ellipse at 50% 20%, rgba(183, 139, 69, 0.12) 0%, rgba(15, 28, 24, 0.98) 75%)',
+          color: '#F8F4EC'
+        }}
+      >
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 16px', backgroundColor: 'rgba(183, 139, 69, 0.14)', border: '1px solid #B78B45', borderRadius: '24px', marginBottom: '16px' }}>
+              <Crown size={14} color="#D4AF37" />
+              <span style={{ fontSize: '0.74rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#E8CA89', fontWeight: 700 }}>
+                Haute Atelier • Exclusive Flacon Editions
+              </span>
+            </div>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.2rem, 4.5vw, 3.4rem)', color: '#FAF7F0', fontWeight: 500, lineHeight: 1.15 }}>
+              The Royal Flacon Atelier
+            </h2>
+            <p style={{ maxWidth: '640px', margin: '14px auto 0', color: '#B6C4BC', fontSize: '0.98rem', lineHeight: 1.7 }}>
+              Hand-gilded crystal flacons, 24-karat gold filigree lattice, and unadulterated artisanal Indian attars hydro-distilled in traditional Awadhi copper degs.
+            </p>
+          </div>
+
+          {/* 5 Flacon Masterpieces Grid — Compact, Ultra-Refined Luxury Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+            {ROYAL_FLACONS.map((flacon) => (
+              <div
+                key={flacon.id}
+                className="flacon-atelier-card"
+                onClick={() => setSelectedFlacon(flacon)}
+                style={{
+                  backgroundColor: '#14231F',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  border: '1px solid rgba(183, 139, 69, 0.3)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                  transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                {/* 1. Card Top Bar: Edition & Volume */}
+                <div style={{ padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#091210', borderBottom: '1px solid rgba(183, 139, 69, 0.2)' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', minWidth: 0 }}>
+                    <Crown size={11} color="#D4AF37" style={{ flexShrink: 0 }} />
+                    <span style={{ fontSize: '0.64rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#E8CA89', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {flacon.edition}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.62rem', color: '#B6C4BC', letterSpacing: '0.04em', backgroundColor: 'rgba(183,139,69,0.12)', padding: '2px 6px', borderRadius: '8px', border: '1px solid rgba(183,139,69,0.25)', flexShrink: 0, marginLeft: '6px' }}>
+                    {flacon.volume}
+                  </span>
+                </div>
+
+                {/* 2. Flacon Image Container: Compact & Fully Contained */}
+                <div className="flacon-card-img-container" style={{ position: 'relative', width: '100%', height: '175px', overflow: 'hidden', backgroundColor: '#08100E', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px' }}>
+                  {/* Ambient Card Aura */}
+                  <div className="perfume-card-aura" />
+                  {/* Dynamic Crystal Light Sheen */}
+                  <div className="perfume-shimmer-sheen" />
+
+                  <img
+                    src={flacon.image}
+                    alt={flacon.title}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      display: 'block',
+                      zIndex: 2,
+                      transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }}
+                    className="flacon-card-img"
+                  />
+                  {/* Subtle Quick View Badge in Bottom Right Corner */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      bottom: '8px',
+                      right: '8px',
+                      backgroundColor: 'rgba(9, 18, 16, 0.85)',
+                      backdropFilter: 'blur(6px)',
+                      border: '1px solid rgba(183, 139, 69, 0.35)',
+                      padding: '2px 7px',
+                      borderRadius: '10px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '3px',
+                      fontSize: '0.58rem',
+                      color: '#FAF7F0',
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)'
+                    }}
+                  >
+                    <Eye size={10} color="#D4AF37" />
+                    <span>View</span>
+                  </div>
+                </div>
+
+                {/* 3. Flacon Body: Compact Typography & Elegant Spacing */}
+                <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', color: '#FAF7F0', marginBottom: '3px', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {flacon.title}
+                  </h3>
+
+                  <p style={{ fontSize: '0.64rem', color: '#D4AF37', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {flacon.craft}
+                  </p>
+
+                  <p style={{ fontSize: '0.72rem', color: '#9EB0A7', lineHeight: 1.45, marginBottom: '10px', flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    {flacon.notes}
+                  </p>
+
+                  {/* Action Buttons */}
+                  <div style={{ display: 'flex', gap: '6px', borderTop: '1px solid rgba(183, 139, 69, 0.18)', paddingTop: '9px' }}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedFlacon(flacon);
+                      }}
+                      className="btn-secondary"
+                      style={{
+                        flex: 1,
+                        padding: '6px 8px',
+                        fontSize: '0.7rem',
+                        color: '#FAF7F0',
+                        borderColor: 'rgba(183, 139, 69, 0.4)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px',
+                        borderRadius: '20px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <Eye size={11} color="#D4AF37" />
+                      <span>Inspect</span>
+                    </button>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onNavigate('shop', { category: flacon.category });
+                      }}
+                      className="btn-gold btn-primary"
+                      style={{
+                        flex: 1,
+                        padding: '6px 8px',
+                        fontSize: '0.7rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '4px',
+                        borderRadius: '20px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <span>Acquire</span>
+                      <ArrowRight size={11} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
 
       {/* 3.5. Free Perfume Sample Marketing Campaign Hero Banner */}
       <FreeSampleBanner
