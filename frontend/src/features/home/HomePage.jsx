@@ -165,6 +165,84 @@ export default function HomePage({
 
   return (
     <div>
+      {/* =========================================================================
+          ROYAL MARQUEE RIBBON: Left-To-Right Slow Motion Italic Luxury Banner
+          ========================================================================= */}
+      <div
+        onClick={() => onNavigate('free-sample')}
+        className="rumera-marquee-bar cursor-pointer group select-none"
+        title="Exclusive Patron Privilege: First 50 Orders Receive Free Tester Set"
+      >
+        <div className="rumera-marquee-fade-left" />
+        <div className="rumera-marquee-fade-right" />
+
+        <div className="rumera-marquee-track">
+          {/* Duplicate set for seamless continuous left-to-right loop */}
+          {[1, 2].map((setNum) => (
+            <div key={setNum} className="flex items-center">
+              {/* Item 1 */}
+              <div className="rumera-marquee-item">
+                <span className="rumera-marquee-badge">
+                  <Crown size={11} className="text-[#D4AF37]" />
+                  <span>First 50 Orders</span>
+                </span>
+                <span className="gold-accent">
+                  Free Luxury Attar Tester Set
+                </span>
+                <span className="text-[#FAF7F0]">
+                  — Complimentary discovery vial included for customer evaluation with every order
+                </span>
+                <span className="text-[#D4AF37]/60 text-xs not-italic">✦</span>
+              </div>
+
+              {/* Item 2 */}
+              <div className="rumera-marquee-item">
+                <span className="rumera-marquee-badge">
+                  <Sparkles size={11} className="text-[#D4AF37]" />
+                  <span>Inaugural Privilege</span>
+                </span>
+                <span className="text-[#FAF7F0]">
+                  Maison Ruméra Royal Courtesy:
+                </span>
+                <span className="gold-highlight">
+                  First 50 Customers Receive Free Pure Extrait Test Flacon
+                </span>
+                <span className="text-[#D4AF37]/60 text-xs not-italic">✧</span>
+              </div>
+
+              {/* Item 3 */}
+              <div className="rumera-marquee-item">
+                <span className="rumera-marquee-badge">
+                  <Gift size={11} className="text-[#D4AF37]" />
+                  <span>Test Before Opening</span>
+                </span>
+                <span className="gold-accent">
+                  Complimentary 100% Non-Alcoholic Attar Sample
+                </span>
+                <span className="text-[#FAF7F0]">
+                  — Experience the imperial sillage before unsealing your main flacon
+                </span>
+                <span className="text-[#D4AF37]/60 text-xs not-italic">✦</span>
+              </div>
+
+              {/* Item 4 */}
+              <div className="rumera-marquee-item">
+                <span className="rumera-marquee-badge">
+                  <span>Awadh Atelier</span>
+                </span>
+                <span className="gold-highlight">
+                  First 50 Orders Get Complimentary Master Perfumer Testing Kit
+                </span>
+                <span className="text-[#FAF7F0]">
+                  • Hydro-distilled in traditional copper degs
+                </span>
+                <span className="text-[#D4AF37]/60 text-xs not-italic">◆</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* 1. Dramatic Luxury Hero Section */}
       <section
         style={{

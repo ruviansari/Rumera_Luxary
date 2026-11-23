@@ -1501,3 +1501,111 @@ a {
   box-shadow: 0 0 8px #D4AF37, 0 0 14px rgba(212, 175, 55, 0.8);
 }
 
+/* =========================================================================
+   6. ROYAL MARQUEE RIBBON (Left-To-Right Slow Motion Italic Luxury Bar)
+   ========================================================================= */
+@keyframes marqueeLeftToRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.rumera-marquee-bar {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(90deg, #050A08 0%, #0E1813 35%, #14231E 50%, #0E1813 65%, #050A08 100%);
+  border-top: 1px solid rgba(212, 175, 55, 0.18);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.22);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(212, 175, 55, 0.12);
+  z-index: 30;
+}
+
+.rumera-marquee-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  will-change: transform;
+  animation: marqueeLeftToRight 42s linear infinite;
+}
+
+.rumera-marquee-bar:hover .rumera-marquee-track {
+  animation-play-state: paused;
+}
+
+.rumera-marquee-fade-left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 70px;
+  background: linear-gradient(to right, #050A08 30%, transparent 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.rumera-marquee-fade-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 70px;
+  background: linear-gradient(to left, #050A08 30%, transparent 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.rumera-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 28px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.88rem;
+  letter-spacing: 0.14em;
+  color: #FAF7F0;
+  white-space: nowrap;
+}
+
+.rumera-marquee-item .gold-highlight {
+  color: #E8CA89;
+  font-weight: 600;
+  font-style: italic;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+.rumera-marquee-item .gold-accent {
+  background: linear-gradient(135deg, #FFF6D6 0%, #F5DE98 30%, #D4AF37 60%, #AA8238 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  font-style: italic;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+}
+
+.rumera-marquee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.22) 0%, rgba(20, 35, 30, 0.9) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #F3E2B3;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+}
+
+
