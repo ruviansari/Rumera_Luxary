@@ -2,12 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { Search, Package, CheckCircle, Clock, Truck, ShieldAlert, ArrowRight } from 'lucide-react';
 import { api } from '../../services/api';
 
-export default function OrderTrackingPage({ initialOrderNumber = '', onNavigate }) {
+export default function OrderTrackingPage({ initialOrderNumber = '', initialVerification = '', onNavigate }) {
   const [orderNumber, setOrderNumber] = useState(initialOrderNumber);
-  const [verification, setVerification] = useState('');
+  const [verification, setVerification] = useState(initialVerification);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [order, setOrder] = useState(null);
+
+  useEffect(() => {
+    if (initialOrderNumber) {
+      setOrderNumber(initialOrderNumber);
+    }
+    if (initialVerification) {
+      setVerification(initialVerification);
+    }
+    if (initialOrderNumber && initialVerification) {
+      const executeAutoTrack = async () => {
+        setLoading(true);
+        setError('');
+        try {
+          const data = await api.trackOrder(initialOrderNumber.trim(), initialVerification.trim());
+          setOrder(data);
+        } catch (err) {
+          setError(err.message || 'Consignment could not be verified with the provided details.');
+          setOrder(null);
+        } finally {
+          setLoading(false);
+        }
+      };
+      executeAutoTrack();
+    }
+  }, [initialOrderNumber, initialVerification]);
 
   const handleTrack = async (e) => {
     if (e) e.preventDefault();

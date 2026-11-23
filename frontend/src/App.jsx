@@ -290,6 +290,7 @@ export default function App() {
         {currentRoute === 'order-tracking' && (
           <OrderTrackingPage
             initialOrderNumber={routeParams.order_number || ''}
+            initialVerification={routeParams.verification || ''}
             onNavigate={navigate}
           />
         )}
