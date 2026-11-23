@@ -575,34 +575,34 @@ export default function CheckoutPage({
       </div>
 
       {/* =========================================================================
-          INTERACTIVE RAZORPAY TEST PAYMENT GATEWAY MODAL (Ultra-Luxury Rounded Edition)
+          INTERACTIVE RAZORPAY TEST PAYMENT GATEWAY MODAL (Ultra-Luxury Elevated Edition)
           ========================================================================= */}
       {testGatewayModal && (
-        <div className="fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="max-w-[460px] w-full bg-gradient-to-b from-[#12221B] via-[#09130F] to-[#040806] border border-[#D4AF37]/50 rounded-[28px] shadow-[0_30px_90px_rgba(0,0,0,0.95),0_0_45px_rgba(212,175,55,0.28)] overflow-hidden text-white animate-in zoom-in-95 duration-200">
-            {/* Modal Header */}
-            <div className="bg-[#050A08] px-6 py-4 border-b border-[#D4AF37]/30 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="rumera-emblem-medallion p-1.5 rounded-xl">
+        <div className="fixed inset-0 z-[1500] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-lg animate-in fade-in duration-200">
+          <div className="max-w-[500px] w-full min-h-[660px] flex flex-col justify-between bg-gradient-to-b from-[#13241C] via-[#0A1410] to-[#040806] border border-[#D4AF37]/50 rounded-[32px] shadow-[0_35px_100px_rgba(0,0,0,0.98),0_0_50px_rgba(212,175,55,0.3)] overflow-hidden text-white animate-in zoom-in-95 duration-200">
+            {/* Modal Header with High-Contrast Provenance */}
+            <div className="bg-[#050A08] px-7 py-5 border-b border-[#D4AF37]/30 flex items-center justify-between">
+              <div className="flex items-center gap-3.5">
+                <div className="rumera-emblem-medallion p-2 rounded-2xl shadow-[0_0_15px_rgba(212,175,55,0.3)]">
                   <img
                     src="/images/rumera_crest_emblem.png"
                     alt="Rumera"
-                    className="h-6 w-auto object-contain filter drop-shadow-[0_0_6px_rgba(212,175,55,0.65)] brightness-110"
+                    className="h-7 w-auto object-contain filter drop-shadow-[0_0_8px_rgba(212,175,55,0.7)] brightness-110"
                   />
                 </div>
                 <div>
-                  <div className="rumera-wordmark-gold text-base block leading-none">
+                  <div className="rumera-wordmark-gold text-base sm:text-lg block leading-none">
                     MAISON RUMÉRA
                   </div>
-                  <div className="text-[8.5px] tracking-[0.24em] uppercase text-[#D4AF37] font-semibold mt-1">
+                  <div className="text-[9px] tracking-[0.26em] uppercase text-[#D4AF37] font-semibold mt-1">
                     Razorpay Gateway Simulator
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5">
-                <span className="px-3 py-1 rounded-full bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] text-[9.5px] font-black uppercase tracking-[0.16em] shadow-[0_0_10px_rgba(212,175,55,0.4)]">
-                  Test Mode
+              <div className="flex items-center gap-3">
+                <span className="px-3.5 py-1 rounded-full bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] text-[9.5px] font-black uppercase tracking-[0.18em] shadow-[0_0_12px_rgba(212,175,55,0.5)]">
+                  Test Sandbox
                 </span>
                 <button
                   onClick={() => {
@@ -612,153 +612,164 @@ export default function CheckoutPage({
                     }
                   }}
                   disabled={testProcessing}
-                  className="w-8 h-8 rounded-full flex items-center justify-center bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 hover:border-[#D4AF37]/40 text-white/70 hover:text-white transition-all cursor-pointer"
+                  className="w-9 h-9 rounded-full flex items-center justify-center bg-white/[0.05] hover:bg-white/[0.15] border border-white/10 hover:border-[#D4AF37] text-white/70 hover:text-[#D4AF37] transition-all duration-300 hover:rotate-90 hover:scale-105 cursor-pointer disabled:opacity-50"
                   aria-label="Close Payment Modal"
                 >
-                  <X size={16} />
+                  <X size={17} />
                 </button>
               </div>
             </div>
 
-            {/* Amount Banner */}
-            <div className="px-6 py-5 bg-gradient-to-b from-[#14261E]/70 to-[#0A1410]/90 border-b border-[#D4AF37]/20 text-center relative overflow-hidden">
-              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/[0.04] border border-[#D4AF37]/30 text-[10.5px] uppercase tracking-[0.2em] text-[#D4AF37] font-medium mb-1">
-                <span>Consignment #{testGatewayModal.order.order_number}</span>
+            {/* Expanded Amount Section with Regal Glow */}
+            <div className="px-7 py-7 bg-gradient-to-b from-[#162A21]/80 to-[#0B1612]/95 border-b border-[#D4AF37]/25 text-center relative overflow-hidden">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.05] border border-[#D4AF37]/40 text-[11px] uppercase tracking-[0.22em] text-[#D4AF37] font-semibold mb-2">
+                <span>Imperial Consignment #{testGatewayModal.order.order_number}</span>
               </div>
-              <div className="font-serif text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFF9E6] via-[#F4DE98] to-[#D4AF37] tracking-tight filter drop-shadow-[0_2px_12px_rgba(212,175,55,0.35)] mt-1">
+              <div className="font-serif text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FFF9E6] via-[#F4DE98] to-[#D4AF37] tracking-tight filter drop-shadow-[0_4px_16px_rgba(212,175,55,0.45)] mt-1">
                 ₹{Number(testGatewayModal.order.total_amount).toLocaleString('en-IN')}
               </div>
-              <div className="text-[11.5px] text-white/60 mt-1.5 flex items-center justify-center gap-1.5">
-                <span>Patron:</span>
-                <strong className="text-[#FAF7F0] font-semibold">{testGatewayModal.order.recipient_name}</strong>
+              <div className="text-[12px] text-white/60 mt-2 flex items-center justify-center gap-2">
+                <span className="text-[#D4AF37]/80">Patron:</span>
+                <strong className="text-[#FAF7F0] font-semibold tracking-wide">{testGatewayModal.order.recipient_name}</strong>
                 <span className="text-[#D4AF37]/50">•</span>
                 <span>{testGatewayModal.order.phone}</span>
               </div>
             </div>
 
-            {/* Payment Method Selector Tabs - Fully Rounded Pill Capsule */}
-            <div className="p-6">
-              <div className="grid grid-cols-2 gap-1.5 p-1.5 bg-black/50 rounded-full border border-[#D4AF37]/30 mb-5">
-                <button
-                  type="button"
-                  onClick={() => setTestPaymentTab('UPI')}
-                  className={`py-2 px-4 rounded-full text-xs tracking-wider uppercase font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    testPaymentTab === 'UPI'
-                      ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_12px_rgba(212,175,55,0.5)]'
-                      : 'text-white/70 hover:text-white'
-                  }`}
-                >
-                  <Smartphone size={14} />
-                  <span>UPI / QR</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTestPaymentTab('CARD')}
-                  className={`py-2 px-4 rounded-full text-xs tracking-wider uppercase font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    testPaymentTab === 'CARD'
-                      ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_12px_rgba(212,175,55,0.5)]'
-                      : 'text-white/70 hover:text-white'
-                  }`}
-                >
-                  <CreditCard size={14} />
-                  <span>Cards</span>
-                </button>
+            {/* Payment Method Section - Generous Height & Spacing */}
+            <div className="p-7 flex-1 flex flex-col justify-between space-y-6">
+              {/* Payment Method Selector Tabs - Fully Rounded Pill Capsule */}
+              <div>
+                <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/60 rounded-full border border-[#D4AF37]/35 mb-6 shadow-[inset_0_2px_8px_rgba(0,0,0,0.6)]">
+                  <button
+                    type="button"
+                    onClick={() => setTestPaymentTab('UPI')}
+                    className={`py-2.5 px-4 rounded-full text-xs tracking-[0.18em] uppercase font-extrabold flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
+                      testPaymentTab === 'UPI'
+                        ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_15px_rgba(212,175,55,0.55)] scale-[1.02]'
+                        : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
+                    }`}
+                  >
+                    <Smartphone size={15} />
+                    <span>UPI / QR Code</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTestPaymentTab('CARD')}
+                    className={`py-2.5 px-4 rounded-full text-xs tracking-[0.18em] uppercase font-extrabold flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${
+                      testPaymentTab === 'CARD'
+                        ? 'bg-gradient-to-r from-[#F8E7BE] via-[#D4AF37] to-[#B78B35] text-[#060B08] shadow-[0_2px_15px_rgba(212,175,55,0.55)] scale-[1.02]'
+                        : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
+                    }`}
+                  >
+                    <CreditCard size={15} />
+                    <span>Cards / NetBanking</span>
+                  </button>
+                </div>
+
+                {/* Tab 1: UPI Simulator - Rounded Pills with Hover */}
+                {testPaymentTab === 'UPI' && (
+                  <div className="space-y-4">
+                    {/* Quick UPI App Selector Pills with Luxury Hover Dynamics */}
+                    <div className="grid grid-cols-4 gap-2.5">
+                      {['GPay', 'PhonePe', 'Paytm', 'BHIM'].map((app) => {
+                        const isSelected = testUpiId.includes(app.toLowerCase());
+                        return (
+                          <button
+                            key={app}
+                            type="button"
+                            onClick={() => setTestUpiId(`patron@${app.toLowerCase()}`)}
+                            className={`rumera-app-pill ${isSelected ? 'active' : ''}`}
+                            title={`Select ${app}`}
+                          >
+                            <span>{app}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] uppercase tracking-[0.18em] text-white/50 block mb-2 px-1">
+                        Simulated Virtual Payment Address (VPA)
+                      </label>
+                      <div className="flex items-center px-4 py-3 bg-black/65 border border-[#D4AF37]/50 hover:border-[#D4AF37] rounded-full text-sm font-mono text-[#D4AF37] shadow-[inset_0_2px_8px_rgba(0,0,0,0.7)] transition-all duration-300">
+                        <span className="flex-1 truncate tracking-wide">{testUpiId}</span>
+                        <span className="px-3 py-1 rounded-full bg-emerald-950/90 border border-emerald-500/60 text-emerald-300 text-[10.5px] font-bold flex items-center gap-1.5 shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.3)]">
+                          ✓ Verified Patron
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Tab 2: Card Simulator - Rounded Edition */}
+                {testPaymentTab === 'CARD' && (
+                  <div className="space-y-4">
+                    <div className="p-5 rounded-3xl bg-gradient-to-br from-[#1F3327] via-[#0F1E17] to-[#070D0A] border border-[#D4AF37]/45 text-xs font-mono space-y-2.5 shadow-[0_10px_25px_rgba(0,0,0,0.6)]">
+                      <div className="flex justify-between items-center text-white/60">
+                        <span className="text-[10.5px] uppercase tracking-[0.18em] text-[#D4AF37] font-semibold">Maison Imperial Card</span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#D4AF37]/25 border border-[#D4AF37]/50 text-[#FAF7F0] text-[9.5px] font-bold">TEST MODE</span>
+                      </div>
+                      <div className="text-lg tracking-[0.22em] text-[#FAF7F0] font-bold pt-1.5">
+                        4111 •••• •••• 4242
+                      </div>
+                      <div className="flex justify-between text-[11.5px] text-white/70 pt-2 border-t border-white/10">
+                        <span>EXP: 12/28</span>
+                        <span>CVV: 786</span>
+                        <span className="text-[#D4AF37]">DOMESTIC / INT</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Tab 1: UPI Simulator - Rounded Pills */}
-              {testPaymentTab === 'UPI' && (
-                <div className="space-y-4">
-                  {/* Quick UPI App Selector Pills */}
-                  <div className="grid grid-cols-4 gap-2">
-                    {['GPay', 'PhonePe', 'Paytm', 'BHIM'].map((app) => {
-                      const isSelected = testUpiId.includes(app.toLowerCase());
-                      return (
-                        <button
-                          key={app}
-                          type="button"
-                          onClick={() => setTestUpiId(`patron@${app.toLowerCase()}`)}
-                          className={`py-2 px-3 rounded-full text-[11px] font-bold tracking-wider uppercase text-center transition-all cursor-pointer ${
-                            isSelected
-                              ? 'bg-[#D4AF37]/25 border-2 border-[#D4AF37] text-[#FAF7F0] shadow-[0_0_12px_rgba(212,175,55,0.4)]'
-                              : 'bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white/70 hover:text-white'
-                          }`}
-                        >
-                          {app}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <div>
-                    <label className="text-[10.5px] uppercase tracking-[0.16em] text-white/50 block mb-1.5 px-1">
-                      Simulated Virtual Payment Address (VPA)
-                    </label>
-                    <div className="flex items-center px-4 py-2.5 bg-black/60 border border-[#D4AF37]/45 rounded-full text-sm font-mono text-[#D4AF37] shadow-[inset_0_2px_6px_rgba(0,0,0,0.6)]">
-                      <span className="flex-1 truncate">{testUpiId}</span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold flex items-center gap-1 shrink-0">
-                        ✓ Verified
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab 2: Card Simulator - Rounded Edition */}
-              {testPaymentTab === 'CARD' && (
-                <div className="space-y-3">
-                  <div className="p-4 rounded-2xl bg-gradient-to-br from-[#1C2C24] via-[#0E1B15] to-[#070D0A] border border-[#D4AF37]/40 text-xs font-mono space-y-2 shadow-[0_8px_20px_rgba(0,0,0,0.5)]">
-                    <div className="flex justify-between items-center text-white/60">
-                      <span className="text-[10px] uppercase tracking-wider text-[#D4AF37]">Maison Imperial Flacon Reserve</span>
-                      <span className="px-2 py-0.5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-[#D4AF37] text-[9px] font-bold">TEST CARD</span>
-                    </div>
-                    <div className="text-base tracking-[0.2em] text-[#FAF7F0] font-bold pt-1">
-                      4111 •••• •••• 4242
-                    </div>
-                    <div className="flex justify-between text-[11px] text-white/70 pt-1 border-t border-white/10">
-                      <span>EXP: 12/28</span>
-                      <span>CVV: 786</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Action Buttons - Fully Rounded Luxury Pills */}
-              <div className="mt-6 space-y-3">
-                {/* Primary Button: Fully Rounded 24K Gold Pill */}
+              {/* Action Buttons with Proper Premium Typography & Hover */}
+              <div className="space-y-3 pt-2">
+                {/* Primary Button: Fully Rounded 24K Gold Pill with Dynamic Hover */}
                 <button
                   type="button"
                   onClick={() => handleCompleteTestPayment(true)}
                   disabled={testProcessing}
-                  className="rumera-btn-free-sample w-full !py-3.5 !px-6 !text-xs !tracking-[0.18em] !font-black !rounded-full flex items-center justify-center gap-2.5 shadow-[0_6px_25px_rgba(212,175,55,0.5)] cursor-pointer disabled:opacity-50"
+                  className="rumera-pay-btn-luxury group"
                 >
                   {testProcessing ? (
-                    <>
-                      <RefreshCw size={16} className="animate-spin text-[#060B08]" />
-                      <span>Authorizing with Bank Gateway...</span>
-                    </>
+                    <div className="flex items-center justify-center gap-3 py-4">
+                      <RefreshCw size={18} className="animate-spin text-[#060B08]" />
+                      <span className="text-xs sm:text-[13px] tracking-[0.24em] font-black uppercase text-[#060B08]">
+                        Authorizing with Bank Gateway...
+                      </span>
+                    </div>
                   ) : (
-                    <>
-                      <ShieldCheck size={17} className="text-[#060B08]" />
-                      <span>Authorize & Pay ₹{Number(testGatewayModal.order.total_amount).toLocaleString('en-IN')} (Success)</span>
-                    </>
+                    <div className="flex flex-col items-center justify-center py-3.5 px-6">
+                      <div className="flex items-center gap-2 text-[#060B08]">
+                        <ShieldCheck size={18} className="text-[#060B08] group-hover:scale-110 transition-transform duration-200" />
+                        <span className="text-xs sm:text-[13.5px] tracking-[0.24em] font-black uppercase">
+                          Authorize & Pay ₹{Number(testGatewayModal.order.total_amount).toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                      <span className="text-[9.5px] tracking-[0.22em] uppercase font-bold text-[#060B08]/75 mt-0.5">
+                        ✦ Instant Verified Sandbox Settlement ✦
+                      </span>
+                    </div>
                   )}
                 </button>
 
-                {/* Secondary Button: Fully Rounded Translucent Pill */}
+                {/* Secondary Button: Fully Rounded Translucent Pill with Hover */}
                 <button
                   type="button"
                   onClick={() => handleCompleteTestPayment(false)}
                   disabled={testProcessing}
-                  className="w-full py-2.5 px-4 rounded-full bg-rose-950/20 hover:bg-rose-950/40 border border-rose-500/30 hover:border-rose-500/50 text-rose-300 text-[11px] font-semibold tracking-wider transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full py-3 px-5 rounded-full bg-rose-950/20 hover:bg-rose-950/45 border border-rose-500/30 hover:border-rose-400/70 text-rose-300 hover:text-white text-[11px] sm:text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,63,94,0.35)] hover:-translate-y-0.5 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 group"
                 >
-                  Simulate Payment Decline / Failure
+                  <X size={14} className="text-rose-400 group-hover:rotate-90 transition-transform duration-300" />
+                  <span>Simulate Payment Decline / Cancel</span>
                 </button>
               </div>
 
               {/* Security Badge */}
-              <div className="mt-4 pt-3 border-t border-white/10 text-center text-[10px] text-white/40 flex items-center justify-center gap-1.5">
-                <Lock size={11} className="text-[#D4AF37]" />
-                <span>256-Bit SSL Encrypted Razorpay Sandbox Protocol</span>
+              <div className="pt-2 text-center text-[10.5px] text-white/40 flex items-center justify-center gap-2">
+                <Lock size={12} className="text-[#D4AF37]" />
+                <span className="tracking-wide">256-Bit SSL Encrypted Razorpay Sandbox Protocol</span>
               </div>
             </div>
           </div>

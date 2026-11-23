@@ -1608,4 +1608,89 @@ a {
   box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
 }
 
+/* =========================================================================
+   7. ULTRA-LUXURY PAYMENT GATEWAY SIMULATOR STYLING & HOVER DYNAMICS
+   ========================================================================= */
+
+/* Luxury Authorize & Pay 24K Gold Pill Button */
+.rumera-pay-btn-luxury {
+  position: relative;
+  width: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #FFF8DE 0%, #F8E3A8 22%, #D4AF37 52%, #C29841 80%, #A88133 100%);
+  border: 1.5px solid rgba(255, 252, 240, 0.95);
+  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  display: block;
+}
+
+.rumera-pay-btn-luxury::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  transform: skewX(-25deg);
+  transition: left 0.75s ease;
+}
+
+.rumera-pay-btn-luxury:hover::after {
+  left: 200%;
+}
+
+.rumera-pay-btn-luxury:hover {
+  transform: translateY(-2.5px) scale(1.015);
+  box-shadow: 0 14px 45px rgba(212, 175, 55, 0.75), 0 0 25px rgba(255, 255, 255, 0.5), inset 0 1px 3px rgba(255, 255, 255, 1);
+  filter: brightness(1.08);
+}
+
+.rumera-pay-btn-luxury:active {
+  transform: translateY(0px) scale(0.99);
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.5);
+}
+
+/* Quick UPI App Selector Pills with Luxury Hover */
+.rumera-app-pill {
+  position: relative;
+  padding: 9px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rumera-app-pill.active {
+  background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.4) 0%, rgba(20, 36, 29, 0.98) 100%);
+  border: 1.5px solid #D4AF37;
+  color: #FFFFFF;
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.rumera-app-pill:not(.active) {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.rumera-app-pill:not(.active):hover {
+  background: rgba(212, 175, 55, 0.18);
+  border-color: rgba(212, 175, 55, 0.7);
+  color: #FFFFFF;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
+}
+
+
 
