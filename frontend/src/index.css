@@ -449,13 +449,9 @@ a {
 }
 
 .hero-bottle-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-6px);
   border-color: #D4AF37 !important;
   box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.75), 0 0 45px rgba(183, 139, 69, 0.38) !important;
-}
-
-.hero-bottle-card:hover .hero-bottle-img {
-  transform: scale(1.04);
 }
 
 /* 1. Main Bottle Levitation & 3D Depth */
@@ -471,27 +467,27 @@ a {
 
 /* Bottle Falling Down & Fixing Into Position Animation */
 .bottle-falling-fix {
-  animation: bottleFallDownFix 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: bottleFallDownFix 0.75s cubic-bezier(0.2, 0.9, 0.3, 1) both;
   will-change: transform, opacity;
 }
 
 @keyframes bottleFallDownFix {
   0% {
-    transform: translateY(-140px) scale(1.14) rotate(-5deg);
+    transform: translateY(-110px) scale(0.93) rotate(-3.5deg);
     opacity: 0;
-    filter: blur(5px) drop-shadow(0 45px 40px rgba(0, 0, 0, 0.9));
+    filter: blur(4px) drop-shadow(0 40px 30px rgba(0, 0, 0, 0.9));
   }
   48% {
     opacity: 1;
-    filter: blur(0px) drop-shadow(0 22px 30px rgba(0, 0, 0, 0.8));
+    filter: blur(0px) drop-shadow(0 20px 25px rgba(0, 0, 0, 0.8));
   }
-  65% {
+  70% {
     /* Touchdown impact on pedestal */
-    transform: translateY(9px) scaleX(1.05) scaleY(0.95) rotate(1.2deg);
+    transform: translateY(7px) scaleX(1.04) scaleY(0.96) rotate(1deg);
   }
-  82% {
+  86% {
     /* Gentle luxury rebound cushion */
-    transform: translateY(-4px) scaleX(0.99) scaleY(1.01) rotate(-0.5deg);
+    transform: translateY(-3px) scaleX(0.99) scaleY(1.01) rotate(-0.4deg);
   }
   100% {
     /* Lock & fix solidly into place */
@@ -752,32 +748,9 @@ a {
   transform: scale(1.12);
 }
 
-/* Tooltip on hover for small hanging perfume bottles */
+/* Tooltip on hover disabled to avoid overlapping action buttons */
 .hanging-bottle-tooltip {
-  position: absolute;
-  bottom: 125%;
-  left: 50%;
-  transform: translateX(-50%) translateY(6px);
-  background: rgba(13, 23, 20, 0.96);
-  border: 1px solid #B78B45;
-  color: #FAF7F0;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
-  text-transform: uppercase;
-  z-index: 30;
-}
-
-.hanging-bottle-item:hover .hanging-bottle-tooltip {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  display: none !important;
 }
 
 /* 6. Professional Miniature Hanging Rumera Flacons Suspended Around Showcase */

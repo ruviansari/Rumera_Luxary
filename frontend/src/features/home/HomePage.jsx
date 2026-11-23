@@ -79,41 +79,6 @@ const ROYAL_FLACONS = [
   }
 ];
 
-const HERO_HANGING_FLACONS = [
-  {
-    id: 'hang-emerald',
-    title: 'Rumera Emerald Extrait',
-    flaconIndex: 1,
-    image: '/images/showcase/royal_emerald_flacon.jpg',
-    className: 'hang-pos-1',
-    threadHeight: '52px'
-  },
-  {
-    id: 'hang-sapphire',
-    title: 'Rumera Sapphire Attar',
-    flaconIndex: 2,
-    image: '/images/showcase/royal_sapphire_flacon.jpg',
-    className: 'hang-pos-2',
-    threadHeight: '44px'
-  },
-  {
-    id: 'hang-amber',
-    title: 'Rumera Amber Crystal',
-    flaconIndex: 0,
-    image: '/images/showcase/royal_amber_flacon_v2.jpg',
-    className: 'hang-pos-3',
-    threadHeight: '60px'
-  },
-  {
-    id: 'hang-aquamarine',
-    title: 'Rumera Aquamarine Reserve',
-    flaconIndex: 3,
-    image: '/images/showcase/royal_aquamarine_flacon.jpg',
-    className: 'hang-pos-4',
-    threadHeight: '48px'
-  }
-];
-
 const BESPOKE_CATEGORY_IMAGES = {
   'dehn-al-oud': '/images/showcase/royal_emerald_flacon.jpg',
   'artisanal-attars': '/images/showcase/royal_sapphire_flacon.jpg',
@@ -187,16 +152,14 @@ export default function HomePage({
 }) {
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
   const [selectedFlacon, setSelectedFlacon] = useState(null);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Automatic Smooth Flacon Cycling with Falling-Down & Fix Animation
+  // Automatic Smooth Flacon Cycling with Falling-Down & Fix Animation (every 3.2s continuously)
   useEffect(() => {
-    if (!isAutoPlaying) return;
     const timer = setInterval(() => {
       setActiveHeroIndex((prev) => (prev + 1) % ROYAL_FLACONS.length);
-    }, 4500);
+    }, 3200);
     return () => clearInterval(timer);
-  }, [isAutoPlaying]);
+  }, []);
 
   const activeFlacon = ROYAL_FLACONS[activeHeroIndex];
 
@@ -274,38 +237,9 @@ export default function HomePage({
               </div>
             </div>
 
-            {/* Right: Interactive Flacon Masterpiece Showcase with Hanging Flacons */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '22px', position: 'relative', width: '100%' }}>
-              <div
-                className="hero-showcase-wrapper"
-                onMouseEnter={() => setIsAutoPlaying(false)}
-                onMouseLeave={() => setIsAutoPlaying(true)}
-              >
-                {/* 4 Professional Hanging Miniature Rumera Flacons with Rumera Logo Mark Suspended Outside */}
-                {HERO_HANGING_FLACONS.map((flacon) => (
-                  <div
-                    key={flacon.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveHeroIndex(flacon.flaconIndex);
-                    }}
-                    className={`hero-hanging-flacon ${flacon.className}`}
-                    title={`Select ${flacon.title}`}
-                  >
-                    <div className="flacon-hang-thread" style={{ height: flacon.threadHeight }} />
-                    <div className="flacon-hang-ring" />
-                    <div className="flacon-mini-body">
-                      <img src={flacon.image} alt={flacon.title} className="flacon-mini-img" />
-                      {/* Rumera Royal Logo Mark Stamp */}
-                      <div className="flacon-mini-seal" title="Rumera Royal Crest">
-                        <img src="/images/rumera_crest_emblem.png" alt="Rumera Logo" />
-                      </div>
-                      <div className="flacon-mini-sheen" />
-                    </div>
-                    <div className="flacon-hang-tag">{flacon.title}</div>
-                  </div>
-                ))}
-
+            {/* Right: Interactive Flacon Masterpiece Showcase with 6-Bottle Dock */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '18px', position: 'relative', width: '100%' }}>
+              <div className="hero-showcase-wrapper">
                 <div
                   className="hero-bottle-card"
                   onClick={() => setSelectedFlacon(activeFlacon)}
@@ -378,20 +312,20 @@ export default function HomePage({
                 </div>
               </div>
 
-              {/* Adjusted Explore Flacon Action Button Below Card */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginTop: '2px', zIndex: 5 }}>
+              {/* Explore Active Flacon Action Button Below Card */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', zIndex: 5 }}>
                 <button
                   onClick={() => onNavigate('product', { slug: activeFlacon.slug })}
                   className="hero-btn-gold"
                   style={{
-                    padding: '9px 26px',
-                    fontSize: '0.8rem',
+                    padding: '10px 28px',
+                    fontSize: '0.82rem',
                     letterSpacing: '0.08em',
                     borderRadius: '9999px',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '8px',
-                    boxShadow: '0 8px 22px rgba(183, 139, 69, 0.45)'
+                    boxShadow: '0 8px 24px rgba(183, 139, 69, 0.45)'
                   }}
                 >
                   <span>Explore {activeFlacon.title}</span>
@@ -400,11 +334,7 @@ export default function HomePage({
               </div>
 
               {/* 6 Flacon Thumbnail Selector Dock with Fixed Bottle Indicator */}
-              <div
-                className="hanging-bottles-dock"
-                onMouseEnter={() => setIsAutoPlaying(false)}
-                onMouseLeave={() => setIsAutoPlaying(true)}
-              >
+              <div className="hanging-bottles-dock">
                 {ROYAL_FLACONS.map((flacon, idx) => {
                   const isActive = idx === activeHeroIndex;
                   return (
@@ -425,7 +355,6 @@ export default function HomePage({
                           👑
                         </span>
                       )}
-                      <span className="hanging-bottle-tooltip">{flacon.title}</span>
                     </button>
                   );
                 })}
