@@ -1,5 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { ShoppingBag, User as UserIcon, Search, Shield, Menu, X, ArrowRight, Phone, Mail, Heart, Sparkles, ArrowUpRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  ShoppingBag,
+  User as UserIcon,
+  Search,
+  Shield,
+  Menu,
+  X,
+  ArrowRight,
+  Phone,
+  Mail,
+  Heart,
+  Sparkles,
+  ArrowUpRight,
+  ChevronDown,
+  LogOut,
+  Package,
+  Layers,
+  Crown
+} from 'lucide-react';
 import { api } from '../../services/api';
 
 const BESPOKE_SEARCH_IMAGES = {
@@ -22,11 +40,48 @@ export default function Header({
   onLogout
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [liveResults, setLiveResults] = useState([]);
   const [liveSearching, setLiveSearching] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
+  const profileDropdownRef = useRef(null);
+
+  // Scroll detection for compact header transition
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 25);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Prevent background scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [mobileMenuOpen]);
+
+  // Live product search debouncing
   useEffect(() => {
     const q = searchQuery.trim();
     if (q.length < 2) {
@@ -67,352 +122,372 @@ export default function Header({
   const isStaff = currentUser && ['SUPER_ADMIN', 'STORE_MANAGER', 'ORDER_FULFILMENT', 'CONTENT_MANAGER'].includes(currentUser.role);
 
   return (
-    <header style={{ position: 'sticky', top: 0, zIndex: 1000, backgroundColor: 'rgba(20, 35, 31, 0.98)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(183, 139, 69, 0.35)', color: '#FFFFFF', boxShadow: '0 4px 25px rgba(0, 0, 0, 0.35)' }}>
-      {/* 1. Royal House Announcement Ribbon — Sabse Top Bar */}
-      <div
-        className="header-top-ribbon"
-        style={{
-          backgroundColor: '#0C1714',
-          borderBottom: '1px solid rgba(183, 139, 69, 0.35)',
-          padding: '6px 16px',
-          textAlign: 'center',
-          fontSize: '0.72rem',
-          letterSpacing: '0.16em',
-          textTransform: 'uppercase',
-          color: '#E8CA89',
-          fontWeight: 600,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '12px',
-          flexWrap: 'wrap'
-        }}
-      >
-        <span>👑 MAISON RUMÉRA</span>
-        <span style={{ color: 'rgba(183, 139, 69, 0.45)' }}>•</span>
-        <span>THE FRAGRANCE OF ROYALTY</span>
-        <span style={{ color: 'rgba(183, 139, 69, 0.45)' }}>•</span>
-        <span style={{ color: '#FAF7F0' }}>FOUNDER: ER. RUMANA ANSARI</span>
-        <span style={{ color: 'rgba(183, 139, 69, 0.45)' }}>•</span>
-        <a href="tel:+919305988767" style={{ color: '#D4AF37', textDecoration: 'none', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-          <Phone size={11} color="#D4AF37" />
-          <span>+91 9305988767</span>
-        </a>
-        <span style={{ color: 'rgba(183, 139, 69, 0.45)' }}>•</span>
-        <a href="mailto:ruviansari144@gmail.com" style={{ color: '#FAF7F0', textDecoration: 'none', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-          <Mail size={11} color="#D4AF37" />
-          <span>ruviansari144@gmail.com</span>
-        </a>
+    <header className="sticky top-0 z-[1000] w-full select-none font-sans text-white">
+      {/* =========================================================================
+          TIER 1: TOP ANNOUNCEMENT BAR (Slim, h-9, #080A08)
+          ========================================================================= */}
+      <div className="bg-[#080A08] border-b border-white/10 text-[11px] tracking-[0.14em] uppercase text-[#E8CA89] h-9 flex items-center px-4 sm:px-6 lg:px-10">
+        <div className="max-w-[1440px] w-full mx-auto flex items-center justify-between">
+          {/* Left: Royal Maison Title */}
+          <div className="flex items-center gap-2 font-medium">
+            <span className="flex items-center gap-1.5 text-[#E8CA89] font-semibold">
+              👑 <span>MAISON RUMÉRA</span>
+            </span>
+            <span className="text-white/20">•</span>
+            <span className="hidden sm:inline text-white/80 font-normal">
+              THE FRAGRANCE OF ROYALTY
+            </span>
+          </div>
+
+          {/* Right: Founder & Contact Details with subtle dividers */}
+          <div className="flex items-center gap-3 sm:gap-4 text-[11px] font-medium text-white/80">
+            <span className="hidden md:inline text-[#FAF7F0]">
+              FOUNDER: <strong className="text-[#E8CA89] font-semibold">ER. RUMANA ANSARI</strong>
+            </span>
+            <span className="hidden md:inline text-white/20">|</span>
+            <a
+              href="tel:+919305988767"
+              className="inline-flex items-center gap-1.5 text-[#D4AF37] hover:text-[#F3E5AB] transition-colors"
+              title="Call Master Perfumer Concierge"
+            >
+              <Phone size={11} className="text-[#D4AF37]" />
+              <span className="font-semibold">+91 9305988767</span>
+            </a>
+            <span className="hidden lg:inline text-white/20">|</span>
+            <a
+              href="mailto:ruviansari144@gmail.com"
+              className="hidden lg:inline-flex items-center gap-1.5 text-white/70 hover:text-white transition-colors"
+              title="Concierge Email"
+            >
+              <Mail size={11} className="text-[#D4AF37]" />
+              <span>ruviansari144@gmail.com</span>
+            </a>
+          </div>
+        </div>
       </div>
 
-      {/* Main Navigation Bar */}
-      <div className="container header-nav-container">
-        {/* Left: Mobile Menu Toggle + Brand Logo (Left of The House) + Navigation */}
-        <div className="header-left-wrap">
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{ display: 'none', color: '#FFFFFF' }}
-            className="mobile-toggle"
-            aria-label="Toggle Navigation"
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+      {/* =========================================================================
+          TIER 2: MAIN GLASSMORPHIC NAVIGATION BAR
+          ========================================================================= */}
+      <div
+        className={`w-full transition-all duration-300 border-b border-[#D4AF37]/20 ${
+          scrolled
+            ? 'h-16 bg-[#080C0A]/95 backdrop-blur-xl shadow-[0_10px_35px_rgba(0,0,0,0.8)]'
+            : 'h-20 bg-[#0E130E]/90 backdrop-blur-md shadow-[0_4px_25px_rgba(0,0,0,0.4)]'
+        }`}
+      >
+        <div className="max-w-[1440px] h-full mx-auto px-4 sm:px-6 lg:px-10 flex items-center justify-between gap-4">
+          {/* -------------------------------------------------------------------
+              LEFT: BRAND IDENTITY (Logo & Wordmark) + MOBILE TOGGLE
+              ------------------------------------------------------------------- */}
+          <div className="flex items-center gap-3 sm:gap-5 shrink-0">
+            {/* Mobile Hamburger Toggle for < xl screens */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="xl:hidden p-2 -ml-2 text-white/80 hover:text-[#D4AF37] hover:bg-white/[0.04] rounded-lg transition-colors"
+              aria-label="Open Navigation Menu"
+            >
+              <Menu size={22} />
+            </button>
 
-          {/* Brand Identity Logo — positioned immediately to the left of The House */}
-          <div
-            className="header-brand-logo"
-            style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', userSelect: 'none', flexShrink: 0 }}
-            onClick={() => onNavigate('home')}
-            title="Rumera Luxury Atra — The Fragrance of Royalty"
-          >
-            <img
-              src="/images/rumera_crest_emblem.png"
-              alt="Rumera Logo"
-              style={{
-                height: '46px',
-                width: 'auto',
-                objectFit: 'contain',
-                filter: 'drop-shadow(0 2px 10px rgba(183, 139, 69, 0.45))',
-                transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
-              }}
-              className="brand-logo-mark"
-            />
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span
-                className="brand-text-name"
-                style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', letterSpacing: '0.18em', color: '#FAF7F0', fontWeight: 600, lineHeight: 1, transition: 'all 0.35s ease' }}
-              >
-                RUMÉRA
-              </span>
-              <span style={{ fontSize: '0.55rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#D4AF37', fontWeight: 700, marginTop: '3px' }}>
-                The Fragrance of Royalty
-              </span>
+            {/* Monogram Emblem & Brand Wordmark */}
+            <div
+              onClick={() => onNavigate('home')}
+              className="flex items-center gap-2.5 sm:gap-3.5 cursor-pointer select-none group shrink-0"
+              title="Maison Ruméra — The Fragrance of Royalty"
+            >
+              <img
+                src="/images/rumera_crest_emblem.png"
+                alt="Ruméra Insignia"
+                className={`w-auto object-contain filter drop-shadow-[0_2px_10px_rgba(212,175,55,0.45)] transition-all duration-300 group-hover:scale-105 ${
+                  scrolled ? 'h-8 sm:h-9' : 'h-9 sm:h-11'
+                }`}
+              />
+              <div className="flex flex-col">
+                <span className="font-serif text-xl sm:text-2xl tracking-[0.2em] text-[#FAF7F0] font-normal leading-none group-hover:text-white transition-colors">
+                  RUMÉRA
+                </span>
+                <span className="text-[8px] sm:text-[9px] tracking-[0.25em] uppercase text-[#D4AF37] font-semibold mt-1">
+                  The Fragrance of Royalty
+                </span>
+              </div>
             </div>
           </div>
 
-          <nav style={{ display: 'flex', gap: '16px', alignItems: 'center' }} className="desktop-nav">
-            <button
-              onClick={() => onNavigate('home')}
-              className={`header-nav-link ${currentRoute === 'home' ? 'active' : ''}`}
-            >
-              The House
-            </button>
-            <button
-              onClick={() => onNavigate('shop')}
-              className={`header-nav-link ${currentRoute === 'shop' ? 'active' : ''}`}
-            >
-              Collection
-            </button>
-            <button
-              onClick={() => onNavigate('shop', { category: 'dehn-al-oud' })}
-              className="header-nav-link"
-            >
-              Dehn Al Oud
-            </button>
-            <button
-              onClick={() => onNavigate('owner')}
-              className={`header-nav-link ${currentRoute === 'owner' ? 'active' : ''}`}
-            >
-              Founder Profile
-            </button>
-            <button
-              onClick={() => onNavigate('about')}
-              className={`header-nav-link ${currentRoute === 'about' ? 'active' : ''}`}
-            >
-              Heritage
-            </button>
+          {/* -------------------------------------------------------------------
+              CENTER: CLEANLY SPACED NAVIGATION LINKS (With Animated Underline)
+              ------------------------------------------------------------------- */}
+          <nav className="hidden xl:flex items-center gap-7 2xl:gap-8">
+            {[
+              { label: 'THE HOUSE', route: 'home' },
+              { label: 'COLLECTION', route: 'shop' },
+              { label: 'DEHN AL OUD', route: 'shop', params: { category: 'dehn-al-oud' } },
+              { label: 'FOUNDER PROFILE', route: 'owner' },
+              { label: 'HERITAGE', route: 'about' }
+            ].map((item) => {
+              const isActive = currentRoute === item.route;
+              return (
+                <button
+                  key={item.label}
+                  onClick={() => onNavigate(item.route, item.params || {})}
+                  className={`relative py-2 text-xs tracking-[0.18em] font-medium uppercase transition-colors whitespace-nowrap group ${
+                    isActive ? 'text-[#FAF7F0]' : 'text-[#DCD7CE] hover:text-[#FAF7F0]'
+                  }`}
+                >
+                  <span>{item.label}</span>
+                  {/* Smooth Animated Gold Underline */}
+                  <span
+                    className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent transition-all duration-300 ${
+                      isActive
+                        ? 'w-full shadow-[0_0_8px_rgba(212,175,55,0.8)]'
+                        : 'w-0 group-hover:w-full group-hover:shadow-[0_0_8px_rgba(212,175,55,0.5)]'
+                    }`}
+                  />
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* -------------------------------------------------------------------
+              RIGHT: ACTION GROUP (Non-Overlapping Pills & Utility Icons)
+              ------------------------------------------------------------------- */}
+          <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
+            {/* 1. 3D EXPERIENCE Pill Button */}
             <button
               onClick={() => onNavigate('experience')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                padding: '4px 12px',
-                borderRadius: '50px',
-                backgroundColor: currentRoute === 'experience' ? '#D4AF37' : 'rgba(212, 175, 55, 0.15)',
-                border: '1px solid #D4AF37',
-                color: currentRoute === 'experience' ? '#0A0A0A' : '#FAF7F0',
-                fontSize: '0.74rem',
-                fontWeight: 700,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                transition: 'all 0.25s ease',
-                boxShadow: '0 0 14px rgba(212, 175, 55, 0.25)'
-              }}
-              title="Experience 3D Interactive Perfume Atelier"
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[11px] tracking-[0.15em] font-semibold uppercase whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                currentRoute === 'experience'
+                  ? 'bg-[#D4AF37] text-black shadow-[0_0_15px_rgba(212,175,55,0.45)]'
+                  : 'border border-[#D4AF37]/60 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black hover:shadow-[0_0_12px_rgba(212,175,55,0.3)]'
+              }`}
+              title="Explore 3D Interactive Perfume Atelier"
             >
-              <Sparkles size={11} color={currentRoute === 'experience' ? '#0A0A0A' : '#D4AF37'} />
+              <Sparkles size={12} className={currentRoute === 'experience' ? 'text-black' : 'text-[#D4AF37]'} />
               <span>3D Experience</span>
             </button>
+
+            {/* 2. FREE SAMPLE Solid Champagne Gold Pill */}
             <button
               onClick={() => onNavigate('free-sample')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                padding: '4px 12px',
-                borderRadius: '50px',
-                backgroundColor: 'rgba(212, 175, 55, 0.16)',
-                border: '1px solid #D4AF37',
-                color: '#E8CA89',
-                fontSize: '0.74rem',
-                fontWeight: 700,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              title="Claim your complimentary discovery flacon"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[11px] tracking-[0.15em] font-bold uppercase whitespace-nowrap bg-[#D4AF37] text-black hover:bg-[#E5C158] transition-all duration-200 shadow-[0_0_12px_rgba(212,175,55,0.25)] cursor-pointer"
+              title="Claim Complimentary Discovery Flacon"
             >
-              <Sparkles size={11} color="#D4AF37" />
+              <Sparkles size={12} className="text-black" />
               <span>Free Sample</span>
             </button>
-          </nav>
-        </div>
 
-        {/* Right: Actions (Search, Admin ERP, Account, Cart) */}
-        <div className="header-right-actions">
-          <a
-            href="tel:+919305988767"
-            className="header-phone-btn"
-            style={{
-              color: '#D4AF37',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '38px',
-              height: '38px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(183, 139, 69, 0.1)',
-              border: '1px solid rgba(183, 139, 69, 0.35)',
-              textDecoration: 'none'
-            }}
-            title="Call Concierge: +91 9305988767"
-          >
-            <Phone size={16} color="#D4AF37" />
-          </a>
+            {/* Subtle Divider between Action Pills & Utility Icons */}
+            <div className="hidden sm:block h-5 w-[1px] bg-[#D4AF37]/25 mx-0.5" />
 
-          <button
-            onClick={() => setSearchOpen(!searchOpen)}
-            className="header-search-btn"
-            style={{ color: '#DCD7CE', display: 'flex', alignItems: 'center', padding: '6px', cursor: 'pointer', background: 'transparent', border: 'none' }}
-            title="Search Catalog"
-          >
-            <Search size={19} />
-          </button>
-
-          {/* Admin ERP Direct Switcher if staff logged in */}
-          {isStaff && (
-            <button
-              onClick={() => onNavigate('admin')}
-              className="header-erp-btn"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '7px 14px',
-                backgroundColor: 'rgba(183, 139, 69, 0.18)',
-                border: '1px solid #B78B45',
-                color: '#E8CA89',
-                borderRadius: '4px',
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                cursor: 'pointer'
-              }}
-            >
-              <Shield size={14} />
-              <span>Admin ERP</span>
-            </button>
-          )}
-
-          {/* Account Button */}
-          {currentUser ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {/* Utility Icons Group: Search, Profile Dropdown, Wishlist, Cart */}
+            <div className="flex items-center gap-1 sm:gap-2">
+              {/* Search Toggle Icon */}
               <button
-                onClick={() => onNavigate('account')}
-                className="header-account-btn"
-                style={{ color: '#DCD7CE', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', background: 'transparent', border: 'none' }}
-                title="Customer Account"
+                onClick={() => setSearchOpen(!searchOpen)}
+                className="p-2 text-white/80 hover:text-[#D4AF37] hover:scale-105 transition-all cursor-pointer rounded-full hover:bg-white/[0.04]"
+                title="Search Fragrance Catalog"
+                aria-label="Search"
               >
-                <UserIcon size={19} />
-                <span className="user-email-text" style={{ maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {currentUser.first_name || currentUser.email.split('@')[0]}
-                </span>
+                <Search size={18} />
+              </button>
+
+              {/* Profile Dropdown (Tucking ADMIN ERP neatly inside!) */}
+              <div className="relative" ref={profileDropdownRef}>
+                <button
+                  onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                  className="flex items-center gap-1.5 p-2 text-white/80 hover:text-[#FAF7F0] rounded-full hover:bg-white/[0.06] transition-all cursor-pointer"
+                  title={currentUser ? currentUser.first_name || currentUser.email : 'Account'}
+                  aria-label="User Account Menu"
+                >
+                  <UserIcon size={18} className="text-[#D4AF37]" />
+                  {currentUser && (
+                    <span className="hidden md:inline text-xs font-medium text-[#FAF7F0] max-w-[80px] truncate">
+                      {currentUser.first_name || currentUser.email.split('@')[0]}
+                    </span>
+                  )}
+                  {isStaff && (
+                    <span
+                      className="w-2 h-2 rounded-full bg-[#D4AF37] shadow-[0_0_6px_#D4AF37]"
+                      title="Super Admin Access Available"
+                    />
+                  )}
+                  <ChevronDown size={13} className={`text-white/60 transition-transform duration-200 ${profileMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Luxury Glassmorphic Profile Dropdown Menu */}
+                {profileMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#0B120F]/95 backdrop-blur-xl border border-[#D4AF37]/35 shadow-[0_15px_40px_rgba(0,0,0,0.85)] p-2 z-[1100] text-sm animate-in fade-in zoom-in-95 duration-150">
+                    {currentUser ? (
+                      <div>
+                        {/* Patron Info Header */}
+                        <div className="px-3 py-2.5 border-b border-[#D4AF37]/20 mb-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] tracking-[0.16em] uppercase font-bold text-[#D4AF37]">
+                              {currentUser.role ? currentUser.role.replace('_', ' ') : 'Patron'}
+                            </span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                          </div>
+                          <div className="text-xs font-semibold text-[#FAF7F0] truncate mt-0.5">
+                            {currentUser.first_name ? `${currentUser.first_name} ${currentUser.last_name || ''}` : currentUser.email}
+                          </div>
+                          <div className="text-[11px] text-white/50 truncate">
+                            {currentUser.email}
+                          </div>
+                        </div>
+
+                        {/* Super Admin ERP Quick Switcher (Tucked Neatly Inside!) */}
+                        {isStaff && (
+                          <div className="p-1 mb-1.5">
+                            <button
+                              onClick={() => {
+                                onNavigate('admin');
+                                setProfileMenuOpen(false);
+                              }}
+                              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37]/20 to-[#B78B45]/15 hover:from-[#D4AF37]/30 hover:to-[#B78B45]/25 border border-[#D4AF37]/45 text-[#FAF7F0] font-semibold text-xs tracking-wider uppercase transition-all shadow-[0_0_12px_rgba(212,175,55,0.2)] cursor-pointer text-left"
+                            >
+                              <Shield size={14} className="text-[#D4AF37] shrink-0" />
+                              <div className="flex flex-col">
+                                <span className="font-bold text-[#E8CA89]">Access Admin ERP</span>
+                                <span className="text-[9px] text-white/60 lowercase tracking-normal">Full catalog & order controls</span>
+                              </div>
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Customer Navigation Links */}
+                        <div className="space-y-0.5">
+                          <button
+                            onClick={() => {
+                              onNavigate('account');
+                              setProfileMenuOpen(false);
+                            }}
+                            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-white/80 hover:text-white hover:bg-white/[0.06] text-xs transition-colors cursor-pointer text-left"
+                          >
+                            <UserIcon size={14} className="text-[#D4AF37]" />
+                            <span>My Patron Account</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              onNavigate('order-tracking');
+                              setProfileMenuOpen(false);
+                            }}
+                            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-white/80 hover:text-white hover:bg-white/[0.06] text-xs transition-colors cursor-pointer text-left"
+                          >
+                            <Package size={14} className="text-[#D4AF37]" />
+                            <span>Track Consignment</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              onNavigate('wishlist');
+                              setProfileMenuOpen(false);
+                            }}
+                            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-white/80 hover:text-white hover:bg-white/[0.06] text-xs transition-colors cursor-pointer text-left"
+                          >
+                            <Heart size={14} className="text-[#D4AF37]" />
+                            <span>Royal Wishlist ({wishlistCount})</span>
+                          </button>
+                        </div>
+
+                        {/* Sign Out */}
+                        <div className="pt-1.5 mt-1.5 border-t border-white/10">
+                          <button
+                            onClick={() => {
+                              onLogout();
+                              setProfileMenuOpen(false);
+                            }}
+                            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-rose-300 hover:text-rose-200 hover:bg-rose-950/30 text-xs transition-colors cursor-pointer text-left"
+                          >
+                            <LogOut size={14} />
+                            <span>Sign Out of Maison</span>
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Guest View */
+                      <div className="p-2 space-y-2">
+                        <div className="px-2 py-1 text-center">
+                          <div className="font-serif text-sm text-[#FAF7F0]">Maison Ruméra Patron</div>
+                          <div className="text-[11px] text-white/60">Sign in to track orders & claim reserves</div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            onNavigate('login');
+                            setProfileMenuOpen(false);
+                          }}
+                          className="w-full py-2 px-4 rounded-xl bg-[#D4AF37] hover:bg-[#E5C158] text-black font-bold text-xs uppercase tracking-wider text-center transition-colors cursor-pointer"
+                        >
+                          Sign In / Register
+                        </button>
+                        <button
+                          onClick={() => {
+                            onNavigate('order-tracking');
+                            setProfileMenuOpen(false);
+                          }}
+                          className="w-full py-2 px-4 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white/90 text-xs text-center transition-colors cursor-pointer"
+                        >
+                          Track Your Order
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Wishlist Heart Icon with Gold Badge */}
+              <button
+                onClick={() => onNavigate('wishlist')}
+                className="relative p-2 text-white/80 hover:text-[#D4AF37] hover:scale-105 transition-all cursor-pointer rounded-full hover:bg-white/[0.04]"
+                title="Royal Wishlist"
+                aria-label="Wishlist"
+              >
+                <Heart size={18} className="text-[#D4AF37]" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-[#D4AF37] text-black text-[10px] font-bold flex items-center justify-center shadow-[0_0_6px_rgba(212,175,55,0.6)]">
+                    {wishlistCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Shopping Bag Cart Icon with Pill Counter */}
+              <button
+                onClick={onOpenCart}
+                className="relative flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-full bg-white/[0.06] hover:bg-[#D4AF37]/20 border border-[#D4AF37]/35 text-[#FAF7F0] hover:border-[#D4AF37] transition-all cursor-pointer shadow-[0_2px_10px_rgba(0,0,0,0.3)]"
+                title="View Shopping Cart"
+                aria-label="Shopping Cart"
+              >
+                <ShoppingBag size={17} className="text-[#D4AF37]" />
+                <span className="text-xs font-bold text-[#FAF7F0]">{cartCount}</span>
               </button>
             </div>
-          ) : (
-            <button
-              onClick={() => onNavigate('login')}
-              className="header-account-btn"
-              style={{ color: '#DCD7CE', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer', background: 'transparent', border: 'none' }}
-            >
-              <UserIcon size={18} />
-              <span>Login</span>
-            </button>
-          )}
-
-          {/* Royal Wishlist Trigger */}
-          <button
-            onClick={() => onNavigate('wishlist')}
-            className="header-wishlist-btn"
-            style={{
-              position: 'relative',
-              backgroundColor: 'rgba(183, 139, 69, 0.12)',
-              border: '1px solid rgba(183, 139, 69, 0.35)',
-              color: '#F0D495',
-              width: '38px',
-              height: '38px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer'
-            }}
-            title="Royal Wishlist"
-            aria-label="Open Wishlist"
-          >
-            <Heart size={17} color="#D4AF37" />
-            {wishlistCount > 0 && (
-              <span
-                style={{
-                  position: 'absolute',
-                  top: '-3px',
-                  right: '-3px',
-                  backgroundColor: '#B78B45',
-                  color: '#14231F',
-                  borderRadius: '50%',
-                  width: '17px',
-                  height: '17px',
-                  fontSize: '0.65rem',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                {wishlistCount}
-              </span>
-            )}
-          </button>
-
-          {/* Cart Trigger */}
-          <button
-            onClick={onOpenCart}
-            className="header-cart-btn"
-            style={{
-              position: 'relative',
-              backgroundColor: '#1D332D',
-              border: '1px solid rgba(183, 139, 69, 0.4)',
-              color: '#F8F4EC',
-              padding: '8px 15px',
-              borderRadius: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              cursor: 'pointer'
-            }}
-            aria-label="Open Cart"
-          >
-            <ShoppingBag size={18} color="#B78B45" />
-            <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{cartCount}</span>
-          </button>
+          </div>
         </div>
       </div>
 
-      {/* 2. Royal Search Bar Dropdown with Instant Live Suggestions */}
+      {/* =========================================================================
+          ROYAL SEARCH BAR EXPANDABLE MODAL / DROPDOWN
+          ========================================================================= */}
       {searchOpen && (
-        <div style={{ backgroundColor: '#0B1613', borderTop: '1px solid rgba(183, 139, 69, 0.35)', borderBottom: '1px solid rgba(183, 139, 69, 0.25)', padding: '20px 0', boxShadow: '0 12px 36px rgba(0,0,0,0.5)' }}>
-          <div className="container" style={{ maxWidth: '720px', margin: '0 auto', padding: '0 20px' }}>
-            <form onSubmit={handleSearchSubmit} style={{ position: 'relative', display: 'flex', gap: '10px' }}>
-              <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
-                <Search size={17} color="#D4AF37" style={{ position: 'absolute', left: '16px', pointerEvents: 'none' }} />
+        <div className="bg-[#0B1613] border-b border-[#D4AF37]/35 py-6 px-4 shadow-[0_15px_40px_rgba(0,0,0,0.7)] animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="max-w-[720px] mx-auto">
+            <form onSubmit={handleSearchSubmit} className="relative flex gap-3">
+              <div className="relative flex-1 flex items-center">
+                <Search size={17} className="absolute left-4 text-[#D4AF37] pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Search by note (Assam Oud, Rose, Amber, Musk) or product name..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px 42px 12px 46px',
-                    backgroundColor: '#12221D',
-                    border: '1.5px solid #B78B45',
-                    color: '#FAF7F0',
-                    borderRadius: '30px',
-                    outline: 'none',
-                    fontSize: '0.9rem',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-                    boxSizing: 'border-box'
-                  }}
+                  className="w-full pl-11 pr-10 py-3 bg-[#12221D] border border-[#D4AF37]/50 focus:border-[#D4AF37] text-[#FAF7F0] placeholder:text-white/40 rounded-full outline-none text-sm shadow-[0_4px_16px_rgba(0,0,0,0.4)] transition-all"
                   autoFocus
                 />
                 {searchQuery && (
                   <button
                     type="button"
-                    onClick={() => { setSearchQuery(''); setLiveResults([]); }}
-                    style={{ position: 'absolute', right: '14px', background: 'none', border: 'none', color: '#B6C4BC', cursor: 'pointer', padding: '4px' }}
+                    onClick={() => {
+                      setSearchQuery('');
+                      setLiveResults([]);
+                    }}
+                    className="absolute right-3.5 text-white/50 hover:text-white p-1"
                   >
                     <X size={15} />
                   </button>
@@ -421,36 +496,24 @@ export default function Header({
 
               <button
                 type="submit"
-                className="btn-gold btn-primary"
-                style={{ padding: '0 24px', fontSize: '0.82rem', borderRadius: '30px', letterSpacing: '0.08em', fontWeight: 700 }}
+                className="px-6 py-3 rounded-full bg-[#D4AF37] hover:bg-[#E5C158] text-black text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shrink-0"
               >
                 Search
               </button>
             </form>
 
             {/* Trending Quick Search Chips */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.7rem', color: '#8E9E96', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                <Sparkles size={11} color="#D4AF37" />
-                <span>Trending Notes:</span>
+            <div className="flex items-center gap-2 mt-3.5 flex-wrap">
+              <span className="text-[11px] text-[#8E9E96] uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles size={11} className="text-[#D4AF37]" />
+                <span>Trending:</span>
               </span>
               {['Assam Oud', 'Rooh Gulab', 'White Musk', 'Shamama', 'Gift Coffret'].map((tag) => (
                 <button
                   key={tag}
                   type="button"
                   onClick={() => handleQuickTagClick(tag)}
-                  style={{
-                    fontSize: '0.7rem',
-                    color: '#FAF7F0',
-                    backgroundColor: 'rgba(183, 139, 69, 0.14)',
-                    border: '1px solid rgba(183, 139, 69, 0.35)',
-                    padding: '3px 10px',
-                    borderRadius: '14px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(183, 139, 69, 0.35)'; e.currentTarget.style.borderColor = '#D4AF37'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(183, 139, 69, 0.14)'; e.currentTarget.style.borderColor = 'rgba(183, 139, 69, 0.35)'; }}
+                  className="text-[11px] text-[#FAF7F0] bg-white/[0.05] hover:bg-[#D4AF37]/20 border border-[#D4AF37]/30 hover:border-[#D4AF37] px-3 py-1 rounded-full transition-all cursor-pointer"
                 >
                   {tag}
                 </button>
@@ -459,22 +522,13 @@ export default function Header({
 
             {/* Live Search Instant Preview Dropdown */}
             {searchQuery.trim().length >= 2 && (
-              <div
-                style={{
-                  marginTop: '14px',
-                  backgroundColor: '#12221D',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(183, 139, 69, 0.4)',
-                  padding: '12px',
-                  boxShadow: '0 12px 30px rgba(0,0,0,0.5)'
-                }}
-              >
-                <div style={{ fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#D4AF37', fontWeight: 700, padding: '4px 8px 8px', borderBottom: '1px solid rgba(183, 139, 69, 0.15)' }}>
-                  {liveSearching ? 'Searching Royal Vault...' : liveResults.length > 0 ? `Matching Creations (${liveResults.length})` : 'No direct formulation matches'}
+              <div className="mt-3.5 bg-[#12221D] rounded-2xl border border-[#D4AF37]/40 p-3 shadow-[0_12px_30px_rgba(0,0,0,0.6)]">
+                <div className="text-[10px] tracking-[0.14em] uppercase text-[#D4AF37] font-bold px-2 pb-2 border-b border-[#D4AF37]/20">
+                  {liveSearching ? 'Searching Royal Vault...' : liveResults.length > 0 ? `Matching Creations (${liveResults.length})` : 'No direct matches found'}
                 </div>
 
                 {liveResults.length > 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+                  <div className="flex flex-col gap-1.5 mt-2">
                     {liveResults.map((item) => {
                       const itemImg = BESPOKE_SEARCH_IMAGES[item.slug] || item.primary_image || '/images/showcase/royal_emerald_flacon.jpg';
                       const price = item.variants?.[0]?.price || '0';
@@ -486,40 +540,29 @@ export default function Header({
                             setSearchOpen(false);
                             setLiveResults([]);
                           }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '8px 10px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            backgroundColor: 'rgba(255,255,255,0.02)',
-                            transition: 'all 0.2s ease'
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(183, 139, 69, 0.16)'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)'; }}
+                          className="flex items-center justify-between p-2 rounded-xl hover:bg-white/[0.06] transition-colors cursor-pointer"
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div className="flex items-center gap-3">
                             <img
                               src={itemImg}
                               alt={item.name}
-                              style={{ width: '38px', height: '44px', objectFit: 'contain', backgroundColor: '#091210', borderRadius: '4px', border: '1px solid rgba(183, 139, 69, 0.25)', padding: '2px' }}
+                              className="w-10 h-11 object-contain bg-[#091210] rounded-md border border-[#D4AF37]/30 p-1"
                             />
                             <div>
-                              <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#FAF7F0', fontFamily: 'var(--font-serif)' }}>
+                              <div className="text-sm font-semibold text-[#FAF7F0] font-serif">
                                 {item.name}
                               </div>
-                              <div style={{ fontSize: '0.68rem', color: '#A0B2A9' }}>
+                              <div className="text-[11px] text-white/50">
                                 {item.category?.name || 'Haute Concentré'} • {item.concentration}
                               </div>
                             </div>
                           </div>
 
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '0.9rem', color: '#E8CA89', fontWeight: 700, fontFamily: 'var(--font-serif)' }}>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-[#E8CA89] font-serif">
                               ₹{Number(price).toLocaleString('en-IN')}
                             </span>
-                            <ArrowUpRight size={14} color="#D4AF37" />
+                            <ArrowUpRight size={14} className="text-[#D4AF37]" />
                           </div>
                         </div>
                       );
@@ -528,23 +571,13 @@ export default function Header({
                     <button
                       type="button"
                       onClick={handleSearchSubmit}
-                      style={{
-                        marginTop: '4px',
-                        padding: '8px',
-                        textAlign: 'center',
-                        fontSize: '0.74rem',
-                        color: '#D4AF37',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        textDecoration: 'underline'
-                      }}
+                      className="mt-1 p-2 text-center text-xs text-[#D4AF37] hover:underline cursor-pointer"
                     >
                       View all results for "{searchQuery}" in Collection →
                     </button>
                   </div>
                 ) : !liveSearching && (
-                  <div style={{ padding: '14px 8px', textAlign: 'center', fontSize: '0.8rem', color: '#8E9E96' }}>
+                  <div className="p-4 text-center text-xs text-white/60">
                     Press <strong>Search</strong> to explore the full collection for "{searchQuery}".
                   </div>
                 )}
@@ -554,333 +587,148 @@ export default function Header({
         </div>
       )}
 
-      {/* Mobile Menu Panel */}
+      {/* =========================================================================
+          SLIDE-OUT LUXURY MOBILE / TABLET DRAWER MENU (< xl)
+          ========================================================================= */}
       {mobileMenuOpen && (
-        <div style={{ backgroundColor: '#14231F', borderTop: '1px solid rgba(183, 139, 69, 0.25)', padding: '24px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-            <button
-              onClick={() => { onNavigate('home'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', color: '#F8F4EC', fontSize: '1.1rem', fontFamily: 'var(--font-serif)' }}
-            >
-              The House (Home)
-            </button>
-            <button
-              onClick={() => { onNavigate('shop'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', color: '#F8F4EC', fontSize: '1.1rem', fontFamily: 'var(--font-serif)' }}
-            >
-              The Complete Collection
-            </button>
-            <button
-              onClick={() => { onNavigate('shop', { category: 'dehn-al-oud' }); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', color: '#B78B45', fontSize: '1.1rem', fontFamily: 'var(--font-serif)' }}
-            >
-              Vintage Dehn Al Oud
-            </button>
-            <button
-              onClick={() => { onNavigate('owner'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', color: '#F8F4EC', fontSize: '1.1rem', fontFamily: 'var(--font-serif)' }}
-            >
-              Founder Profile & Story
-            </button>
-            <button
-              onClick={() => { onNavigate('about'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', color: '#F8F4EC', fontSize: '1.1rem', fontFamily: 'var(--font-serif)' }}
-            >
-              Kannauj & Assam Heritage
-            </button>
-            <button
-              onClick={() => { onNavigate('experience'); setMobileMenuOpen(false); }}
-              style={{
-                textAlign: 'left',
-                color: '#FAF7F0',
-                fontSize: '1.05rem',
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 0',
-              }}
-            >
-              <Sparkles size={16} color="#D4AF37" />
-              <span>3D Interactive Flacon Experience</span>
-            </button>
-            <button
-              onClick={() => { onNavigate('free-sample'); setMobileMenuOpen(false); }}
-              style={{
-                textAlign: 'left',
-                color: '#D4AF37',
-                fontSize: '1.05rem',
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 0',
-              }}
-            >
-              <Sparkles size={16} color="#D4AF37" />
-              <span>Claim Free Perfume Sample</span>
-            </button>
-            <button
-              onClick={() => { onNavigate('order-tracking'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', color: '#DCD7CE', fontSize: '0.95rem' }}
-            >
-              Track Your Order
-            </button>
-            {isStaff && (
-              <button
-                onClick={() => { onNavigate('admin'); setMobileMenuOpen(false); }}
-                style={{ textAlign: 'left', color: '#E8CA89', fontWeight: 'bold', fontSize: '1rem', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.1)' }}
-              >
-                Access ERP Admin Dashboard →
-              </button>
-            )}
+        <div className="fixed inset-0 z-[1200] xl:hidden">
+          {/* Backdrop Overlay */}
+          <div
+            onClick={() => setMobileMenuOpen(false)}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+          />
 
-            {/* Mobile Direct Concierge Helpline */}
-            <div style={{ paddingTop: '14px', borderTop: '1px solid rgba(183,139,69,0.25)', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {/* Drawer Panel */}
+          <div className="fixed top-0 left-0 bottom-0 w-[300px] sm:w-[340px] bg-[#0A100E] border-r border-[#D4AF37]/25 p-6 flex flex-col justify-between overflow-y-auto z-[1210] shadow-[10px_0_40px_rgba(0,0,0,0.85)] animate-in slide-in-from-left duration-250">
+            <div>
+              {/* Header inside drawer */}
+              <div className="flex items-center justify-between pb-5 border-b border-[#D4AF37]/20">
+                <div className="flex items-center gap-2.5">
+                  <img
+                    src="/images/rumera_crest_emblem.png"
+                    alt="Ruméra"
+                    className="h-8 w-auto object-contain"
+                  />
+                  <div>
+                    <span className="font-serif text-lg tracking-[0.2em] text-[#FAF7F0] font-normal leading-none block">
+                      RUMÉRA
+                    </span>
+                    <span className="text-[8px] tracking-[0.2em] uppercase text-[#D4AF37] font-semibold mt-0.5 block">
+                      Haute Parfumerie
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-1.5 text-white/60 hover:text-white rounded-lg hover:bg-white/[0.05] transition-colors"
+                  aria-label="Close Menu"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Navigation Links inside drawer */}
+              <div className="py-6 space-y-4">
+                {[
+                  { label: 'The House', route: 'home' },
+                  { label: 'The Collection', route: 'shop' },
+                  { label: 'Vintage Dehn Al Oud', route: 'shop', params: { category: 'dehn-al-oud' } },
+                  { label: 'Founder Profile & Story', route: 'owner' },
+                  { label: 'Kannauj & Assam Heritage', route: 'about' }
+                ].map((link) => (
+                  <button
+                    key={link.label}
+                    onClick={() => {
+                      onNavigate(link.route, link.params || {});
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left font-serif text-lg text-[#FAF7F0] hover:text-[#D4AF37] transition-colors py-1 block"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+
+                {/* 3D Experience Drawer Pill */}
+                <button
+                  onClick={() => {
+                    onNavigate('experience');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-between p-3 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-[#FAF7F0] font-semibold text-xs tracking-wider uppercase mt-4"
+                >
+                  <span className="flex items-center gap-2">
+                    <Sparkles size={14} className="text-[#D4AF37]" />
+                    <span>3D Interactive Experience</span>
+                  </span>
+                  <ArrowRight size={14} className="text-[#D4AF37]" />
+                </button>
+
+                {/* Free Sample Drawer Pill */}
+                <button
+                  onClick={() => {
+                    onNavigate('free-sample');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-between p-3 rounded-xl bg-[#D4AF37] text-black font-bold text-xs tracking-wider uppercase shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+                >
+                  <span className="flex items-center gap-2">
+                    <Sparkles size={14} className="text-black" />
+                    <span>Claim Free Perfume Sample</span>
+                  </span>
+                  <ArrowRight size={14} className="text-black" />
+                </button>
+
+                {/* Track Order */}
+                <button
+                  onClick={() => {
+                    onNavigate('order-tracking');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full text-left text-xs tracking-widest uppercase text-white/70 hover:text-white py-2 block"
+                >
+                  Track Your Order
+                </button>
+
+                {/* Super Admin Switcher if staff */}
+                {isStaff && (
+                  <button
+                    onClick={() => {
+                      onNavigate('admin');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-200 text-xs font-bold uppercase tracking-wider text-left mt-2"
+                  >
+                    <Shield size={14} className="text-emerald-400" />
+                    <span>Access ERP Admin Dashboard</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Bottom Concierge Contact */}
+            <div className="pt-4 border-t border-[#D4AF37]/20 space-y-2.5">
+              <div className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-semibold">
+                Royal Concierge Helpline
+              </div>
               <a
                 href="tel:+919305988767"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '12px 18px',
-                  backgroundColor: 'rgba(183, 139, 69, 0.15)',
-                  border: '1px solid #B78B45',
-                  borderRadius: '4px',
-                  color: '#FAF7F0',
-                  textDecoration: 'none',
-                  fontSize: '0.88rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.04em'
-                }}
+                className="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.04] text-xs text-[#FAF7F0] hover:text-[#D4AF37] transition-colors"
               >
-                <Phone size={16} color="#D4AF37" />
-                <span>Call: +91 9305988767</span>
+                <Phone size={13} className="text-[#D4AF37]" />
+                <span>+91 9305988767</span>
               </a>
               <a
                 href="mailto:ruviansari144@gmail.com"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  padding: '10px 18px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(183, 139, 69, 0.5)',
-                  borderRadius: '4px',
-                  color: '#E8CA89',
-                  textDecoration: 'none',
-                  fontSize: '0.84rem',
-                  fontWeight: 600
-                }}
+                className="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.04] text-xs text-white/70 hover:text-white transition-colors"
               >
-                <Mail size={15} color="#D4AF37" />
+                <Mail size={13} className="text-[#D4AF37]" />
                 <span>ruviansari144@gmail.com</span>
               </a>
             </div>
           </div>
         </div>
       )}
-
-      <style>{`
-        /* 1. Brand Logo Hover */
-        .header-brand-logo {
-          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .header-brand-logo:hover {
-          transform: translateY(-2px);
-        }
-        .header-brand-logo:hover .brand-logo-mark {
-          filter: drop-shadow(0 0 16px rgba(212, 175, 55, 0.95)) !important;
-          transform: scale(1.08) rotate(-2deg);
-        }
-        .header-brand-logo:hover .brand-text-name {
-          color: #FFFFFF !important;
-          text-shadow: 0 0 16px rgba(212, 175, 55, 0.65);
-          letter-spacing: 0.22em !important;
-        }
-
-        /* 2. Navigation Links Hover & Animated Underline */
-        .header-nav-link {
-          position: relative;
-          color: #DCD7CE;
-          font-size: 0.82rem;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          font-weight: 600;
-          padding: 8px 4px 6px;
-          white-space: nowrap;
-          border: none;
-          background: transparent;
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .header-nav-link::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          width: 0;
-          height: 2px;
-          background: linear-gradient(90deg, transparent, #B78B45 20%, #F5DEB3 50%, #B78B45 80%, transparent);
-          transform: translateX(-50%);
-          transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
-          border-radius: 2px;
-        }
-        .header-nav-link:hover {
-          color: #FAF7F0 !important;
-          transform: translateY(-2px);
-          text-shadow: 0 0 12px rgba(232, 202, 137, 0.5);
-        }
-        .header-nav-link:hover::after {
-          width: 100%;
-          box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
-        }
-        .header-nav-link.active {
-          color: #B78B45 !important;
-        }
-        .header-nav-link.active::after {
-          width: 100%;
-          background: #B78B45;
-          box-shadow: 0 0 8px rgba(183, 139, 69, 0.5);
-        }
-
-        /* 3. Phone Concierge Button Hover */
-        .header-phone-btn {
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .header-phone-btn:hover {
-          transform: scale(1.15) translateY(-2px);
-          background-color: rgba(212, 175, 55, 0.28) !important;
-          border-color: #D4AF37 !important;
-          box-shadow: 0 0 16px rgba(212, 175, 55, 0.65);
-        }
-        .header-phone-btn:hover svg {
-          animation: phoneRinging 0.4s ease infinite alternate;
-        }
-        @keyframes phoneRinging {
-          0% { transform: rotate(-12deg); }
-          100% { transform: rotate(12deg); }
-        }
-
-        /* 4. Search Button Hover */
-        .header-search-btn {
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .header-search-btn:hover {
-          color: #E8CA89 !important;
-          transform: scale(1.2);
-          filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.75));
-        }
-
-        /* 5. Admin ERP Button Hover */
-        .header-erp-btn {
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .header-erp-btn:hover {
-          background-color: rgba(183, 139, 69, 0.35) !important;
-          border-color: #E8CA89 !important;
-          color: #FFFFFF !important;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 18px rgba(183, 139, 69, 0.45);
-        }
-        .header-erp-btn:hover svg {
-          transform: rotate(15deg);
-          transition: transform 0.3s ease;
-        }
-
-        /* 6. Account Button Hover */
-        .header-account-btn {
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          padding: 6px 10px;
-          border-radius: 20px;
-        }
-        .header-account-btn:hover {
-          color: #FAF7F0 !important;
-          background-color: rgba(255, 255, 255, 0.1);
-          transform: translateY(-1px);
-        }
-        .header-account-btn:hover svg {
-          color: #D4AF37 !important;
-          transform: scale(1.1);
-          transition: transform 0.3s ease;
-        }
-
-        /* 7. Cart Button Hover */
-        .header-cart-btn {
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .header-cart-btn:hover {
-          background-color: #26463D !important;
-          border-color: #D4AF37 !important;
-          transform: translateY(-2px) scale(1.05);
-          box-shadow: 0 0 20px rgba(183, 139, 69, 0.55);
-        }
-        .header-cart-btn:hover svg {
-          transform: rotate(-10deg) scale(1.1);
-          transition: transform 0.3s ease;
-        }
-
-        .header-nav-container {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          height: 80px;
-          gap: 20px;
-        }
-
-        .header-left-wrap {
-          display: flex;
-          align-items: center;
-          gap: 28px;
-          min-width: 0;
-        }
-
-        .header-right-actions {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          flex-shrink: 0;
-        }
-
-        @media (max-width: 1024px) {
-          .desktop-nav { display: none !important; }
-          .mobile-toggle { display: block !important; }
-          .user-email-text { display: none !important; }
-          .header-nav-container { height: 70px !important; }
-        }
-
-        @media (max-width: 900px) {
-          /* Hide phone button from the tight top bar on tablet/mobile so it NEVER collides with RUMERA logo */
-          .header-phone-btn { display: none !important; }
-          .header-left-wrap { gap: 12px !important; }
-          .header-right-actions { gap: 8px !important; }
-        }
-
-        @media (max-width: 640px) {
-          .header-nav-container { height: 62px !important; gap: 8px !important; }
-          .header-left-wrap { gap: 8px !important; }
-          .header-brand-logo { gap: 6px !important; }
-          .brand-logo-mark { height: 32px !important; }
-          .brand-text-name { font-size: 1.25rem !important; letter-spacing: 0.1em !important; }
-          .header-right-actions { gap: 6px !important; }
-          .header-erp-btn span { display: none !important; }
-          .header-erp-btn { padding: 5px 8px !important; }
-          .header-account-btn span { display: none !important; }
-          .header-account-btn { padding: 5px 6px !important; }
-          .header-cart-btn { padding: 5px 10px !important; gap: 4px !important; }
-          .mobile-toggle { padding: 4px !important; }
-          .header-search-btn { padding: 4px !important; }
-        }
-
-        @media (max-width: 380px) {
-          .brand-text-name { font-size: 1.1rem !important; letter-spacing: 0.08em !important; }
-          .brand-logo-mark { height: 28px !important; }
-          .header-left-wrap { gap: 6px !important; }
-          .header-right-actions { gap: 4px !important; }
-        }
-      `}</style>
     </header>
   );
 }
